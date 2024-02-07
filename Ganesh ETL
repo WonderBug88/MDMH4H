@@ -1,50 +1,48 @@
 import pandas as pd
 
 # Correct the file paths to use raw string literals or double backslashes
-excel_file_path = r'C:\Users\juddu\OneDrive\Mission Critical Projects\Vendor Onboarding APP\Vendor Data Files (May not be updated)\Ganesh Mills Price Catalog Effective February 15,2024 in excel.xlsx'
-output_file_path = r'C:\Users\juddu\OneDrive\Mission Critical Projects\GaneshETL.csv'
+excel_file_path = 'C:\\Users\\juddu\\OneDrive\\Mission Critical Projects\\Vendor Onboarding APP\\Vendor Data Files (May not be updated)\\Ganesh Mills Price Catalog Effective February 15,2024 in excel.xlsx'
+output_file_path = 'C:\\Users\\juddu\\OneDrive\\Mission Critical Projects\\GaneshETL.csv'
 
 # Load the workbook
-excel_file = pd.ExcelFile(excel_file_path)
+excel_data = pd.read_excel(excel_file_path)
 
-def aggregate_product_details(sheet_df):
-    products_list = []
-    current_parent_details = {}
+# Initialize an empty DataFrame to store all product details
+all_product_details = []
 
-    for index, row in sheet_df.iterrows():
-        # Check for non-empty row and if it's a parent product description
-        if not row.isnull().all() and 'Size' in row.values:
-            # Capture parent product details
-            current_parent_details = {
-                'Quality': row['Quality'] if 'Quality' in row else '',
-                'Specs': row['Specs'] if 'Specs' in row else '',
-                'Color': row['Color'] if 'Color' in row else '',
-                'Description': row['Description'] if 'Description' in row else ''
-            }
-        elif not row.isnull().all() and pd.notnull(row['Ganesh Mills Item No.']):
-            # This row is a product detail row, capture its details
-            details = {
-                "Ganesh Mills Item No.": row['Ganesh Mills Item No.'],
-                "Short Description": row['Short Description'] if 'Short Description' in row else '',
-                "Size": row['Size'] if 'Size' in row else '',
-                "Weight": row['Weight'] if 'Weight' in row else '',
-                "Special Price": row['Special Price'] if 'Special Price' in row else '',
-                "Unit": row['Unit'] if 'Unit' in row else '',
-                "Case Qty": row['Case Qty'] if 'Case Qty' in row else '',
-                "Bale / Carton": row['Bale / Carton'] if 'Bale / Carton' in row else '',
-                "Dims LxWxH": row['Dims LxWxH'] if 'Dims LxWxH' in row else '',
-                "Wt/Ctn": row['Wt/Ctn'] if 'Wt/Ctn' in row else '',
-                **current_parent_details
-            }
-            products_list.append(details)
+# Initialize a dictionary to hold the current parent product details
+current_parent_details = {}
 
-    return pd.DataFrame(products_list)
+# Iterate over the DataFrame
+for index, row in excel_data.iterrows():
+    # Check if the row contains attributes in Column B (assume attribute names are in Column B)
+    if pd.notnull(row['Short Description']) and any(attr in row['Short Description'] for attr in ['Quality:', 'Specs:', 'Color:', 'Description:']):
+        # Capture attribute value from Column C
+        attribute_name = row['Short Description'].split(':')[0]  # Get the attribute name (e.g., 'Quality')
+        current_parent_details[attribute_name] = row['Size']  # Get the corresponding value from Column C
+    elif pd.notnull(row['Size']):
+        # This row contains a child product, capture its details and the current parent details
+        product_details = {
+            'Ganesh Mills Item No.': row['Ganesh Mills Item No.'],
+            'Short Description': row['Short Description'],
+            'Size': row['Size'],
+            'Weight': row['Weight'],
+            'Special Price': row['Special Price'],
+            'Unit': row['Unit'],
+            'Case Qty': row['Case Qty'],
+            'Bale / Carton': row['Bale / Carton'],
+            'Dims LxWxH': row['Dims LxWxH'],
+            'Wt/Ctn': row['Wt/Ctn'],
+            **current_parent_details  # Include the parent product details
+        }
+        all_product_details.append(product_details)
 
-# Apply the function to each sheet and concatenate the results
-all_product_details = pd.DataFrame()
-for sheet_name in excel_file.sheet_names:
-    sheet_df = pd.read_excel(excel_file, sheet_name=sheet_name)
-    all_product_details = pd.concat([all_product_details, aggregate_product_details(sheet_df)], ignore_index=True)
 
-# Output the processed DataFrame to a CSV file directly
-all_product_details.to_csv(output_file_path, index=False)
+        # Append the product details to the all_product_details DataFrame
+        all_product_details_df = pd.DataFrame(all_product_details)
+
+
+# Output the DataFrame to a CSV file
+all_product_details_df.to_csv(output_file_path, index=False)
+
+
