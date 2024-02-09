@@ -10,13 +10,49 @@ all_sheets_data = pd.read_excel(excel_file_path, sheet_name=None)  # 'None' load
 # Initialize an empty list to store all product details across sheets
 all_product_details = []
 
+# Conversion dictionary for units
+unit_conversion = {
+    'dozen': 12,
+    'each': 1,
+    'CTN': 1,
+    # Add other units as necessary
+}
+
 # Iterate over each sheet in the workbook
 for sheet_name, sheet_data in all_sheets_data.items():
     current_parent_product = ""
     current_parent_details = {}  # Ensure this is reset for each sheet
     
+    # Ensure this loop is correctly nested inside the above loop
     for index, row in sheet_data.iterrows():
+        # Initialize quantity and uom at the start of each loop iteration
+        quantity, uom = '', ''  # Default values
+        
         item_no = str(row['Ganesh Mills Item No.'])
+        
+        # Identify parent products and other conditions as before
+        # [Your existing conditions and operations here]
+
+        # Before extracting quantity and uom, ensure they are defined in each iteration
+        if pd.notnull(row['Case Qty']):
+            case_qty_parts = str(row['Case Qty']).split(' ', 1)
+            if len(case_qty_parts) == 2:
+                quantity, uom = case_qty_parts
+
+        # Convert unit text to string and lower case, handling non-string and NaN values
+        if pd.notnull(row['Unit']):
+            unit_text = str(row['Unit']).lower()
+        else:
+            unit_text = ''  # Default to an empty string if Unit is NaN
+
+        units_numeric = unit_conversion.get(unit_text, None)
+
+        # Calculate price per each unit if units_numeric is not None and cost is a numeric value
+        cost_per_unit = row['Special Price']
+        try:
+            price_per_unit = float(cost_per_unit) / units_numeric if units_numeric and pd.notnull(cost_per_unit) else None
+        except ValueError:
+            price_per_unit = None  # Handle cases where cost_per_unit is not a float
         
         # Identify parent products
         if item_no.isupper() and not any(char.isdigit() for char in item_no):
@@ -38,7 +74,8 @@ for sheet_name, sheet_data in all_sheets_data.items():
             else:
                 dims = dims_str.split('x')
                 dims = [dim.strip() for dim in dims] + [''] * (3 - len(dims))  # Ensure list has 3 elements
-         # Split 'Case Qty' into 'Quantity' and 'UOM'
+
+            # Split 'Case Qty' into 'Quantity' and 'UOM'
             quantity, uom = ('', '')
             if pd.notnull(row['Case Qty']):
                 case_qty_parts = str(row['Case Qty']).split(' ', 1)
@@ -46,12 +83,13 @@ for sheet_name, sheet_data in all_sheets_data.items():
                     quantity, uom = case_qty_parts
 
             product_details = {
+                'Brand': 'Ganesh Mills',  # Added 'Brand' column
                 'Parent Product': current_parent_product,
-                'Ganesh Mills Item No.': row['Ganesh Mills Item No.'],
-                'Short Description': row['Short Description'],
-                'Size': row['Size'],
-                'Weight': row['Weight'],
-                'Special Price': row['Special Price'],
+                'SKU': row['Ganesh Mills Item No.'],  # Changed column name to 'SKU'
+                'Child Category': row['Short Description'],
+                'Product Size': row['Size'],
+                'Product Weight': row['Weight'],
+                'Cost Price Per Unit': row['Special Price'],
                 'Unit': row['Unit'],
                 'Quantity': quantity,
                 'UOM': uom,
@@ -59,7 +97,7 @@ for sheet_name, sheet_data in all_sheets_data.items():
                 'Case Length': dims[0],
                 'Case Width': dims[1],
                 'Case Height': dims[2],
-                'Wt/Ctn': row['Wt/Ctn'],
+                'Case Weight': row['Wt/Ctn'],  # Changed column name to 'Case Weight'
                 **current_parent_details
             }
             all_product_details.append(product_details)
@@ -67,5 +105,8 @@ for sheet_name, sheet_data in all_sheets_data.items():
 
 # Convert and save the list of product details to a DataFrame and then to a CSV file
 all_product_details_df = pd.DataFrame(all_product_details)
+all_product_details_df['Cost Price Per Unit'] = pd.to_numeric(all_product_details_df['Cost Price Per Unit'], errors='coerce')
 all_product_details_df['Quantity'] = pd.to_numeric(all_product_details_df['Quantity'], errors='coerce')
+
+# Exporting to CSV format
 all_product_details_df.to_csv(output_file_path, index=False)
