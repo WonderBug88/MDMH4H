@@ -1,0 +1,42 @@
+﻿body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background: #e0e0e0;
+    padding: 10px 0;
+    text-align: center;
+}
+
+    header img {
+        max-height: 100px;
+    }
+
+main {
+    margin: 20px;
+    text-align: center;
+}
+
+
+
+.logistics-container {
+    width: 80%;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.logistics-item h2 {
+    color: #333;
+}
+
+.logistics-item p {
+    color: #666;
+    line-height: 1.6;
+}
+
+
+/* You can add more styles for your muted green color and other design preferences. */

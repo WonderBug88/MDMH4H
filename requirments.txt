@@ -1,0 +1,5 @@
+Flask
+httpx
+pandas
+openai
+Scrapy

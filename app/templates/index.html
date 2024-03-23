@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier Data Submission</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo_hotel_supplies_1551335679__80870.webp') }}" alt="Company Logo">
+    </header>
+    <style>
+        .flash-messages div {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+    </style>
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div>{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <main>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <label for="supplier">Select Supplier:</label>
+            <select id="supplier" name="supplier">
+                {% for supplier in suppliers %}
+                <option value="{{ supplier }}">{{ supplier }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="file">Upload Data Feed:</label>
+            <input type="file" id="file" name="file">
+            <!-- Include other form fields as needed -->
+            <input type="submit" value="Submit Data">
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Management</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.4/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <!-- Include Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-200 font-sans">
+    <header
+      class="bg-gray-900 text-white p-5 flex justify-between items-center"
+    >
+      <div class="logo flex items-center">
+        <img
+          src="https://cdn11.bigcommerce.com/s-99oa2tso/images/stencil/original/logo_hotel_supplies_1551335679__80870.original.png"
+          class="h-10 mr-4"
+        />
+        <span class="text-xl font-bold">Hotel Supplies</span>
+      </div>
+      <div class="tab-navigation flex gap-4">
+        <button
+          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+        >
+          Product Management
+        </button>
+        <button
+          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+        >
+          Logistics
+        </button>
+        <button
+          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+        >
+          Competitors
+        </button>
+        <button
+          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+        >
+          Order History
+        </button>
+      </div>
+      <div class="user-welcome flex items-center text-sm">
+        Welcome, User
+        <div class="ml-2 text-lg">👤</div>
+      </div>
+    </header>
+    {% if parent_product %}
+    <main class="p-5">
+      <div class="flex flex-wrap -mx-2">
+        <div class="w-full md:w-2/3 px-2 mb-4">
+          <div class="bg-white p-5 shadow rounded">
+            <!-- Left Column Content -->
+            <div class="mb-4">
+              <label
+                for="supplier"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >Supplier</label
+              >
+              <input
+                type="text"
+                id="supplier"
+                name="supplier"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="parent-product"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >Parent Product</label
+              >
+              <input
+                type="text"
+                id="parent-product"
+                name="parent_product"
+                value="{{ current_parent_name }}"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="title"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >Product Title</label
+              >
+              <input
+                type="text"
+                id="product_title"
+                name="product_title"
+                value="{{ generated_product_title }}"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="category"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >Category</label
+              >
+              <select
+                id="category"
+                name="category"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              >
+                <!-- Category Options -->
+              </select>
+            </div>
+            <div class="mb-4">
+              <label
+                for="meta title"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >Meta Title</label
+              >
+              <input
+                type="text"
+                id="meta-title"
+                name="meta_title"
+                value="{{ generated_meta_title }}"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="meta-keyword"
+                class="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Meta Key Word</label
+              >
+              <input
+                type="text"
+                id="meta-keyword"
+                name="meta_keyword"
+                value="{{ generated_keywords }}"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="meta descriptiom"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >Meta Descriptiom</label
+              >
+              <input
+                type="text"
+                id="meta_description"
+                name="meta_descriptiom"
+                value="{{ generated_meta_description }}</textarea>"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                readonly
+              />
+            </div>
+          </div>
+        </div>
+        <div class="w-full md:w-1/3 px-2 mb-4">
+          <div class="bg-white p-5 shadow rounded">
+            <!-- Right Column Content -->
+            <div class="mb-4">
+              <!-- Image Upload and Product Details Here -->
+              <h3 class="font-bold text-xl mb-3">Images</h3>
+              <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Upload Images
+              </button>
+              <div class="mb-4">
+                <label
+                  for="alt images"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >alt images</label
+                >
+                <textarea
+                  id="Alt images"
+                  name="alt_images"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+{{ generated_alt_image_descriptions }}</textarea
+                >
+              </div>
+              <!-- Text Area for Product Descriptions -->
+              <div class="mt-4">
+                <label
+                  for="product-description"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                  >Product Description</label
+                >
+                <textarea
+                  id="product-description"
+                  name="Description"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+{{ generated_description }}</textarea
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Product Variants Table -->
+      <div class="mt-8">
+        <div class="bg-white p-5 shadow rounded">
+          <h3 class="font-bold text-xl mb-3">Product Variants</h3>
+          <table class="table-auto w-full mb-4">
+            <thead>
+              <tr class="bg-blue-500 text-white">
+                <th>SKU</th>
+                <th class="px-4 py-2">Type</th>
+                <th class="px-4 py-2">Size</th>
+                <th class="px-4 py-2">Weight</th>
+                <th class="px-4 py-2">Color</th>
+                <th class="px-4 py-2">QTY</th>
+                <th class="px-4 py-2">Cost Per Each</th>
+                <th class="px-4 py-2">Cost Per Case</th>
+                <th class="px-4 py-2">Price Per Each</th>
+                <th class="px-4 py-2">Price Per Case</th>
+                <th class="px-4 py-2">Inventory</th>
+                <th class="px-4 py-2">Image</th>
+                <th class="px-4 py-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for child in parent_product['child_products'] %}
+              <tr>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child['SKU'] }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Type', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Product Size', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Product Weight', 'N/A') }} {{ child.get('Product
+                  Weight UOM', '') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Color', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Case Qty', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  ${{ child.get('Cost Per Each', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  ${{ child.get('Cost Per Case', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  ${{ child.get('Price Per Each', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  ${{ child.get('Price Per Case', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ inventory.get('inventory', 'N/A') if inventory is defined
+                  else 'N/A' }}
+                </td>
+                <td class="border px-4 py-2">
+                  <i class="fas fa-image" title="View Image"></i>
+                </td>
+                <td class="border px-4 py-2">
+                  <i class="fas fa-eye" title="View Similar Products"></i>
+                  <!-- Edit product icon -->
+
+                  <i class="fas fa-pen" title="Edit Product"></i>
+                  <!-- Hide product icon -->
+
+                  <i class="fas fa-toggle-on" title="Hide Product"></i>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Shipping Warehouse Table -->
+      <div class="mt-8">
+        <div class="bg-white p-5 shadow rounded">
+          <h3 class="font-bold text-xl mb-3">Shipping Warehouse</h3>
+          <table class="table-auto w-full mb-4">
+            <thead>
+              <tr class="bg-blue-500 text-white">
+                <th class="px-4 py-2">Location Name</th>
+                <th class="px-4 py-2">Address</th>
+                <th class="px-4 py-2">City</th>
+                <th class="px-4 py-2">State</th>
+                <th class="px-4 py-2">Zip</th>
+                <th class="px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="addressTableBody" class="bg-white">
+              <tr>
+                <td class="border px-4 py-2" contenteditable="false">
+                  Warehouse #1
+                </td>
+                <td class="border px-4 py-2" contenteditable="false">
+                  1234 Maple Street
+                </td>
+                <td class="border px-4 py-2" contenteditable="false">
+                  Anytown
+                </td>
+                <td class="border px-4 py-2" contenteditable="false">CA</td>
+                <td class="border px-4 py-2" contenteditable="false">90001</td>
+                <td class="border px-4 py-2">
+                  <button
+                    class="edit-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                    onclick="toggleEdit(this)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="save-btn bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+                    onclick="saveAddress(this)"
+                  >
+                    Save
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Product Logistics Table -->
+      <div class="mt-8">
+        <div class="bg-white p-5 shadow rounded">
+          <h3 class="font-bold text-xl mb-3">Logistics</h3>
+          <table class="table-auto w-full mb-4">
+            <thead class="bg-blue-500 text-white">
+              <tr class="bg-blue-500 text-white">
+                <th class="px-4 py-2">SKU</th>
+                <th class="px-4 py-2">Case Length</th>
+                <th class="px-4 py-2">Case Width</th>
+                <th class="px-4 py-2">Case Height</th>
+                <th class="px-4 py-2">Case Weight</th>
+                <th class="px-4 py-2">Shipping Group</th>
+                <th class="px-4 py-2">Origin</th>
+                <th class="px-4 py-2">Dimensional Rules</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for child in parent_product['child_products'] %}
+              <tr>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child['SKU'] }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Case Length', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Case Width', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Case Height', 'N/A') }}
+                </td>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child.get('Case Weight', 'N/A') }} {{ child.get('Case
+                  Weight UOM', '') }}
+                </td>
+                <td class="border px-4 py-2">Class 250</td>
+                <td class="border px-4 py-2">Wharehouse name</td>
+                <td class="border px-4 py-2">Ships S</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="10">No child products found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Product Compeitors Table -->
+      <div class="mt-8">
+        <div class="bg-white p-5 shadow rounded">
+          <h3 class="font-bold text-xl mb-3">Competitors Data</h3>
+          {% if competitor_data %}
+          <div class="overflow-auto">
+            <table class="table-auto w-full">
+              <thead class="bg-blue-500 text-white">
+                <tr>
+                  <!-- Generate table headers dynamically -->
+                  {% for key, _ in competitor_data[0].items() %}
+                  <th class="px-4 py-2">{{ key|replace("_", " ")|title }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in competitor_data %}
+                <tr>
+                  <!-- Populate table rows dynamically -->
+                  {% for _key, value in product.items() %} {% if _key ==
+                  'images' %}
+                  <td class="border px-4 py-2">
+                    {% if product['images'] %}
+                    <img
+                      src="{{ product['images'][0] }}"
+                      alt="Product Image"
+                      style="height: 50px"
+                    />
+                    {% else %}
+                    <i class="fas fa-image"></i>
+                    {% endif %}
+                  </td>
+                  {% elif _key == 'url' %}
+                  <td class="border px-4 py-2">
+                    <a href="{{ value }}" target="_blank">View</a>
+                  </td>
+                  {% else %}
+                  <td
+                    class="border px-4 py-2"
+                    style="min-width: 
+                                    {% if _key == 'title' or
+                                        _key == 'description' %}
+                                        400px 
+                                    {% endif %}"
+                  >
+                    {{ value }}
+                  </td>
+                  {% endif %} {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p>No competitor data found for this product.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Product Order History -->
+      <div class="mt-8">
+        <div class="bg-white p-5 shadow rounded">
+          <h3 class="font-bold text-xl mb-3">Order History</h3>
+          <table class="table-auto w-full mb-4">
+            <thead class="bg-blue-500 text-white">
+              <tr class="bg-blue-500 text-white">
+                <th class="px-4 py-2">SKU</th>
+                <th class="px-4 py-2">Product ID</th>
+                <th class="px-4 py-2">Number of Orders</th>
+                <th class="px-4 py-2">QTY Sold</th>
+                <th class="px-4 py-2">Days Since Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for child in parent_product['child_products'] %}
+              <tr>
+                <td class="border px-4 py-2" contenteditable="true">
+                  {{ child['SKU'] }}
+                </td>
+                <td class="border px-4 py-2">Product ID</td>
+                <td class="border px-4 py-2">Number of Orders</td>
+                <td class="border px-4 py-2">QTY Sold</td>
+                <td class="border px-4 py-2">Days Since Sold</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="10">No child products found.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KeyWord Analytics -->
+      <div class="mt-8">
+        <div class="bg-white p-5 shadow rounded">
+          <h3 class="font-bold text-xl mb-3">Product Search Performance</h3>
+          <table class="table-auto w-full mb-4">
+            <thead class="bg-blue-500 text-white">
+              <tr>
+                <th class="px-4 py-2">Page URL</th>
+                <th class="px-4 py-2">Query (Keyword)</th>
+                <th class="px-4 py-2">Country</th>
+                <th class="px-4 py-2">Clicks</th>
+                <th class="px-4 py-2">Impressions</th>
+                <th class="px-4 py-2">CTR (%)</th>
+                <th class="px-4 py-2">Position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border px-4 py-2">www.example.com/red-sneakers</td>
+                <td class="border px-4 py-2">buy red sneakers</td>
+                <td class="border px-4 py-2">USA</td>
+                <td class="border px-4 py-2">150</td>
+                <td class="border px-4 py-2">2000</td>
+                <td class="border px-4 py-2">7.5</td>
+                <td class="border px-4 py-2">3.2</td>
+              </tr>
+              <tr>
+                <td class="border px-4 py-2">www.example.com/eco-bottle</td>
+                <td class="border px-4 py-2">eco-friendly water bottle</td>
+                <td class="border px-4 py-2">UK</td>
+                <td class="border px-4 py-2">90</td>
+                <td class="border px-4 py-2">1200</td>
+                <td class="border px-4 py-2">7.5</td>
+                <td class="border px-4 py-2">5.4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-start space-x-4 mt-4">
+        <a
+          href="{{ url_for('main.product_management', index=prev_index) }}"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Previous
+        </a>
+        <a
+          href="{{ url_for('main.product_management', index=next_index) }}"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Next
+        </a>
+      </div>
+    </main>
+    {% else %}
+    <p>No parent product selected or found.</p>
+    {% endif %}
+  </body>
+</html>

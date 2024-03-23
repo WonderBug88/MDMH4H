@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics Information</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/logo_hotel_supplies_1551335679__80870.webp') }}" alt="Company Logo">
+    </header>
+   <main>
+       
+            {% if parent_product %}
+       <form action="{{ url_for('select_product') }}" method="POST">
+    <label for="parent-product-selection">Select Parent Product:</label>
+    <select name="parent_product_selection" id="parent-product-selection">
+        {% for parent_product_name in parent_products.keys() %}
+            <option value="{{ current_parent_name }}">{{ current_parent_name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Select</button>
+</form>
+
+                <div class="tab-navigation">
+                    <a href="{{ url_for('main.product_management') }}" class="tab-button">Product</a>
+                    <button class="tab-button active">logistics</button>
+                </div>
+                <div class="form-group">
+                    <label for="parent-product">Parent Product</label>
+                    <input type="text" id="parent-product" name="parent_product" value="{{ current_parent_name }}" readonly>
+                </div>
+            <table>
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Case Length</th>
+                    <th>Case Width</th>
+                    <th>Case Height</th>
+                    <th>Case Weight</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for child in parent_product['child_products'] %}
+                <tr>
+                    <td contenteditable="true">{{ child['SKU'] }}</td>
+                    <td contenteditable="true">{{ child.get('Case Length', 'N/A') }}</td>
+                    <td contenteditable="true">{{ child.get('Case Width', 'N/A') }}</td>
+                    <td contenteditable="true">{{ child.get('Case Height', 'N/A') }}</td>
+                    <td contenteditable="true">>{{ child.get('Case Weight', 'N/A') }} {{ child.get('Case Weight UOM', '') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10">No child products found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <!-- Navigation Buttons -->
+    <div class="navigation">
+        <a href="{{ url_for('main.product_management', index=prev_index) }}">Previous</a>
+        <a href="{{ url_for('main.product_management', index=next_index) }}">Next</a>
+    </div>
+</main>
+</body>
+</html>

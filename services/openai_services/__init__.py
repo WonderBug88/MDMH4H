@@ -1,0 +1,2 @@
+from .content_generation import generate_product_description
+
