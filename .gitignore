@@ -109,3 +109,4 @@ venv.bak/
 
 #ignore json larger output files as it git will not allow to push
 /scrap_data/output/*.json
+*/output/*.json
