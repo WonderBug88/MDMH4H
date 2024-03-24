@@ -405,17 +405,24 @@
                 {% for product in competitor_data %}
                 <tr>
                   <!-- Populate table rows dynamically -->
-                  {% for _key, value in product.items() %} {% if _key ==
-                  'images' %}
+                  {% for _key, value in product.items() %} 
+                  {% if _key == 'images' %}
                   <td class="border px-4 py-2">
                     {% if product['images'] %}
-                    <img
-                      src="{{ product['images'][0] }}"
-                      alt="Product Image"
-                      style="height: 50px"
-                    />
+                      {% for image in product['images'] %}
+                        <div class="mb-2">
+                          <a href="{{ image }}" target="_blank">
+                            <img
+                              src="{{ image }}"
+                              alt="Product Image"
+                              style="height: 50px"
+                              title="{{ image }}"
+                            />
+                          </a>
+                        </div>
+                      {% endfor %} 
                     {% else %}
-                    <i class="fas fa-image"></i>
+                      <i class="fas fa-image"></i>
                     {% endif %}
                   </td>
                   {% elif _key == 'url' %}
