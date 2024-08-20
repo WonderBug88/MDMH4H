@@ -23,6 +23,15 @@ class Config:
     ALLOWED_EXTENSIONS = {"pdf", "doc", "docx", "xls", "xlsx"}
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
     ETL_SCRIPTS_PATH = os.path.join(BASE_DIR, "etl_scripts")
+    GSC_CREDENTIALS_FILE_PATH = environ.get("GSC_CREDENTIALS_FILE_PATH")
+    BIG_COMMERCE_ACCESS_TOKEN = environ.get("BIG_COMMERCE_ACCESS_TOKEN")
+    BIG_COMMERCE_STORE_HASH = environ.get("BIG_COMMERCE_STORE_HASH")
+    # DB
+    DB_NAME = environ.get('DB_NAME')
+    DB_USER = environ.get('DB_USER')
+    DB_PASSWORD = environ.get('DB_PASSWORD')
+    DB_HOST = environ.get('DB_HOST')
+    DB_PORT = 5432
 
 
 class DevelopmentConfig(Config):

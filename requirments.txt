@@ -3,3 +3,9 @@ httpx
 pandas
 openai
 Scrapy
+requests
+python-dotenv
+portalocker
+mysql-connector-python
+google
+google-api-python-client
