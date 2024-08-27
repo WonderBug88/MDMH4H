@@ -26,4 +26,9 @@ def remove_none_str(_, value):
     if not value or value == "None":
         return "-"
     return value
+
+@pass_context
+def round_number(_, value):
+    
+    return round(value, 2) if value else value
     
