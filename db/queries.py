@@ -5,6 +5,7 @@ all_queries = {
                         title AS variant_title,
                         parent_product,
                         description,
+                        category,
                         part_number,
                         type,
                         size,
@@ -24,6 +25,7 @@ all_queries = {
                                 'title', variant_title,
                                 'sku', part_number,
                                 'description', description,
+                                'category', category,
                                 'type', type,
                                 'size', size,
                                 'weight', weight,
@@ -60,6 +62,7 @@ all_queries = {
                                 'title', variant_title,
                                 'sku', sku,
                                 'description', description,
+                                'category', category_type,
                                 'type', type,
                                 'size', size,
                                 'weight', lbs_dz,
@@ -85,6 +88,7 @@ all_queries = {
                         title AS variant_title,
                         parent_product,
                         sku,
+                        category,
                         description,
                         type,
                         size,
@@ -101,6 +105,7 @@ all_queries = {
                                 'title', variant_title,
                                 'sku', sku,
                                 'description', description,
+                                'category', category,
                                 'type', type,
                                 'size', size,
                                 'weight', case_weight,
@@ -123,7 +128,8 @@ all_queries = {
                         SELECT
                         parent_product AS variant_title,
                         parent_product,
-                        sku,
+                        sku, 
+                        child_category AS category,
                         description,
                         type,
                         product_size as size,
@@ -142,6 +148,7 @@ all_queries = {
                                 'title', variant_title,
                                 'sku', sku,
                                 'description', description,
+                                'category', category,
                                 'type', type,
                                 'size', size,
                                 'weight', weight,
@@ -289,3 +296,36 @@ def get_gsc_query(custom_url, start_date, end_date):
         LIMIT {10} OFFSET {0};"""
 
     return gsc_qry
+
+
+def get_order_history_query(skus):
+
+    query = f"""
+        WITH sku_stats AS (
+            SELECT 
+                sku,
+                COUNT(*) AS num_orders,  -- Total number of orders for each SKU
+                SUM(order_qty_total) AS qty_sold,  -- Total units sold for each SKU
+                MAX(order_date) AS last_sold_date,  -- Most recent order date for each SKU
+                SUM(order_total) AS total_order_value  -- Total order value for each SKU
+            FROM 
+                orders
+            WHERE 
+                sku IN ({skus})
+            GROUP BY 
+                sku
+        )
+        SELECT 
+            ss.sku,
+            ss.num_orders,  -- Number of Orders
+            ss.qty_sold,  -- Quantity Sold
+            CURRENT_DATE - ss.last_sold_date AS days_since_last_sold,  -- Days Since Last Sold
+            ROUND(ss.total_order_value / NULLIF(ss.qty_sold, 0), 2) AS selling_price,  -- Selling Price rounded to 2 digits
+            ss.last_sold_date AS purchase_date  -- Purchase Date (last sold date)
+        FROM 
+            sku_stats ss
+        WHERE 
+            ss.sku IN ({skus})
+    """
+
+    return query

@@ -9,7 +9,7 @@ from flask import (Blueprint, session, request, render_template,
 from app.config import Config
 from db import get_db_connection
 from db.curd import DataRetriever
-from db.queries import get_raw_query, get_gsc_query
+from db.queries import get_raw_query, get_gsc_query, get_order_history_query
 from .utils import find_parent_product, generate_content, get_product_details
 from app.utilities.bigcommerce import find_product_by_sku
 
@@ -82,7 +82,7 @@ def product_management():
     # Update page value based on the current page and next and previous buttons
     if request.args.get('next'):
         current_page += 1
-    elif request.args.get('prev'):
+    elif request.args.get('prev') and current_page > 1:
         current_page -= 1
 
     limit = 1
@@ -92,18 +92,18 @@ def product_management():
         flash(f'No products found for {brand_id}', 'error')
         return redirect(url_for('main.index'))
 
-    variant_skus = [variant['sku']
-                    for variant in brand_products[0]['variants']]
+    # Correctly format skus_string for the SQL IN clause
+    variant_skus = [f"'{variant['sku']}'" for variant in brand_products[0]['variants']]
+    skus_string = ', '.join(variant_skus)
 
-    skus_string = "', '".join(variant_skus)
-
-    orders_query = f"""SELECT * FROM orders WHERE sku IN ('{skus_string}')"""
+    # Updated orders_query
+    orders_query = get_order_history_query(skus_string)
 
     analytics_data_schema = DataRetriever(schema='analytics_data')
     orders_data = analytics_data_schema.query(orders_query)
 
     # get competitor_data from ash schema products table for variant_skus
-    ash_query = f"""SELECT * FROM products WHERE part_number IN ('{skus_string}')"""
+    ash_query = f"""SELECT * FROM products WHERE part_number IN ({skus_string})"""
     competitor_data = DataRetriever(schema='ahs').query(ash_query)
 
     # Initialize content generation variables
@@ -113,6 +113,7 @@ def product_management():
     parent_product = brand_products[0] if brand_products else {}
     variants = parent_product.get('variants', [])
     parent_product_sku = variants[0]['sku'] if variants else ''
+    product_category = variants[0].get('category', '') if variants else '' # As of now, category is not available for every supplier
     parent_product_description = variants[0]['description'] if variants else 'No description available'
 
     if parent_product:
@@ -140,26 +141,25 @@ def product_management():
 
     # GET GSC DATA
     gsc_data = []
-    gsc_custom_url = ''
+    gsc_serach_value = ''
     today = datetime.now()
     last_30_days = today - timedelta(days=180)
     gsc_filter_from = last_30_days.strftime('%Y-%m-%d')
     gsc_filter_to = today.strftime('%Y-%m-%d')
 
     # HOS100CO0080 Testing SKU
-    bc_product = find_product_by_sku(parent_product_sku)
-    if bc_product:
-        gsc_custom_url = bc_product.get('Custom URL')
-        # gsc_custom_url = '/downlite-pillows-25-75-goose-down-feather/'
-        gsc_qry = get_gsc_query(gsc_custom_url, gsc_filter_from, gsc_filter_to)
+    # gsc_custom_url = '/downlite-pillows-25-75-goose-down-feather/'
+    bc_product = find_product_by_sku(parent_product_sku) # BigCommerce Product
+    gsc_serach_value = bc_product.get('Custom URL') if bc_product else product_category.lower()
+    if gsc_serach_value:
+        gsc_qry = get_gsc_query(gsc_serach_value, gsc_filter_from, gsc_filter_to)
         gsc_data = analytics_data_schema.query(gsc_qry)
-    else:
-        pass
-        # logging.error("No product found with SKU", parent_product.get('sku'))
+
     return render_template('product_management.html',
                            supplier=brand_id,
                            supplier_name=brand_id,
                            product=parent_product,
+                           product_category=product_category,
                            page=current_page,
                            generated_description=generated_description,
                            generated_meta_title=generated_meta_title,
@@ -167,7 +167,7 @@ def product_management():
                            generated_product_title=generated_product_title,
                            generated_meta_description=generated_meta_description,
                            competitor_data=competitor_data,
-                           gsc_custom_url=gsc_custom_url,
+                           gsc_custom_url=gsc_serach_value,
                            gsc_data=gsc_data,
                            gsc_filter_from=gsc_filter_from,
                            gsc_filter_to=gsc_filter_to,

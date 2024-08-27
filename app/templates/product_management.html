@@ -492,12 +492,11 @@
             <thead class="bg-blue-500 text-white">
               <tr class="bg-blue-500 text-white">
                 <th class="px-4 py-2">SKU</th>
-                <th class="px-4 py-2">Product ID</th>
-                <th class="px-4 py-2">Qty</th>
-                <th class="px-4 py-2">Order ID</th>
-                <th class="px-4 py-2">Order Date</th>
-                <th class="px-4 py-2">Order Total</th>
-                <th class="px-4 py-2">Order Qty Total</th>
+                <th class="px-4 py-2">Number of Orders</th>
+                <th class="px-4 py-2">Quantity Sold</th>
+                <th class="px-4 py-2">Days Since Last Sold</th>
+                <th class="px-4 py-2"> Selling Price</th>
+                <th class="px-4 py-2">Purchase Date</th>
 
 
               </tr>
@@ -508,12 +507,11 @@
                 <td class="border px-4 py-2" contenteditable="true">
                   {{ child['sku'] }}
                 </td>
-                <td class="border px-4 py-2">{{ child['product_id'] }}</td>
-                <td class="border px-4 py-2">{{ child['qty'] }}</td>
-                <td class="border px-4 py-2">{{ child['order_id'] }}</td>
-                <td class="border px-4 py-2">{{ child['order_date'] }}</td>
-                <td class="border px-4 py-2">{{ child['order_total'] }}</td>
-                <td class="border px-4 py-2">{{ child['order_qty_total'] }}</td>
+                <td class="border px-4 py-2">{{ child['num_orders'] }}</td>
+                <td class="border px-4 py-2">{{ child['qty_sold'] }}</td>
+                <td class="border px-4 py-2">{{ child['days_since_last_sold'] }}</td>
+                <td class="border px-4 py-2">{{ child['selling_price'] }}</td>
+                <td class="border px-4 py-2">{{ child['purchase_date'] }}</td>
                 
               </tr>
               {% else %}
@@ -546,6 +544,7 @@
                 <th class="px-4 py-2">Impressions</th>
                 <th class="px-4 py-2">CTR (%)</th>
                 <th class="px-4 py-2">Position</th>
+                <th class="px-4 py-2">Category</th>
               </tr>
             </thead>
             <tbody id="gsc_data_tbody">
@@ -556,7 +555,8 @@
                 <td class="border px-4 py-2">{{ keyword['clicks'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['impressions'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['ctr'] }}</td>
-                <td class="border px-4 py-2">{{ keyword['position'] }}</td>
+                <td class="border px-4 py-2">{{ keyword['position']|round_number }}</td>
+                <td class="border px-4 py-2">{{ product_category }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -653,7 +653,10 @@
                   <td class="border px-4 py-2">${keyword['clicks']}</td>
                   <td class="border px-4 py-2">${keyword['impressions']}</td>
                   <td class="border px-4 py-2">${keyword['ctr']}</td>
-                  <td class="border px-4 py-2">${keyword['position']}</td>
+                  <td class="border px-4 py-2">
+                    ${keyword['position'] ? Number(keyword['position']).toFixed(2) : 'N/A'}
+                  </td>
+                  <td class="border px-4 py-2">{{product_category}}</td>
                 </tr>`;
               tbody.append(row);
             });
