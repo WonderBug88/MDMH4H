@@ -1,74 +1,194 @@
 import os
 import logging
 import mysql.connector
-import subprocess
 import json
-import sys
 import portalocker
-from app.config import Config
-from db import get_db_connection
+from datetime import datetime, timedelta
 from flask import (Blueprint, session, request, render_template,
                    redirect, url_for, flash, send_from_directory, jsonify)
-from werkzeug.utils import secure_filename
-from app.utilities.helpers import allowed_file
-from .utils import (load_and_process_products, get_product_details,
-                    generate_content, find_parent_product,
-                    search_products_by_sku, get_compititors_data)
+from app.config import Config
+from db import get_db_connection
+from db.curd import DataRetriever
+from db.queries import get_raw_query, get_gsc_query
+from .utils import find_parent_product, generate_content, get_product_details
+from app.utilities.bigcommerce import find_product_by_sku
 
 main_bp = Blueprint("main", __name__)
-
-# Load Competitor Data at the beginning of the file so don't have to load/read file it every time
-competitor_data = get_compititors_data('ahs') # @TODO Change the supplier name from db or from the user input
 
 
 @main_bp.route('/', methods=['GET', 'POST'])
 def index():
-    SUPPLIERS = [
-        "Choose Supplier", "GANESH MILLS", "WESTPOINT HOSPITALITY", "THOMASTON MILLS",
-        "HOSPITALITY 1 SOURCE", "DOWNLITE", "1888 MILLS", "BERKSHIRE HOSPITALITY",
-        "HOLLYWOOD BED FRAME", "CSL", "KARTRI", "FORBES", "SICO", "BISSEL", "HAPCO",
-        "JS FIBER", "KTX", "PACIFIC COAST", "GLARO", "CONAIR", "ESSENDENT"
+    if request.method == 'POST':
+        supplier = request.form.get('supplier')
+        if not supplier:
+            flash('No supplier selected', 'error')
+            return redirect(url_for('main.index'))
+        return redirect(url_for('main.product_management', supplier=supplier))
+
+    schmas = [
+        {
+            "id": '1888_mills',
+            "name": '1888 MILLS',
+            "table": "product"
+        },
+        {
+            "id": 'Thomaston Mills',
+            "name": 'Thomaston Mills',
+            "table": "products"
+        },
+
+        {
+            "id": 'berkshire',
+            "name": 'Berkshire',
+            "table": "products"
+        },
+        {
+            "id": 'downlite_import',
+            "name": 'DOWNLITE',
+            "table": "producs"
+        },
+        {
+            "id": 'ganesh',
+            "name": 'GANESH',
+            "table": "products"
+        },
+        {
+            "id": 'bissel',
+            "name": 'Bissel',
+            "table": "product"
+        },
+        # {
+        #     "id": 'microchill',
+        #     "name": 'Microchill',
+        #     "table": "products"
+        # }
     ]
-    if request.method == 'POST':
-        file = request.files.get('file')
-        supplier = request.form.get('supplier')
-        # Check if the supplier is not selected or if it's the default choice
-        if supplier not in SUPPLIERS or supplier == "Choose Supplier":
-            flash('Invalid supplier selected', 'error')
-            return redirect(url_for('main.index'))
-        # Check for file presence and validation
-        if not file or file.filename == '':
-            flash('No file selected', 'error')
-            return redirect(url_for('index'))
-        if not allowed_file(file.filename):
-            flash('File type not allowed', 'error')
-            return redirect(url_for('main.index'))
-        filename = secure_filename(file.filename)
-        # filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        filepath = os.path.join(Config.UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        # Process the file here based on the supplier
-        flash('File uploaded successfully', 'success')
-        # Redirect or render another page to show the results
-        return redirect(url_for('main.product_management', supplier=supplier, filepath=filepath))
-    return render_template('index.html', suppliers=SUPPLIERS)
+
+    return render_template('index.html', brands=schmas)
 
 
-@main_bp.route('/main_index', methods=['GET', 'POST'])
-def main_index():
-    if request.method == 'POST':
-        file = request.files.get('file')
-        supplier = request.form.get('supplier')
-        if not file or file.filename == '' or supplier not in SUPPLIERS:
-            flash('No file selected or invalid supplier', 'error')
-            return redirect(url_for('index'))
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(Config.UPLOAD_FOLDER, filename)
-            file.save(filepath)
-            # Redirect to product management with supplier and filepath parameters
-            return redirect(url_for('main_bp.product_management', supplier=supplier, filepath=filepath))
-    return render_template('index.html', suppliers=SUPPLIERS)
+@main_bp.route('/product-management', methods=['GET'])
+def product_management():
+    brand_id = request.args.get('supplier')
+
+    if not brand_id:
+        flash('No supplier selected.', 'error')
+        return redirect(url_for('main.index'))
+
+    # SQL query to retrieve products and their variants with pagination
+    query = get_raw_query(brand_id)
+
+    current_page = request.args.get('page', default=1, type=int)
+    # Update page value based on the current page and next and previous buttons
+    if request.args.get('next'):
+        current_page += 1
+    elif request.args.get('prev'):
+        current_page -= 1
+
+    limit = 1
+    offset = (current_page - 1) * limit
+    brand_products = DataRetriever(schema=brand_id).query(query, limit, offset)
+    if not brand_products:
+        flash(f'No products found for {brand_id}', 'error')
+        return redirect(url_for('main.index'))
+
+    variant_skus = [variant['sku']
+                    for variant in brand_products[0]['variants']]
+
+    skus_string = "', '".join(variant_skus)
+
+    orders_query = f"""SELECT * FROM orders WHERE sku IN ('{skus_string}')"""
+
+    analytics_data_schema = DataRetriever(schema='analytics_data')
+    orders_data = analytics_data_schema.query(orders_query)
+
+    # get competitor_data from ash schema products table for variant_skus
+    ash_query = f"""SELECT * FROM products WHERE part_number IN ('{skus_string}')"""
+    competitor_data = DataRetriever(schema='ahs').query(ash_query)
+
+    # Initialize content generation variables
+    generated_description = generated_meta_title = generated_keywords = generated_product_title = generated_meta_description = 'No information available'
+
+    # # Determine the parent product to display
+    parent_product = brand_products[0] if brand_products else {}
+    variants = parent_product.get('variants', [])
+    parent_product_sku = variants[0]['sku'] if variants else ''
+    parent_product_description = variants[0]['description'] if variants else 'No description available'
+
+    if parent_product:
+        # Construct product details for content generation
+        product_details = {
+            'name': parent_product.get('parent_product', 'No name available'),
+            'description': parent_product_description,
+            # Ensure this function returns a meaningful string or default
+            'child_details': get_product_details(variants)
+        }
+
+        # Generate SEO-friendly content
+        generated_product_title = generate_content(
+            'product_title', product_details, brand=brand_id)
+        generated_description = generate_content(
+            'description', product_details, brand=brand_id)
+        generated_meta_description = generate_content(
+            'meta_description', product_details, brand=brand_id)
+        generated_meta_title = generate_content(
+            'meta_title', product_details, brand=brand_id)
+        generated_keywords = generate_content(
+            'keywords', product_details, brand=brand_id)
+    else:
+        flash('Parent product not found.', 'error')
+
+    # GET GSC DATA
+    gsc_data = []
+    gsc_custom_url = ''
+    today = datetime.now()
+    last_30_days = today - timedelta(days=180)
+    gsc_filter_from = last_30_days.strftime('%Y-%m-%d')
+    gsc_filter_to = today.strftime('%Y-%m-%d')
+
+    # HOS100CO0080 Testing SKU
+    bc_product = find_product_by_sku(parent_product_sku)
+    if bc_product:
+        gsc_custom_url = bc_product.get('Custom URL')
+        # gsc_custom_url = '/downlite-pillows-25-75-goose-down-feather/'
+        gsc_qry = get_gsc_query(gsc_custom_url, gsc_filter_from, gsc_filter_to)
+        gsc_data = analytics_data_schema.query(gsc_qry)
+    else:
+        pass
+        # logging.error("No product found with SKU", parent_product.get('sku'))
+    return render_template('product_management.html',
+                           supplier=brand_id,
+                           supplier_name=brand_id,
+                           product=parent_product,
+                           page=current_page,
+                           generated_description=generated_description,
+                           generated_meta_title=generated_meta_title,
+                           generated_keywords=generated_keywords,
+                           generated_product_title=generated_product_title,
+                           generated_meta_description=generated_meta_description,
+                           competitor_data=competitor_data,
+                           gsc_custom_url=gsc_custom_url,
+                           gsc_data=gsc_data,
+                           gsc_filter_from=gsc_filter_from,
+                           gsc_filter_to=gsc_filter_to,
+                           orders_data=orders_data
+                           )
+
+
+@main_bp.route('/gsc-data', methods=['GET'])
+def gsc_data():
+    """Filter GSC table data based on custom URL and date range."""
+    custom_url = request.args.get('custom_url')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    if not custom_url or not start_date or not end_date:
+        return jsonify({"error": "Invalid parameters."}), 400
+
+    gsc_qry = get_gsc_query(custom_url, start_date, end_date)
+    gsc_data = DataRetriever(schema='analytics_data').query(gsc_qry)
+
+    return jsonify(gsc_data)
 
 
 @main_bp.route('/secure-data', methods=['GET'])
@@ -156,156 +276,6 @@ def select_product():
     session['parent_product_id'] = parent_product_id
     # Ensure the ID matches one of the JSON file entries
     return redirect(url_for('logistics'))
-
-
-@main_bp.route('/product-management', methods=['GET'])
-def product_management():
-    supplier = session.get('supplier', 'Default Supplier for Testing')
-    filepath = request.args.get('filepath', default=None)
-    selected_parent_label = request.args.get('parent_product_name')
-    print(f"Selected Parent Label: {selected_parent_label}")
-
-    # Load and process the JSON file
-    json_file_path = os.path.join(
-        Config.UPLOAD_FOLDER, 'processed_ganesh_mills_data.json')
-    if not os.path.exists(json_file_path):
-        flash('Processed JSON file not found', 'error')
-        return redirect(url_for('main.index'))
-
-    parent_products = load_and_process_products(json_file_path)
-    if not parent_products:
-        flash('No parent products found in the JSON file', 'error')
-        return redirect(url_for('main.index'))
-
-    # Initialize content generation variables
-    generated_description = generated_meta_title = generated_keywords = generated_product_title = generated_meta_description = 'No information available'
-
-    # Determine the parent product to display
-    parent_product = parent_products.get(selected_parent_label)
-    if parent_product:
-        # Assuming each parent product has an 'id' field
-        parent_product_id = parent_product.get('id', 'default_id')
-        session['parent_product_id'] = parent_product_id
-        print(
-            f"Set parent_product_id in session: {session['parent_product_id']}")
-    else:
-        print('Parent product not found for the given label.')
-
-    if parent_product:
-        # Construct product details for content generation
-        product_details = {
-            'name': selected_parent_label,  # Assuming this is a valid name or identifier
-            'description': parent_product.get('description', 'No description available'),
-            # Ensure this function returns a meaningful string or default
-            'child_details': get_product_details(parent_product)
-        }
-
-        # Generate SEO-friendly content
-        generated_product_title = generate_content(
-            'product_title', product_details)
-        generated_description = generate_content(
-            'description', product_details)
-        generated_meta_description = generate_content(
-            'meta_description', product_details)
-        generated_meta_title = generate_content('meta_title', product_details)
-        generated_keywords = generate_content('keywords', product_details)
-    else:
-        flash('Parent product not found.', 'error')
-
-    # ETL Script Logic
-    etl_scripts_path = Config.ETL_SCRIPTS_PATH
-    etl_scripts = {
-        "GANESH MILLS": ["module_ganeshmills.py", "module_ganeshmills2.py", "module_ganeshmills3.py"],
-    }
-
-    if supplier in etl_scripts and filepath:
-        for script_path in etl_scripts[supplier]:
-            full_script_path = os.path.join(etl_scripts_path, script_path)
-            try:
-                result = subprocess.run(
-                    [sys.executable, full_script_path, filepath], capture_output=True, text=True, check=True)
-                # Ensure the script is executable
-                os.chmod(full_script_path, 0o755)
-                logging.info(f'Script Output: {result.stdout}')
-                if result.returncode != 0:
-                    flash(
-                        f'An error occurred while processing ETL script: {result.stderr}', 'error')
-                    return redirect(url_for('main.index'))
-            except subprocess.CalledProcessError as e:
-                logging.error(
-                    f'ETL script failed with return code {e.returncode}: {e.stderr}')
-                flash(f'ETL script failed: {e.stderr}', 'error')
-                return redirect(url_for('main.index'))
-            except Exception as e:
-                logging.error(f'Error executing ETL script: {str(e)}')
-                flash(f'Error executing ETL script: {str(e)}', 'error')
-                return redirect(url_for('main.index'))
-    # Determine the parent product to display, incorporating previous and next navigation
-    # Default to first product; could enhance to find index of selected_parent_label
-    current_index = 0
-    if selected_parent_label and selected_parent_label in parent_products:
-        current_parent_name = selected_parent_label
-    else:
-        parent_product_names = list(parent_products.keys())
-        current_index = int(request.args.get('index', 0))
-        current_parent_name = parent_product_names[current_index]
-
-        next_index = (current_index + 1) % len(parent_product_names)
-        prev_index = (current_index - 1) % len(parent_product_names)
-
-    # Example function to format product details into a descriptive string
-
-    parent_product = parent_products[current_parent_name]
-
-    if parent_product:
-        # Details for generating content
-        product_details = {
-            'name': current_parent_name,
-            'description': parent_product.get('description', 'No description available'),
-            'child_details': get_product_details(parent_product),
-        }
-
-    # Generate SEO-friendly content
-        generated_description = generate_content(
-            'description', product_details)
-        generated_meta_description = generate_content(
-            'meta_description', product_details)
-        generated_meta_title = generate_content('meta_title', product_details)
-        generated_keywords = generate_content('keywords', product_details)
-        generated_product_title = generate_content(
-            'product_title', product_details)
-
-    else:
-        flash('Parent product not found.', 'error')
-        generated_description, generated_meta_title, generated_keywords, generated_product_title, generated_meta_description = None, None, None
-
-    # Get competitor data
-    # get skus from the parent product child products
-    skus_list = [child_product['SKU'] for child_product in parent_product.get('child_products', [])]
-    matched_products = search_products_by_sku(
-        competitor_data, skus_list)
-    return render_template('product_management.html',
-                           supplier=session.get(
-                               'supplier', 'Default Supplier for Testing'),
-                           parent_product=parent_product,
-                           parent_products=parent_products,
-                           selected_parent_label=selected_parent_label,
-                           # Pass generated description to the template
-                           generated_description=generated_description,
-                           # Pass generated meta title to the template
-                           generated_meta_title=generated_meta_title,
-                           # Pass generated keywords to the template
-                           generated_keywords=generated_keywords,
-                           # Pass generated description to the template
-                           generated_product_title=generated_product_title,
-                           # Pass generated description to the template
-                           generated_meta_description=generated_meta_description,
-                           next_index=next_index,
-                           prev_index=prev_index,
-                           current_parent_name=current_parent_name,
-                           filepath=filepath,
-                           competitor_data=matched_products
-                           )
 
 
 @main_bp.route('/logistics', methods=['GET'])
