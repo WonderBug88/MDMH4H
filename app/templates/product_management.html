@@ -21,16 +21,42 @@
   </head>
   <body class="bg-gray-200 font-sans">
     <header
-      class="bg-gray-900 text-white p-5 flex justify-between items-center"
+      class="bg-gray-900 text-white p-5 flex justify-between items-center flex-wrap"
     >
+      <!-- Logo Section -->
       <div class="logo flex items-center">
         <img
           src="https://cdn11.bigcommerce.com/s-99oa2tso/images/stencil/original/logo_hotel_supplies_1551335679__80870.original.png"
           class="h-10 mr-4"
+          alt="Hotel Supplies Logo"
         />
         <span class="text-xl font-bold">Hotel Supplies</span>
       </div>
-      <div class="tab-navigation flex gap-4">
+
+      <!-- Hamburger Menu Button (Visible on Small Screens) -->
+      <button
+        class="block md:hidden text-white focus:outline-none"
+        id="menu-toggle"
+        aria-label="Toggle navigation"
+      >
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
+
+      <!-- Navigation Buttons (Hidden on Small Screens) -->
+      <div class="tab-navigation hidden md:flex md:gap-4">
         <button
           class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
         >
@@ -52,11 +78,40 @@
           Order History
         </button>
       </div>
+
+      <!-- User Welcome Section -->
       <div class="user-welcome flex items-center text-sm">
         Welcome, User
         <div class="ml-2 text-lg">👤</div>
       </div>
+
+      <!-- Mobile Menu (Visible on Small Screens when Toggled) -->
+      <div class="w-full md:hidden hidden" id="mobile-menu">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <button
+            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+          >
+            Product Management
+          </button>
+          <button
+            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+          >
+            Logistics
+          </button>
+          <button
+            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+          >
+            Competitors
+          </button>
+          <button
+            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+          >
+            Order History
+          </button>
+        </div>
+      </div>
     </header>
+
     {% if product %}
     <main class="p-5">
       <div class="flex flex-wrap -mx-2">
@@ -225,94 +280,105 @@
       </div>
       <!-- Product Variants Table -->
       <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded">
+        <div class="bg-white p-5 shadow rounded overflow-x-auto">
           <h3 class="font-bold text-xl mb-3">Product Variants</h3>
-          <table class="table-auto w-full mb-4">
+          <table class="table-auto w-full mb-4 text-sm md:text-base">
             <thead>
               <tr class="bg-blue-500 text-white">
-                <th>Title</th>
-                <th>SKU</th>
-                <th class="px-4 py-2">Type</th>
-                <th class="px-4 py-2">Size</th>
-                <th class="px-4 py-2">Weight</th>
-                <th class="px-4 py-2">Color</th>
-                <th class="px-4 py-2">QTY</th>
-                <th class="px-4 py-2">Cost Per Each</th>
-                <th class="px-4 py-2">Cost Per Case</th>
-                <!-- <th class="px-4 py-2">Price Per Each</th>
-                <th class="px-4 py-2">Price Per Case</th>
-                <th class="px-4 py-2">Inventory</th> -->
-                <th class="px-4 py-2">Image</th>
-                <th class="px-4 py-2">Action</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Title</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">SKU</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Type</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Size</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Weight</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Color</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">QTY</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Cost Per Each</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Cost Per Case</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Image</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for child in product['variants'] %}
               <tr>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['title']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child.get('sku') }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['type']|remove_none_str}}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
-                  {{ child.get('size') }} 
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
+                  {{ child.get('size') }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['weight']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child.get('color', 'N/A') }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
-                  {{ child['case_qty']|remove_none_str  }}
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
+                  {{ child['case_qty']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
-                {% if child['each_cost'] %}${% endif %}
-                {{ child['each_cost']|remove_none_str }}
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
+                  {% if child['each_cost'] %}${% endif %} {{
+                  child['each_cost']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
-                {% if child['case_cost'] %} $ {% endif %}
-                {{ child['case_cost']|remove_none_str  }}
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
+                  {% if child['case_cost'] %} $ {% endif %} {{
+                  child['case_cost']|remove_none_str }}
                 </td>
-                <!-- <td class="border px-4 py-2" contenteditable="true">
-                  ${{ child.get('Price Per Each', 'N/A') }}
-                </td>
-                <td class="border px-4 py-2" contenteditable="true">
-                  ${{ child.get('Price Per Case', 'N/A') }}
-                </td>
-                <td class="border px-4 py-2" contenteditable="true">
-                  {{ inventory.get('inventory', 'N/A') if inventory is defined
-                  else 'N/A' }}
-                </td> -->
-                <td class="border px-4 py-2">
-                  {% if child.get('images') %}
-                      {% for image in child['images']|format_images %}
-                      <div class="mb-2">
-                        <a href="{{ image }}" target="_blank">
-                          <img
-                            src="{{ image }}"
-                            alt="Product Image"
-                            style="height: 50px"
-                            title="{{ image }}"
-                          />
-                        </a>
-                      </div>
-                      {% endfor %}
-                  {% else %}
+                <td class="border px-2 py-1 md:px-4 md:py-2">
+                  {% if child.get('images') %} {% for image in
+                  child['images']|format_images %}
+                  <div class="mb-2">
+                    <a href="{{ image }}" target="_blank">
+                      <img
+                        src="{{ image }}"
+                        alt="Product Image"
+                        class="h-12 md:h-16"
+                        title="{{ image }}"
+                      />
+                    </a>
+                  </div>
+                  {% endfor %} {% else %}
                   <i class="fas fa-image"></i>
                   {% endif %}
-                  
                 </td>
-                <td class="border px-4 py-2">
+                <td class="border px-2 py-1 md:px-4 md:py-2">
                   <a href="{{ child.get('url') }}" target="_blank">
-                  <i class="fas fa-eye" title="View Similar Products"></i>
+                    <i class="fas fa-eye" title="View Similar Products"></i>
                   </a>
                   <!-- Edit product icon -->
-
                   <i class="fas fa-pen" title="Edit Product"></i>
                   <!-- Hide product icon -->
                   {% if child.get('active') %}
@@ -328,98 +394,69 @@
         </div>
       </div>
 
-      <!-- Shipping Warehouse Table -->
-      <!-- <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded">
-          <h3 class="font-bold text-xl mb-3">Shipping Warehouse</h3>
-          <table class="table-auto w-full mb-4">
-            <thead>
-              <tr class="bg-blue-500 text-white">
-                <th class="px-4 py-2">Location Name</th>
-                <th class="px-4 py-2">Address</th>
-                <th class="px-4 py-2">City</th>
-                <th class="px-4 py-2">State</th>
-                <th class="px-4 py-2">Zip</th>
-                <th class="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="addressTableBody" class="bg-white">
-              <tr>
-                <td class="border px-4 py-2" contenteditable="false">
-                  Warehouse #1
-                </td>
-                <td class="border px-4 py-2" contenteditable="false">
-                  1234 Maple Street
-                </td>
-                <td class="border px-4 py-2" contenteditable="false">
-                  Anytown
-                </td>
-                <td class="border px-4 py-2" contenteditable="false">CA</td>
-                <td class="border px-4 py-2" contenteditable="false">90001</td>
-                <td class="border px-4 py-2">
-                  <button
-                    class="edit-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                    onclick="toggleEdit(this)"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    class="save-btn bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
-                    onclick="saveAddress(this)"
-                  >
-                    Save
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="10">No data found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div> -->
-
       <!-- Product Logistics Table -->
       <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded">
+        <div class="bg-white p-5 shadow rounded overflow-x-auto">
           <h3 class="font-bold text-xl mb-3">Logistics</h3>
-          <table class="table-auto w-full mb-4">
+          <table class="table-auto w-full mb-4 text-sm md:text-base">
             <thead class="bg-blue-500 text-white">
-              <tr class="bg-blue-500 text-white">
-                <th class="px-4 py-2">SKU</th>
-                <th class="px-4 py-2">Case Quantity</th>
-                <th class="px-4 py-2">Case Length</th>
-                <th class="px-4 py-2">Case Width</th>
-                <th class="px-4 py-2">Case Height</th>
-                <th class="px-4 py-2">Case Weight</th>
+              <tr>
+                <th class="px-2 py-1 md:px-4 md:py-2">SKU</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Case Quantity</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Case Length</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Case Width</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Case Height</th>
+                <th class="px-2 py-1 md:px-4 md:py-2">Case Weight</th>
               </tr>
             </thead>
             <tbody>
               {% for child in product['variants'] %}
               <tr>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['sku'] }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['case_qty']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['case_length']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['case_width']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['case_height']|remove_none_str }}
                 </td>
-                <td class="border px-4 py-2" contenteditable="true">
+                <td
+                  class="border px-2 py-1 md:px-4 md:py-2"
+                  contenteditable="true"
+                >
                   {{ child['case_weight']|remove_none_str }}
                 </td>
-               
               </tr>
               {% else %}
               <tr>
-                <td colspan="10">No child products found.</td>
+                <td
+                  colspan="6"
+                  class="border px-2 py-1 md:px-4 md:py-2 text-center"
+                >
+                  No child products found.
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -449,8 +486,8 @@
                   {% for _key, value in product.items() %} {% if _key ==
                   'images' %}
                   <td class="border px-4 py-2">
-                    {% if product['images'] %} 
-                    {% for image in product['images'] %}
+                    {% if product['images'] %} {% for image in product['images']
+                    %}
                     <div class="mb-2">
                       <a href="{{ image }}" target="_blank">
                         <img
@@ -494,7 +531,7 @@
 
       <!-- Product Order History -->
       <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded">
+        <div class="bg-white p-5 shadow rounded overflow-x-auto">
           <h3 class="font-bold text-xl mb-3">Order History</h3>
           <table class="table-auto w-full mb-4">
             <thead class="bg-blue-500 text-white">
@@ -503,10 +540,8 @@
                 <th class="px-4 py-2">Number of Orders</th>
                 <th class="px-4 py-2">Quantity Sold</th>
                 <th class="px-4 py-2">Days Since Last Sold</th>
-                <th class="px-4 py-2"> Selling Price</th>
+                <th class="px-4 py-2">Selling Price</th>
                 <th class="px-4 py-2">Purchase Date</th>
-
-
               </tr>
             </thead>
             <tbody>
@@ -517,10 +552,11 @@
                 </td>
                 <td class="border px-4 py-2">{{ child['num_orders'] }}</td>
                 <td class="border px-4 py-2">{{ child['qty_sold'] }}</td>
-                <td class="border px-4 py-2">{{ child['days_since_last_sold'] }}</td>
+                <td class="border px-4 py-2">
+                  {{ child['days_since_last_sold'] }}
+                </td>
                 <td class="border px-4 py-2">{{ child['selling_price'] }}</td>
                 <td class="border px-4 py-2">{{ child['purchase_date'] }}</td>
-                
               </tr>
               {% else %}
               <tr>
@@ -534,7 +570,7 @@
 
       <!-- KeyWord Analytics -->
       <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded">
+        <div class="bg-white p-5 shadow rounded overflow-x-auto">
           <div class="flex d-flex justify-between items-center mb-4">
             <h3 class="font-bold text-xl mb-3">Product Search Performance</h3>
             <div id="reportrange">
@@ -563,7 +599,9 @@
                 <td class="border px-4 py-2">{{ keyword['clicks'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['impressions'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['ctr'] }}</td>
-                <td class="border px-4 py-2">{{ keyword['position']|round_number }}</td>
+                <td class="border px-4 py-2">
+                  {{ keyword['position']|round_number }}
+                </td>
                 <td class="border px-4 py-2">{{ product_category }}</td>
               </tr>
               {% endfor %}
@@ -643,37 +681,49 @@
 
       function updateTable(startDate, endDate) {
         $.ajax({
-          url: '/gsc-data',
-          method: 'GET',
+          url: "/gsc-data",
+          method: "GET",
           data: {
             custom_url: customUrl,
             start_date: startDate,
-            end_date: endDate
+            end_date: endDate,
           },
-          success: function(response) {
+          success: function (response) {
             const tbody = $("#gsc_data_tbody");
             tbody.empty();
 
-            response.forEach(keyword => {
+            response.forEach((keyword) => {
               const row = `<tr>
-                  <td class="border px-4 py-2">${keyword['page']}</td>
-                  <td class="border px-4 py-2">${keyword['query']}</td>
-                  <td class="border px-4 py-2">${keyword['clicks']}</td>
-                  <td class="border px-4 py-2">${keyword['impressions']}</td>
-                  <td class="border px-4 py-2">${keyword['ctr']}</td>
+                  <td class="border px-4 py-2">${keyword["page"]}</td>
+                  <td class="border px-4 py-2">${keyword["query"]}</td>
+                  <td class="border px-4 py-2">${keyword["clicks"]}</td>
+                  <td class="border px-4 py-2">${keyword["impressions"]}</td>
+                  <td class="border px-4 py-2">${keyword["ctr"]}</td>
                   <td class="border px-4 py-2">
-                    ${keyword['position'] ? Number(keyword['position']).toFixed(2) : 'N/A'}
+                    ${
+                      keyword["position"]
+                        ? Number(keyword["position"]).toFixed(2)
+                        : "N/A"
+                    }
                   </td>
                   <td class="border px-4 py-2">{{product_category}}</td>
                 </tr>`;
               tbody.append(row);
             });
           },
-          error: function(error) {
+          error: function (error) {
             console.error("Error fetching data:", error);
-          }
+          },
         });
       }
     });
+
+    // <!-- JavaScript to Toggle Mobile Menu -->
+    document
+      .getElementById("menu-toggle")
+      .addEventListener("click", function () {
+        var menu = document.getElementById("mobile-menu");
+        menu.classList.toggle("hidden");
+      });
   </script>
 </html>
