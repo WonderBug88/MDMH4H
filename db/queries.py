@@ -6,6 +6,7 @@ all_queries = {
                         parent_product,
                         description,
                         category,
+                        sub_category,
                         part_number,
                         type,
                         size,
@@ -26,6 +27,7 @@ all_queries = {
                                 'sku', part_number,
                                 'description', description,
                                 'category', category,
+                                'sub_category', sub_category,
                                 'type', type,
                                 'size', size,
                                 'weight', weight,
@@ -89,6 +91,7 @@ all_queries = {
                         parent_product,
                         sku,
                         category,
+                        sub_category,
                         description,
                         type,
                         size,
@@ -106,6 +109,7 @@ all_queries = {
                                 'sku', sku,
                                 'description', description,
                                 'category', category,
+                                'sub_category', sub_category,
                                 'type', type,
                                 'size', size,
                                 'weight', case_weight,
@@ -128,7 +132,7 @@ all_queries = {
                         SELECT
                         parent_product AS variant_title,
                         parent_product,
-                        sku, 
+                        sku,
                         child_category AS category,
                         description,
                         type,
@@ -274,12 +278,12 @@ def get_raw_query(schema_name: str):
     return all_queries.get(schema_name, '')
 
 
-def get_gsc_query(custom_url, start_date, end_date):
+def get_gsc_query(search_value, start_date, end_date):
     """
     Retrieves data from gsc_data table based on custom URL and date range.
 
     Args:
-      custom_url: The URL to filter by.
+      search_value: The Value to filter by can be a Custom URL, Category, or Sub-Category.
       start_date: The start date of the filter range.
       end_date: The end date of the filter range.
 
@@ -290,11 +294,12 @@ def get_gsc_query(custom_url, start_date, end_date):
     gsc_qry = f"""
         SELECT * 
         FROM gsc_data 
-        WHERE page LIKE '%{custom_url}%' 
+        WHERE LOWER(page) LIKE LOWER('%{search_value}%') 
             AND date BETWEEN '{start_date}' AND '{end_date}'
         ORDER BY date DESC 
-        LIMIT {10} OFFSET {0};"""
-
+        LIMIT {10} OFFSET {0};
+    """
+    
     return gsc_qry
 
 

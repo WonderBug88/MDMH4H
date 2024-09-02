@@ -115,6 +115,7 @@ def product_management():
         variants = parent_product.get('variants', [])
         parent_product_sku = variants[0]['sku'] if variants else ''
         product_category = variants[0].get('category', '') if variants else '' # As of now, category is not available for every supplier
+        product_subcategories = list({variant.get('sub_category', '') for variant in variants if variant.get('sub_category')})
         parent_product_description = variants[0]['description'] if variants else 'No description available'
 
         if parent_product:
@@ -148,10 +149,10 @@ def product_management():
         gsc_filter_from = last_30_days.strftime('%Y-%m-%d')
         gsc_filter_to = today.strftime('%Y-%m-%d')
 
-        # HOS100CO0080 Testing SKU
-        # gsc_custom_url = '/downlite-pillows-25-75-goose-down-feather/'
+        # parent_product_sku = 'HOS100CO0080' # Testing SKU
+        # gsc_serach_value = '/downlite-pillows-25-75-goose-down-feather/'
         bc_product = find_product_by_sku(parent_product_sku) # BigCommerce Product
-        gsc_serach_value = bc_product.get('Custom URL') if bc_product else product_category.lower()
+        gsc_serach_value = bc_product.get('Custom URL') if bc_product else None
         if gsc_serach_value:
             gsc_qry = get_gsc_query(gsc_serach_value, gsc_filter_from, gsc_filter_to)
             gsc_data = analytics_data_schema.query(gsc_qry)
@@ -161,6 +162,7 @@ def product_management():
                             supplier_name=brand_id,
                             product=parent_product,
                             product_category=product_category,
+                            product_subcategories=product_subcategories,
                             page=current_page,
                             generated_description=generated_description,
                             generated_meta_title=generated_meta_title,
@@ -168,7 +170,7 @@ def product_management():
                             generated_product_title=generated_product_title,
                             generated_meta_description=generated_meta_description,
                             competitor_data=competitor_data,
-                            gsc_custom_url=gsc_serach_value,
+                            gsc_custom_url=gsc_serach_value or 'No custom URL found',
                             gsc_data=gsc_data,
                             gsc_filter_from=gsc_filter_from,
                             gsc_filter_to=gsc_filter_to,
@@ -182,14 +184,15 @@ def product_management():
 @main_bp.route('/gsc-data', methods=['GET'])
 def gsc_data():
     """Filter GSC table data based on custom URL and date range."""
-    custom_url = request.args.get('custom_url')
+    search_value = request.args.get('search_value')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
-    if not custom_url or not start_date or not end_date:
+    if not search_value or not start_date or not end_date:
         return jsonify({"error": "Invalid parameters."}), 400
-
-    gsc_qry = get_gsc_query(custom_url, start_date, end_date)
+    
+    search_value = search_value.replace(" ", "-")
+    gsc_qry = get_gsc_query(search_value, start_date, end_date)
     gsc_data = DataRetriever(schema='analytics_data').query(gsc_qry)
 
     return jsonify(gsc_data)
