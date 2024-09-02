@@ -817,7 +817,7 @@
 
       // Send AJAX request to Flask to update the table based on the tab selected
       if (tabName === "url") {
-        updateTable(gsc_filter_from, gsc_filter_to, customUrl);
+        updateTable(gsc_filter_from, gsc_filter_to, search_value);
       } else if (tabName === "type-category") {
         search_value = "{{ product_category }}";
         updateTable(gsc_filter_from, gsc_filter_to, search_value);
