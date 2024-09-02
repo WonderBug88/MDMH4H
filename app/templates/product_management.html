@@ -645,7 +645,7 @@
                 >
                   <option value="">Select Sub Category</option>
                   {% for sub in product_subcategories %}
-                  <option value="{{ sub }}">{{ sub }}</option>
+                    <option value="{{ sub }}">{{ sub }}</option>
                   {% endfor %}
                 </select>
               {% else %}
@@ -717,7 +717,8 @@
   <script type="text/javascript">
     let gsc_filter_from = "{{ gsc_filter_from }}";
     let gsc_filter_to = "{{ gsc_filter_to }}";
-    let customUrl = "{{ gsc_custom_url }}";
+    // search_value value should be based on select tab 
+    let search_value  = "{{ gsc_custom_url }}";
 
     $(function () {
       var start = moment(gsc_filter_from);
@@ -732,7 +733,7 @@
         updateTable(
           start.format("YYYY-MM-DD"),
           end.format("YYYY-MM-DD"),
-          customUrl
+          search_value
         );
       }
 
@@ -811,7 +812,8 @@
       if (tabName === "url") {
         updateTable(gsc_filter_from, gsc_filter_to, customUrl);
       } else if (tabName === "type-category") {
-        updateTable(gsc_filter_from, gsc_filter_to, "{{ product_category }}");
+        search_value = "{{ product_category }}";
+        updateTable(gsc_filter_from, gsc_filter_to, search_value);
       }
     }
 
@@ -819,7 +821,8 @@
     document
       .getElementById("_subCategory")
       .addEventListener("change", function () {
-        updateTable(gsc_filter_from, gsc_filter_to, this.value);
+        search_value = this.value;
+        updateTable(gsc_filter_from, gsc_filter_to, search_value);
       });
   </script>
 </html>
