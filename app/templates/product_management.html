@@ -573,28 +573,106 @@
         <div class="bg-white p-5 shadow rounded overflow-x-auto">
           <div class="flex d-flex justify-between items-center mb-4">
             <h3 class="font-bold text-xl mb-3">Product Search Performance</h3>
-            <div id="reportrange">
+            <div
+              id="reportrange"
+              class="bg-white p-2 rounded border border-gray-300"
+            >
               <i class="fa fa-calendar"></i>&nbsp; <span></span>
               <i class="fa fa-caret-down"></i>
             </div>
           </div>
+
+          <!-- Tabs -->
+          <div class="mb-4 border-b border-gray-200">
+            <ul class="flex space-x-4">
+              {% if gsc_custom_url %}
+              <li>
+                <button
+                  class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
+                  onclick="switchTab('url')"
+                >
+                  URLs
+                </button>
+              </li>
+              {% endif %}
+              {% if product_category %}
+              <li>
+                <button
+                  class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
+                  onclick="switchTab('type-category')"
+                >
+                  Type Category
+                </button>
+              </li>
+              {% endif %}
+              {% if product_subcategories %}
+              <li>
+                <button
+                  class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
+                  onclick="switchTab('sub-category')"
+                >
+                  Sub Category
+                </button>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+          <!-- Tab Content -->
+          <div id="url" class="tab-content">
+            <label class="block mb-4 text-gray-700 font-semibold"
+              >URL:
+              <a
+                href="{{ gsc_custom_url }}"
+                target="_blank"
+                class="text-blue-500 hover:underline"
+                >{{ gsc_custom_url }}</a
+              >
+            </label>
+          </div>
+          <div id="type-category" class="tab-content hidden">
+            <label class="block mb-4 text-gray-700 font-semibold"
+              >Category:
+              {% if product_category %}
+                {{product_category}}
+              {% else %}
+                No category found.
+              {% endif %}
+              </label>
+          </div>
+          <div id="sub-category" class="tab-content hidden">
+            <label
+              class="block mb-4 text-gray-700 font-semibold flex items-center"
+            >
+              {% if product_subcategories %}
+                <select
+                  id="_subCategory"
+                  class="shadow appearance-none border rounded ml-2 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-60"
+                >
+                  <option value="">Select Sub Category</option>
+                  {% for sub in product_subcategories %}
+                  <option value="{{ sub }}">{{ sub }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <span class="ml-2">No subcategories found.</span>
+              {% endif %}
+            </label>
+          </div>
+
           <!-- Table for Google Analytics Data -->
           <table class="table-auto w-full mb-4" id="gsc_data_table">
-            <thead class="bg-blue-500 text-white">
+            <thead class="bg-blue-500 text-white text-left">
               <tr>
-                <th class="px-4 py-2">Page URL</th>
                 <th class="px-4 py-2">Query (Keyword)</th>
                 <th class="px-4 py-2">Clicks</th>
                 <th class="px-4 py-2">Impressions</th>
                 <th class="px-4 py-2">CTR (%)</th>
                 <th class="px-4 py-2">Position</th>
-                <th class="px-4 py-2">Category</th>
               </tr>
             </thead>
             <tbody id="gsc_data_tbody">
               {% for keyword in gsc_data %}
               <tr>
-                <td class="border px-4 py-2">{{ keyword['page'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['query'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['clicks'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['impressions'] }}</td>
@@ -602,7 +680,6 @@
                 <td class="border px-4 py-2">
                   {{ keyword['position']|round_number }}
                 </td>
-                <td class="border px-4 py-2">{{ product_category }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -657,7 +734,11 @@
         );
 
         // Call the Flask URL to update the table
-        updateTable(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
+        updateTable(
+          start.format("YYYY-MM-DD"),
+          end.format("YYYY-MM-DD"),
+          customUrl
+        );
       }
 
       $("#reportrange").daterangepicker(
@@ -678,23 +759,23 @@
       );
 
       cb(start, end);
+    });
 
-      function updateTable(startDate, endDate) {
-        $.ajax({
-          url: "/gsc-data",
-          method: "GET",
-          data: {
-            custom_url: customUrl,
-            start_date: startDate,
-            end_date: endDate,
-          },
-          success: function (response) {
-            const tbody = $("#gsc_data_tbody");
-            tbody.empty();
+    function updateTable(startDate, endDate, searchValue) {
+      $.ajax({
+        url: "/gsc-data",
+        method: "GET",
+        data: {
+          search_value: searchValue,
+          start_date: startDate,
+          end_date: endDate,
+        },
+        success: function (response) {
+          const tbody = $("#gsc_data_tbody");
+          tbody.empty();
 
-            response.forEach((keyword) => {
-              const row = `<tr>
-                  <td class="border px-4 py-2">${keyword["page"]}</td>
+          response.forEach((keyword) => {
+            const row = `<tr>
                   <td class="border px-4 py-2">${keyword["query"]}</td>
                   <td class="border px-4 py-2">${keyword["clicks"]}</td>
                   <td class="border px-4 py-2">${keyword["impressions"]}</td>
@@ -706,17 +787,15 @@
                         : "N/A"
                     }
                   </td>
-                  <td class="border px-4 py-2">{{product_category}}</td>
                 </tr>`;
-              tbody.append(row);
-            });
-          },
-          error: function (error) {
-            console.error("Error fetching data:", error);
-          },
-        });
-      }
-    });
+            tbody.append(row);
+          });
+        },
+        error: function (error) {
+          console.error("Error fetching data:", error);
+        },
+      });
+    }
 
     // <!-- JavaScript to Toggle Mobile Menu -->
     document
@@ -724,6 +803,28 @@
       .addEventListener("click", function () {
         var menu = document.getElementById("mobile-menu");
         menu.classList.toggle("hidden");
+      });
+
+    // <!-- JavaScript for Tab Switching -->
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-content").forEach((content) => {
+        content.classList.add("hidden");
+      });
+      document.getElementById(tabName).classList.remove("hidden");
+
+      // Send AJAX request to Flask to update the table based on the tab selected
+      if (tabName === "url") {
+        updateTable(gsc_filter_from, gsc_filter_to, customUrl);
+      } else if (tabName === "type-category") {
+        updateTable(gsc_filter_from, gsc_filter_to, "{{ product_category }}");
+      }
+    }
+
+    // on _subCategory change update the table
+    document
+      .getElementById("_subCategory")
+      .addEventListener("change", function () {
+        updateTable(gsc_filter_from, gsc_filter_to, this.value);
       });
   </script>
 </html>
