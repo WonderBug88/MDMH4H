@@ -618,42 +618,43 @@
             </ul>
           </div>
           <!-- Tab Content -->
-          <div id="url" class="tab-content">
-            <label class="block mb-4 text-gray-700 font-semibold"
-              >URL:
-              <a
-                href="{{ gsc_custom_url }}"
-                target="_blank"
-                class="text-blue-500 hover:underline"
-                >{{ gsc_custom_url }}</a
-              >
-            </label>
-          </div>
-          <div id="type-category" class="tab-content hidden">
-            <label class="block mb-4 text-gray-700 font-semibold"
-              >Category: {{product_category}}
+           {% if gsc_custom_url %}
+            <div id="url" class="tab-content">
+              <label class="block mb-4 text-gray-700 font-semibold"
+                >URL:
+                <a
+                  href="{{ gsc_custom_url }}"
+                  target="_blank"
+                  class="text-blue-500 hover:underline"
+                  >{{ gsc_custom_url }}</a
+                >
               </label>
-          </div>
-          <div id="sub-category" class="tab-content hidden">
-            <label
-              class="block mb-4 text-gray-700 font-semibold flex items-center"
-            >
-              {% if product_subcategories %}
-                <select
-                  id="_subCategory"
-                  class="shadow appearance-none border rounded ml-2 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-60"
+            </div>
+          {% endif %}
+          {% if product_category %}
+            <div id="type-category" class="tab-content hidden">
+              <label class="block mb-4 text-gray-700 font-semibold"
+                >Category: {{product_category}}
+                </label>
+            </div>
+          {% endif %}
+          {% if product_subcategories %}
+            <div id="sub-category" class="tab-content hidden">
+              <label
+                class="block mb-4 text-gray-700 font-semibold flex items-center"
+              >
+                  <select
+                    id="_subCategory"
+                    class="shadow appearance-none border rounded ml-2 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-60"
                 >
                   <option value="">Select Sub Category</option>
                   {% for sub in product_subcategories %}
                     <option value="{{ sub }}">{{ sub }}</option>
                   {% endfor %}
                 </select>
-              {% else %}
-                <span class="ml-2">No subcategories found.</span>
-              {% endif %}
             </label>
           </div>
-
+          {% endif %}
           <!-- Table for Google Analytics Data -->
           <table class="table-auto w-full mb-4" id="gsc_data_table">
             <thead class="bg-blue-500 text-white text-left">
@@ -718,8 +719,7 @@
     let gsc_filter_from = "{{ gsc_filter_from }}";
     let gsc_filter_to = "{{ gsc_filter_to }}";
     // search_value value should be based on select tab 
-    let search_value  = "{{ gsc_custom_url }}";
-
+    let search_value  = "{{ gsc_custom_url }}" || "{{ product_category }} ";
     $(function () {
       var start = moment(gsc_filter_from);
       var end = moment(gsc_filter_to);
@@ -755,6 +755,13 @@
       );
 
       cb(start, end);
+
+      // On load based on tab value make tab avitive
+      {% if gsc_custom_url %}
+      switchTab('url');
+      {% elif product_category %}
+      switchTab('type-category');
+      {% endif %}
     });
 
     function updateTable(startDate, endDate, searchValue) {
