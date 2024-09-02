@@ -170,7 +170,7 @@ def product_management():
                             generated_product_title=generated_product_title,
                             generated_meta_description=generated_meta_description,
                             competitor_data=competitor_data,
-                            gsc_custom_url=gsc_serach_value or 'No custom URL found',
+                            gsc_custom_url=gsc_serach_value,
                             gsc_data=gsc_data,
                             gsc_filter_from=gsc_filter_from,
                             gsc_filter_to=gsc_filter_to,
