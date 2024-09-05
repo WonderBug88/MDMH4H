@@ -143,18 +143,18 @@ def product_management():
 
         # GET GSC DATA
         gsc_data = []
-        gsc_serach_value = ''
         today = datetime.now()
         last_30_days = today - timedelta(days=180)
         gsc_filter_from = last_30_days.strftime('%Y-%m-%d')
         gsc_filter_to = today.strftime('%Y-%m-%d')
 
         # parent_product_sku = 'HOS100CO0080' # Testing SKU
-        # gsc_serach_value = '/downlite-pillows-25-75-goose-down-feather/'
+        # gsc_custom_url = '/downlite-pillows-25-75-goose-down-feather/'
         bc_product = find_product_by_sku(parent_product_sku) # BigCommerce Product
-        gsc_serach_value = bc_product.get('Custom URL') if bc_product else None
-        if gsc_serach_value:
-            gsc_qry = get_gsc_query(gsc_serach_value, gsc_filter_from, gsc_filter_to)
+        gsc_custom_url = bc_product.get('Custom URL') if bc_product else None
+        print(f"Custom URL---: {gsc_custom_url}")
+        if gsc_custom_url:
+            gsc_qry = get_gsc_query(gsc_custom_url, gsc_filter_from, gsc_filter_to)
             gsc_data = analytics_data_schema.query(gsc_qry)
 
         return render_template('product_management.html',
@@ -170,7 +170,7 @@ def product_management():
                             generated_product_title=generated_product_title,
                             generated_meta_description=generated_meta_description,
                             competitor_data=competitor_data,
-                            gsc_custom_url=gsc_serach_value,
+                            gsc_custom_url=gsc_custom_url,
                             gsc_data=gsc_data,
                             gsc_filter_from=gsc_filter_from,
                             gsc_filter_to=gsc_filter_to,
