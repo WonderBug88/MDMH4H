@@ -594,8 +594,7 @@
                   URLs
                 </button>
               </li>
-              {% endif %}
-              {% if product_category %}
+              {% endif %} {% if product_category %}
               <li>
                 <button
                   class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
@@ -604,8 +603,7 @@
                   Type Category
                 </button>
               </li>
-              {% endif %}
-              {% if product_subcategories %}
+              {% endif %} {% if product_subcategories %}
               <li>
                 <button
                   class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
@@ -618,40 +616,38 @@
             </ul>
           </div>
           <!-- Tab Content -->
-           {% if gsc_custom_url %}
-            <div id="url" class="tab-content">
-              <label class="block mb-4 text-gray-700 font-semibold"
-                >URL:
-                <a
-                  href="{{ gsc_custom_url }}"
-                  target="_blank"
-                  class="text-blue-500 hover:underline"
-                  >{{ gsc_custom_url }}</a
-                >
-              </label>
-            </div>
-          {% endif %}
-          {% if product_category %}
-            <div id="type-category" class="tab-content hidden">
-              <label class="block mb-4 text-gray-700 font-semibold"
-                >Category: {{product_category}}
-                </label>
-            </div>
-          {% endif %}
-          {% if product_subcategories %}
-            <div id="sub-category" class="tab-content hidden">
-              <label
-                class="block mb-4 text-gray-700 font-semibold flex items-center"
+          {% if gsc_custom_url %}
+          <div id="url" class="tab-content">
+            <label class="block mb-4 text-gray-700 font-semibold"
+              >URL:
+              <a
+                href="{{ gsc_custom_url }}"
+                target="_blank"
+                class="text-blue-500 hover:underline"
+                >{{ gsc_custom_url }}</a
               >
-                  <select
-                    id="_subCategory"
-                    class="shadow appearance-none border rounded ml-2 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-60"
-                >
-                  <option value="">Select Sub Category</option>
-                  {% for sub in product_subcategories %}
-                    <option value="{{ sub }}">{{ sub }}</option>
-                  {% endfor %}
-                </select>
+            </label>
+          </div>
+          {% endif %} {% if product_category %}
+          <div id="type-category" class="tab-content hidden">
+            <label class="block mb-4 text-gray-700 font-semibold"
+              >Category: {{product_category}}
+            </label>
+          </div>
+          {% endif %} {% if product_subcategories %}
+          <div id="sub-category" class="tab-content hidden">
+            <label
+              class="block mb-4 text-gray-700 font-semibold flex items-center"
+            >
+              <select
+                id="_subCategory"
+                class="shadow appearance-none border rounded ml-2 py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-60"
+              >
+                <option value="">Select Sub Category</option>
+                {% for sub in product_subcategories %}
+                <option value="{{ sub }}">{{ sub }}</option>
+                {% endfor %}
+              </select>
             </label>
           </div>
           {% endif %}
@@ -718,8 +714,18 @@
   <script type="text/javascript">
     let gsc_filter_from = "{{ gsc_filter_from }}";
     let gsc_filter_to = "{{ gsc_filter_to }}";
-    // search_value value should be based on select tab 
-    let search_value  = "{{ gsc_custom_url }}" || "{{ product_category }} ";
+    let gsc_custom_url = "{{ gsc_custom_url }}";
+    let product_category = "{{ product_category }}";
+    let search_value = "";
+
+    if (gsc_custom_url !== "None" && gsc_custom_url) {
+      search_value = gsc_custom_url;
+      switchTab("url");
+    } else if (product_category) {
+      search_value = product_category;
+      switchTab("type-category");
+    }
+
     $(function () {
       var start = moment(gsc_filter_from);
       var end = moment(gsc_filter_to);
@@ -755,13 +761,6 @@
       );
 
       cb(start, end);
-
-      // On load based on tab value make tab avitive
-      {% if gsc_custom_url %}
-      switchTab('url');
-      {% elif product_category %}
-      switchTab('type-category');
-      {% endif %}
     });
 
     function updateTable(startDate, endDate, searchValue) {
@@ -776,8 +775,12 @@
         success: function (response) {
           const tbody = $("#gsc_data_tbody");
           tbody.empty();
-
-          response.forEach((keyword) => {
+          if (response.length === 0) {
+            tbody.append(
+              '<tr><td colspan="5" class="border px-4 py-2 text-center">No data found for the selected date range.</td></tr>'
+            );
+          }else{
+            response.forEach((keyword) => {
             const row = `<tr>
                   <td class="border px-4 py-2">${keyword["query"]}</td>
                   <td class="border px-4 py-2">${keyword["clicks"]}</td>
@@ -793,6 +796,7 @@
                 </tr>`;
             tbody.append(row);
           });
+          }
         },
         error: function (error) {
           console.error("Error fetching data:", error);
@@ -817,17 +821,17 @@
 
       // Send AJAX request to Flask to update the table based on the tab selected
       if (tabName === "url") {
+        search_value = "{{gsc_custom_url}}";
         updateTable(gsc_filter_from, gsc_filter_to, search_value);
       } else if (tabName === "type-category") {
-        search_value = "{{ product_category }}";
+        search_value = "{{product_category}}";
         updateTable(gsc_filter_from, gsc_filter_to, search_value);
       }
     }
 
     // on _subCategory change update the table
     document
-      .getElementById("_subCategory")
-      .addEventListener("change", function () {
+      .getElementById("_subCategory")?.addEventListener("change", function () {
         search_value = this.value;
         updateTable(gsc_filter_from, gsc_filter_to, search_value);
       });

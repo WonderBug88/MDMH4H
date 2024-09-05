@@ -297,7 +297,7 @@ def get_gsc_query(search_value, start_date, end_date):
         WHERE LOWER(page) LIKE LOWER('%{search_value}%') 
             AND date BETWEEN '{start_date}' AND '{end_date}'
         ORDER BY date DESC 
-        LIMIT {10} OFFSET {0};
+        LIMIT {25} OFFSET {0};
     """
     
     return gsc_qry
