@@ -655,6 +655,7 @@
           <table class="table-auto w-full mb-4" id="gsc_data_table">
             <thead class="bg-blue-500 text-white text-left">
               <tr>
+                <th class="px-4 py-2">Page</th>
                 <th class="px-4 py-2">Query (Keyword)</th>
                 <th class="px-4 py-2">Clicks</th>
                 <th class="px-4 py-2">Impressions</th>
@@ -665,6 +666,7 @@
             <tbody id="gsc_data_tbody">
               {% for keyword in gsc_data %}
               <tr>
+                <td class="border px-4 py-2">{{ keyword['page'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['query'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['clicks'] }}</td>
                 <td class="border px-4 py-2">{{ keyword['impressions'] }}</td>
@@ -782,6 +784,7 @@
           }else{
             response.forEach((keyword) => {
             const row = `<tr>
+                  <td class="border px-4 py-2">${keyword["page"]}</td>
                   <td class="border px-4 py-2">${keyword["query"]}</td>
                   <td class="border px-4 py-2">${keyword["clicks"]}</td>
                   <td class="border px-4 py-2">${keyword["impressions"]}</td>
