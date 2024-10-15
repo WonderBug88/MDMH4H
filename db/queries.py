@@ -1,3 +1,5 @@
+# Description: This file contains all the SQL queries used in the application.
+from db.curd import DataRetriever
 
 all_queries = {
     "1888_mills": """ WITH product_hierarchy AS (
@@ -270,6 +272,62 @@ all_queries = {
         LIMIT %s
         OFFSET %s;
     """,
+    "h4h_import2": """ WITH product_hierarchy AS (
+            SELECT
+                p.name AS parent_product,
+                p.id AS id,
+                p.name AS variant_title,
+                p.type AS type,
+                p.custom_url as custom_url,
+                p.sku AS parent_sku,
+                p.description AS description,
+                v.image_url AS image_url,
+                p.price AS each_cost,
+                p.cost_price AS case_cost,
+
+                v.width AS width,
+                v.depth AS length,
+                v.height AS height,
+                v.weight AS weight,
+                v.sku AS case_width,
+                v.sku AS case_length,
+                v.sku AS case_height,
+                v.sku AS case_weight,
+                v.sku AS sku
+            FROM
+                products p
+            LEFT JOIN
+                variants v ON v.product_id = p.id
+        )
+        SELECT
+            parent_product,
+            parent_sku,
+            id,
+            jsonb_agg(jsonb_build_object(
+                'title', variant_title,
+                'sku', sku,
+                'description', description,
+                'type', type,
+                'custom_url', custom_url,
+                'size', width || 'x' || length || 'x' || height,
+                'weight', weight,
+                'each_cost', each_cost,
+                'case_cost', case_cost,
+                'images', image_url,
+                'case_weight', weight,
+                'case_width', width,
+                'case_length', length,
+                'case_height', height
+            )) AS variants
+        FROM
+            product_hierarchy
+        GROUP BY
+            parent_product,
+            parent_sku,
+            id
+        LIMIT %s
+        OFFSET %s;
+    """,
 }
 
 
@@ -278,7 +336,7 @@ def get_raw_query(schema_name: str):
     return all_queries.get(schema_name, '')
 
 
-def get_gsc_query(search_value, start_date, end_date):
+def get_gsc_query(custom_urls, start_date, end_date):
     """
     Retrieves data from gsc_data table based on custom URL and date range.
 
@@ -291,15 +349,27 @@ def get_gsc_query(search_value, start_date, end_date):
       The SQL query as a string.
     """
 
+    # gsc_qry = f"""
+    #     SELECT *
+    #     FROM gsc_data
+    #     WHERE LOWER(page) LIKE LOWER('%{custom_urls}%')
+    #         AND date BETWEEN '{start_date}' AND '{end_date}'
+    #     ORDER BY date DESC
+    #     LIMIT {25} OFFSET {0};
+    #     """
+
+    # Ensure custom_urls is a list of strings, then convert to a properly formatted tuple
+    custom_urls = ', '.join([f"'{url}'" for url in custom_urls])
+
+    # Use parentheses around the list of URLs in the SQL query
     gsc_qry = f"""
-        SELECT * 
-        FROM gsc_data 
-        WHERE LOWER(page) LIKE LOWER('%{search_value}%') 
+        SELECT *
+        FROM gsc_data
+        WHERE page IN ({custom_urls})  -- Wrapped in parentheses for the IN clause
             AND date BETWEEN '{start_date}' AND '{end_date}'
-        ORDER BY date DESC 
-        LIMIT {25} OFFSET {0};
+        ORDER BY date DESC;
     """
-    
+
     return gsc_qry
 
 
@@ -334,3 +404,34 @@ def get_order_history_query(skus):
     """
 
     return query
+
+
+def get_product_categories_data(sku):
+    query = f"""
+        SELECT 
+            p.sku AS sku,
+            p.product_url AS product_url,
+            
+            -- Aggregating categories with id and URL
+            jsonb_agg(DISTINCT jsonb_build_object(
+                'id', p.category_id,
+                'category_url', p.category_url
+            )) AS categories,
+            
+            -- Aggregating brands with id and URL
+            jsonb_agg(DISTINCT jsonb_build_object(
+                'id', p.brand_id,
+                'brand_url', p.brand_url
+            )) AS brands
+
+        FROM 
+            product_categories p
+
+        WHERE 
+            p.sku = '{sku}' -- Filter by sku
+
+        GROUP BY 
+            p.sku, p.product_url;
+    """
+    pc_data = DataRetriever(schema='h4h_import2').query(query)
+    return pc_data[0] if isinstance(pc_data, list) and len(pc_data) > 0 else pc_data
