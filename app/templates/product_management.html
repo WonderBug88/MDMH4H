@@ -22,6 +22,17 @@
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
     />
+    <style>
+        /* Ensure the arrows are also white for both asc and desc sorting */
+        #gsc_data_table thead .sorting_asc::before,
+        #gsc_data_table thead .sorting_desc::before {
+          color: black;
+        }
+        #gsc_data_table thead .sorting_asc::after,
+        #gsc_data_table thead .sorting_desc::after {
+          color: black;
+        }
+    </style>
   </head>
   <body class="bg-gray-200 font-sans">
     <header
@@ -712,10 +723,12 @@
     let table = $("#gsc_data_table").DataTable({
       searching: true,
       info: false,
-      ordering: false,
+      ordering: true,
       lengthChange: false,
       pageLength: 20,
       dom: '<"top"lf><"reportrange-div">rt<"bottom"p><"clear">',
+      // make ordering icons white
+      
     });
 
     // Inject the custom `reportrange` field into the right top section
