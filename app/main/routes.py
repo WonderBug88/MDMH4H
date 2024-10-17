@@ -123,28 +123,28 @@ def product_management():
         # product_category = variants[0].get('category', '') if variants else '' # As of now, category is not available for every supplier
         # product_subcategories = list({variant.get('sub_category', '') for variant in variants if variant.get('sub_category')})
 
-        if parent_product:
-            # Construct product details for content generation
-            product_details = {
-                'name': parent_product.get('parent_product', 'No name available'),
-                'description': parent_product_description,
-                # Ensure this function returns a meaningful string or default
-                'child_details': get_product_details(variants)
-            }
+        # if parent_product:
+        #     # Construct product details for content generation
+        #     product_details = {
+        #         'name': parent_product.get('parent_product', 'No name available'),
+        #         'description': parent_product_description,
+        #         # Ensure this function returns a meaningful string or default
+        #         'child_details': get_product_details(variants)
+        #     }
 
-            # Generate SEO-friendly content
-            generated_product_title = generate_content(
-                'product_title', product_details, brand=brand_id)
-            generated_description = generate_content(
-                'description', product_details, brand=brand_id)
-            generated_meta_description = generate_content(
-                'meta_description', product_details, brand=brand_id)
-            generated_meta_title = generate_content(
-                'meta_title', product_details, brand=brand_id)
-            generated_keywords = generate_content(
-                'keywords', product_details, brand=brand_id)
-        else:
-            flash('Parent product not found.', 'error')
+        #     # Generate SEO-friendly content
+        #     generated_product_title = generate_content(
+        #         'product_title', product_details, brand=brand_id)
+        #     generated_description = generate_content(
+        #         'description', product_details, brand=brand_id)
+        #     generated_meta_description = generate_content(
+        #         'meta_description', product_details, brand=brand_id)
+        #     generated_meta_title = generate_content(
+        #         'meta_title', product_details, brand=brand_id)
+        #     generated_keywords = generate_content(
+        #         'keywords', product_details, brand=brand_id)
+        # else:
+        #     flash('Parent product not found.', 'error')
 
         # GET GSC DATA
         today = datetime.now()
