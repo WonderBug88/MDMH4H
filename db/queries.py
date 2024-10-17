@@ -367,7 +367,8 @@ def get_gsc_query(custom_urls, start_date, end_date):
         FROM gsc_data
         WHERE page IN ({custom_urls})  -- Wrapped in parentheses for the IN clause
             AND date BETWEEN '{start_date}' AND '{end_date}'
-        ORDER BY date DESC;
+        ORDER BY date DESC
+        LIMIT {8000} OFFSET {0};
     """
 
     return gsc_qry

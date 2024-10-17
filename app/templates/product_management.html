@@ -32,6 +32,23 @@
         #gsc_data_table thead .sorting_desc::after {
           color: black;
         }
+
+        /* Move sorting icons to the start of the th */
+        #gsc_data_table th.sorting::before,
+        #gsc_data_table th.sorting_asc::before,
+        #gsc_data_table th.sorting_desc::before {
+          left: -5px; /* Adjust as needed */
+        }
+        #gsc_data_table th.sorting::after,
+        #gsc_data_table th.sorting_asc::after,
+        #gsc_data_table th.sorting_desc::after {
+          left: -5px; /* Adjust as needed */
+        }
+
+        #gsc_data_table th {
+          position: relative; /* Required for absolute positioning of icons */
+        }
+
     </style>
   </head>
   <body class="bg-gray-200 font-sans">
@@ -650,8 +667,13 @@
           </div>
           {% endif %}
           <!-- Table for Google Analytics Data -->
-          <table class="table-auto w-full mb-4" id="gsc_data_table">
-            <thead class="bg-blue-500 text-white text-left">
+          <div class="relative">
+            <!-- Loader -->
+            <div id="table-loader" class="absolute inset-0 flex justify-center items-start bg-gray-100 bg-opacity-50 z-10" style="display: none;">
+              <span class="text-black text-lg absolute top-40">Loading data...</span>
+            </div>
+            <table class="table-auto w-full mb-4" id="gsc_data_table">
+            <thead class="bg-blue-500 text-white text-center">
               <tr>
                 <th class="px-4 py-2">Page</th>
                 <th class="px-4 py-2">Query (Keyword)</th>
@@ -665,6 +687,7 @@
               <!-- Table Data will be populated here -->
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
@@ -711,24 +734,19 @@
     let category_urls = "{{ category_urls }}";
     let search_value = "";
 
-    if (product_url !== "None" && product_url) {
-      search_value = product_url;
-      switchTab("url");
-    } else if (category_urls) {
-      search_value = category_urls;
-      switchTab("type-category");
-    }
-
     // Initialize the DataTable when the page loads
     let table = $("#gsc_data_table").DataTable({
       searching: true,
       info: false,
       ordering: true,
       lengthChange: false,
-      pageLength: 20,
+      pageLength: 25,
       dom: '<"top"lf><"reportrange-div">rt<"bottom"p><"clear">',
-      // make ordering icons white
-      
+      columnDefs: [
+        { targets: 0, orderable: false }, 
+      ],
+      order: [] // Prevent any initial ordering
+
     });
 
     // Inject the custom `reportrange` field into the right top section
@@ -757,6 +775,15 @@
 
     // Initialize the DateRangePicker and Load the DataTable with the initial data
     $(function () {
+      // Check if the product URL is available
+      if (product_url !== "None" && product_url) {
+        search_value = product_url;
+        switchTab("url");
+      } else if (category_urls) {
+          search_value = category_urls;
+          switchTab("type-category");
+        }
+
       var start = moment(gsc_filter_from);
       var end = moment(gsc_filter_to);
 
@@ -794,6 +821,10 @@
     });
 
     function updateTable(startDate, endDate, searchValue) {
+
+      // Show the loader text in table
+      $("#table-loader").show();
+
       $.ajax({
         url: "/gsc-data",
         method: "GET",
@@ -813,7 +844,7 @@
               keyword["query"],
               keyword["clicks"],
               keyword["impressions"],
-              keyword["ctr"],
+              keyword["ctr"].toFixed(2),
               keyword["position"]
                 ? Number(keyword["position"]).toFixed(2)
                 : "N/A",
@@ -825,6 +856,10 @@
         },
         error: function (error) {
           console.error("Error fetching data:", error);
+        },
+        complete: function () {
+          // Hide the loader
+          $("#table-loader").hide();
         },
       });
     }
