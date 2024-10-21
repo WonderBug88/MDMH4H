@@ -732,7 +732,7 @@
     let gsc_filter_to = "{{ gsc_filter_to }}";
     let product_url = "{{ product_url }}";
     let category_urls = "{{ category_urls }}";
-    let search_value = "";
+    let search_value =  "{{ product_url }}";
 
     // Initialize the DataTable when the page loads
     let table = $("#gsc_data_table").DataTable({
@@ -776,13 +776,13 @@
     // Initialize the DateRangePicker and Load the DataTable with the initial data
     $(function () {
       // Check if the product URL is available
-      if (product_url !== "None" && product_url) {
-        search_value = product_url;
-        switchTab("url");
-      } else if (category_urls) {
-          search_value = category_urls;
-          switchTab("type-category");
-        }
+      // if (product_url !== "None" && product_url) {
+      //   search_value = product_url;
+      //   switchTab("url");
+      // } else if (category_urls) {
+      //     search_value = category_urls;
+      //     switchTab("type-category");
+      //   }
 
       var start = moment(gsc_filter_from);
       var end = moment(gsc_filter_to);
