@@ -429,5 +429,4 @@ def get_product_categories_data(sku):
             p.sku, p.product_url;
     """
     pc_data = DataRetriever(schema='h4h_import2').query(query)
-    print('pc_data:', pc_data)
     return pc_data[0] if isinstance(pc_data, list) and len(pc_data) > 0 else pc_data
