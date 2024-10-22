@@ -89,8 +89,7 @@ def product_management():
 
         limit = 1
         offset = (current_page - 1) * limit
-        brand_products = DataRetriever(
-            schema=brand_id).query(query, limit, offset)
+        brand_products = DataRetriever(schema=brand_id).query(query, limit, offset)
         if not brand_products:
             flash(f'No products found for {brand_id}', 'error')
             return redirect(url_for('main.index'))

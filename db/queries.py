@@ -412,27 +412,22 @@ def get_product_categories_data(sku):
         SELECT 
             p.sku AS sku,
             p.product_url AS product_url,
-            
-            -- Aggregating categories with id and URL
             jsonb_agg(DISTINCT jsonb_build_object(
                 'id', p.category_id,
                 'category_url', p.category_url
             )) AS categories,
             
-            -- Aggregating brands with id and URL
             jsonb_agg(DISTINCT jsonb_build_object(
                 'id', p.brand_id,
                 'brand_url', p.brand_url
             )) AS brands
-
         FROM 
             product_categories p
-
         WHERE 
-            p.sku = '{sku}' -- Filter by sku
-
+            p.sku = '{sku}'
         GROUP BY 
             p.sku, p.product_url;
     """
     pc_data = DataRetriever(schema='h4h_import2').query(query)
+    print('pc_data:', pc_data)
     return pc_data[0] if isinstance(pc_data, list) and len(pc_data) > 0 else pc_data
