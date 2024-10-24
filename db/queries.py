@@ -363,12 +363,18 @@ def get_gsc_query(custom_urls, start_date, end_date):
 
     # Use parentheses around the list of URLs in the SQL query
     gsc_qry = f"""
-        SELECT *
-        FROM gsc_data
-        WHERE page IN ({custom_urls})  -- Wrapped in parentheses for the IN clause
-            AND date BETWEEN '{start_date}' AND '{end_date}'
-        ORDER BY date DESC
-        LIMIT {8000} OFFSET {0};
+    SELECT 
+        query, 
+        page,
+        SUM(clicks) AS clicks, 
+        SUM(impressions) AS impressions, 
+        AVG(ctr) AS ctr, 
+        AVG(position) AS position
+    FROM gsc_data
+    WHERE page IN ({custom_urls})
+        AND date BETWEEN '{start_date}' AND '{end_date}'
+    GROUP BY query, page
+    ORDER BY clicks DESC;
     """
 
     return gsc_qry
@@ -429,5 +435,4 @@ def get_product_categories_data(sku):
             p.sku, p.product_url;
     """
     pc_data = DataRetriever(schema='h4h_import2').query(query)
-    print('pc_data:', pc_data)
     return pc_data[0] if isinstance(pc_data, list) and len(pc_data) > 0 else pc_data
