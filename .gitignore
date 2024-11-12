@@ -113,3 +113,6 @@ venv.bak/
 /scrap_data/output/*.xlsx
 /scrap_data/output/*.xls
 /scrap_data/ahscompany_products/*.json
+
+# Ignore google key file
+/etl_scripts/gsc/*.json
