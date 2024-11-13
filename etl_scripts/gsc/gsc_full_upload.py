@@ -16,10 +16,9 @@ DB_HOST = os.environ.get('DB_HOST')
 DB_NAME = os.environ.get('DB_NAME')
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
-print(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, "DB_HOST, DB_NAME, DB_USER, DB_PASSWORD")
 
 # Path to your service account key file
-SERVICE_ACCOUNT_FILE = f'{BASE_DIR}/etl_scripts/gsc/triple-skein-418601-2b7de307bc54.json'
+SERVICE_ACCOUNT_FILE = f'{BASE_DIR}/etl_scripts/gsc/triple-skein-418601-0d9a35a7da48.json'
 
 # Define the scopes and API service name/version
 SCOPES = ['https://www.googleapis.com/auth/webmasters.readonly']
@@ -98,8 +97,8 @@ def main():
     service = get_authenticated_service()
 
     SITE_URL = 'https://www.hotels4humanity.com'
-    START_DATE = '2024-11-01'
-    END_DATE = '2024-11-10'
+    START_DATE = '2024-11-12'
+    END_DATE = '2024-11-13'
     COUNTRY = 'USA'
 
     # Fetch all data in batches
