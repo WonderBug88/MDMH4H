@@ -38,5 +38,6 @@ main {
     line-height: 1.6;
 }
 
+/* <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> */
 
 /* You can add more styles for your muted green color and other design preferences. */

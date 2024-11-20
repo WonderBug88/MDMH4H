@@ -1,0 +1,101 @@
+    <!-- Navigation Bar -->
+    <div class="bg-gray-800 p-4">
+        <!-- PAM Branding and Menu Selection -->
+        <div class="flex flex-wrap items-center justify-between">
+          <!-- Logo and Title -->
+          <div class="flex items-center mb-4 md:mb-0">
+            <img
+              src="https://cdn11.bigcommerce.com/s-99oa2tso/images/stencil/original/logo_hotel_supplies_1551335679__80870.original.png"
+              alt="PAM Logo"
+              class="mr-2 h-12 w-auto"
+            />
+            <a class="text-lg font-bold text-white sm:text-xl md:text-2xl"
+              href="{{ url_for('pam.pam_main') }}"
+            >
+              Product Attribute Matrix
+            </a>
+          </div>
+  
+          <!-- Menu Selection -->
+          <nav class="hidden md:flex space-x-4">
+            <a
+            href="{{ url_for('main.index') }}"
+              class="text-sm text-white hover:underline"
+            >
+              Data Import
+          </a>
+            <button
+              class="text-sm text-white hover:underline"
+            >
+              Discrepancy Review
+            </button>
+            <button
+              class="text-sm text-white hover:underline"
+            >
+              Sync Options
+            </button>
+            <button
+              class="text-sm text-white hover:underline"
+            >
+              Notification Settings
+            </button>
+          </nav>
+  
+          <!-- Mobile Menu Icon -->
+          <div class="md:hidden">
+            <button
+              onclick="toggleMenu()"
+              class="text-white hover:text-gray-400 focus:outline-none"
+            >
+              <i class="fas fa-bars text-2xl"></i>
+            </button>
+          </div>
+  
+          <!-- User Authentication Section -->
+          <div
+            id="auth-section"
+            class="flex items-center space-x-3 text-white mt-4 md:mt-0"
+          >
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-user text-xl"></i>
+              <span
+                id="user-welcome"
+                class="hidden sm:inline text-sm md:text-base"
+              >
+                <strong>{{ name }}</strong>
+              </span>
+            </div>
+            <a
+              id="auth-button"
+              class="rounded bg-red-500 px-3 py-2 text-sm hover:bg-red-400 md:px-4 md:py-2"
+              href="{{ url_for('user.logout') }}"
+            >
+              Logout
+          </a>
+          </div>
+        </div>
+  
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden mt-4 space-y-2 md:hidden">
+          <button
+            class="block w-full text-left text-white hover:underline"
+          >
+            Data Import
+          </button>
+          <button
+            class="block w-full text-left text-white hover:underline"
+          >
+            Discrepancy Review
+          </button>
+          <button
+            class="block w-full text-left text-white hover:underline"
+          >
+            Sync Options
+          </button>
+          <button
+            class="block w-full text-left text-white hover:underline"
+          >
+            Notification Settings
+          </button>
+        </div>
+      </div>

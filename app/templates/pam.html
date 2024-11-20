@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Search and Filter Section -->
+    <div class="container mx-auto my-4">
+      <form action="{{ url_for('pam.pam_main') }}" method="get"  id="searchForm">
+        <div class="flex items-center justify-between">
+          <input
+            type="text"
+            name="search"
+            placeholder="Search brands or products..."
+            class="w-2/3 rounded-lg border border-gray-300 p-2"
+          />
+          <!-- <button
+          class="rounded bg-gray-200 px-4 py-2 text-black hover:bg-gray-300"
+          >
+          <i class="fas fa-filter"></i>
+          Filter
+        </button> -->
+      </form>
+      </div>
+    </div>
+
+    <div class="container mx-auto my-6">
+      <h2 class="mb-4 text-3xl font-bold text-gray-800">
+        Brands & Parent Products
+      </h2>
+    
+      <div class="space-y-4" id="brands-container">
+        {% for brand in brands_data %}
+        <div class="rounded-lg border border-gray-300 bg-white shadow-md">
+          <!-- Brand Header -->
+          <div 
+            class="cursor-pointer flex items-center justify-between bg-gray-200 p-4" 
+            onclick="toggleSection('brand-{{ brand.brand_name }}')"
+          >
+            <h3 class="text-lg font-bold">{{ brand.brand_name }}</h3>
+            <span class="text-sm text-gray-600">Categories: {{ brand.data|length }}</span>
+          </div>
+    
+          <!-- Categories Section -->
+          <div id="brand-{{ brand.brand_name }}" class="hidden p-4">
+            {% for category in brand.data %}
+            <div class="mb-4 rounded-lg border border-gray-300 bg-gray-50">
+              <!-- Category Header -->
+              <div 
+                class="cursor-pointer flex items-center justify-between p-4" 
+                onclick="toggleSection('{{brand.brand_name}}-category-{{ category.category }}-{{loop.index}}')"
+              >
+                <span class="font-semibold">{{ category.category }}</span>
+                <span class="text-sm text-gray-600">
+                  Total Products: {{ category.total_products }}
+                </span>
+              </div>
+    
+              <!-- Products Section -->
+              <div id="{{brand.brand_name}}-category-{{ category.category }}-{{loop.index}}" class="hidden p-4">
+                <ul class="space-y-2">
+                  {% for product in category.products %}
+                  <li class="flex items-center justify-between rounded bg-gray-200 p-4">
+                    <span class="font-semibold">{{ product }}</span>
+                  </li>
+                  {% endfor %}
+                </ul>
+                <!-- Add New Parent Product Button -->
+                <button
+                  onclick="openModal('{{ brand.brand_name }}')"
+                  class="mt-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-400"
+                >
+                  Add New Parent Product
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <!-- Load More Button -->
+      <div class="flex justify-center mt-4">
+        <button id="load-more-btn"
+            class="w-auto rounded bg-green-500 px-3 py-2 text-white hover:bg-green-400"
+            data-page="{{ page + 1 }}">Load More</button>
+      </div>
+    </div>
+    
+    <!-- Modal for Adding a New Parent Product -->
+    <div
+      id="modal"
+      class="fixed inset-0 flex hidden items-center justify-center bg-gray-600 bg-opacity-50"
+    >
+      <div class="w-1/3 rounded-lg bg-white p-8">
+        <h3 class="mb-4 text-2xl font-bold">Add New Parent Product</h3>
+        <form id="newProductForm" onsubmit="addProduct(event)">
+          <input type="hidden" id="brandName" />
+          <div class="mb-4">
+            <label class="block font-semibold">Product Name</label>
+            <input
+              type="text"
+              id="productName"
+              class="w-full rounded border border-gray-300 p-2"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block font-semibold">Description</label>
+            <textarea
+              id="productDescription"
+              class="w-full rounded border border-gray-300 p-2"
+              required
+            ></textarea>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              onclick="closeModal()"
+              class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-400"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-400"
+            >
+              Add Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}
+
+  <!-- JavaScript for Modal and Adding Product -->
+  {% block scripts %} 
+  <script>
+    function openModal(brandName) {
+      document.getElementById("modal").classList.remove("hidden");
+      document.getElementById("brandName").value = brandName;
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+    }
+
+    function addProduct(event) {
+      event.preventDefault();
+
+      const brandName = document.getElementById("brandName").value;
+      const productName = document.getElementById("productName").value;
+      const productDescription =
+        document.getElementById("productDescription").value;
+
+      // Map brand names to corresponding div IDs
+      const brandIdMap = {
+        "1888 Mills": "brand-1888-mills",
+        "Thomaston Mills": "brand-thomaston-mills",
+      };
+
+      const brandId = brandIdMap[brandName];
+      const brandSection = document.getElementById(brandId).querySelector("ul");
+
+      const newProductItem = document.createElement("li");
+      newProductItem.classList.add(
+        "flex",
+        "justify-between",
+        "items-center",
+        "p-4",
+        "bg-gray-100",
+        "rounded"
+      );
+      newProductItem.innerHTML = `
+          <span class="font-semibold">${productName}</span>
+          <p class="text-sm text-gray-700">${productDescription}</p>
+      `;
+
+      brandSection.appendChild(newProductItem);
+
+      // Reset the form and close the modal
+      document.getElementById("newProductForm").reset();
+      closeModal();
+    }
+
+      // Toggles visibility of sections
+      function toggleSection(id) {
+        const element = document.getElementById(id);
+        element.classList.toggle('hidden');
+      }
+
+    // Handle Load More button click event
+    document.getElementById('load-more-btn').addEventListener('click', function() {
+        var page = parseInt(this.getAttribute('data-page'));
+        
+        // Disable the Load More button while loading
+        this.disabled = true;
+
+        // Send AJAX request to fetch next page of data
+        fetch(`/pam?page=${page}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update the page content with the new HTML
+            document.querySelector('.space-y-4').insertAdjacentHTML('beforeend', data.html);
+
+            // Check if there are more pages to load
+            if (!data.next_page) {
+                document.getElementById('load-more-btn').style.display = 'none'; // Hide Load More button
+            } else {
+                document.getElementById('load-more-btn').setAttribute('data-page', page + 1);
+                document.getElementById('load-more-btn').disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading more content:', error);
+            document.getElementById('load-more-btn').disabled = false;
+        });
+    });
+
+    $('#searchForm').submit(function(e) {
+      e.preventDefault();
+      const searchQuery = $('input[name="search"]').val();
+      const page = 1; // Reset to the first page for new search
+
+      $.get('{{ url_for("pam.pam_main") }}', { search: searchQuery, page: page }, function(response) {
+          $('#brands-container').html(response.html);
+          if (response.next_page) {
+              $('#load-more-btn').show();
+          } else {
+              $('#load-more-btn').hide();
+          }
+    });
+});
+
+  </script>
+{% endblock %}

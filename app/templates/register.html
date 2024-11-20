@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | P.A.M</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.4/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Public Navigation Bar -->
+    <div class="bg-gray-800 p-4">
+      <div class="flex flex-wrap items-center justify-between">
+        <div class="flex items-center mb-4 md:mb-0">
+          <img
+            src="https://cdn11.bigcommerce.com/s-99oa2tso/images/stencil/original/logo_hotel_supplies_1551335679__80870.original.png"
+            alt="PAM Logo"
+            class="mr-2 h-12 w-auto"
+          />
+          <h1 class="text-lg font-bold text-white sm:text-xl md:text-2xl">
+            Product Attribute Matrix
+          </h1>
+        </div>
+
+        <!-- User Non-Authentication Section -->
+        <div
+          id="auth-section"
+          class="flex items-center space-x-3 text-white mt-4 md:mt-0"
+        >
+          <a class="" href="{{ url_for('user.login') }}"> Login </a>
+          <a class="" href="{{ url_for('user.register') }}"> Register </a>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+      <!-- Signup Container -->
+      <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+        <div class="text-center mb-6">
+          <h2 class="mt-2 text-2xl font-bold text-gray-700">
+            Create an Account
+          </h2>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=True) %} {% if
+        messages %} {% for category, message in messages %}
+        <p class="{{ category }}">{{ message }}</p>
+        {% endfor %} {% endif %} {% endwith %}
+        <form class="space-y-4" method="post" action="{{ url_for('user.register') }}">
+          <!-- Name Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600"
+              >Full Name</label
+            >
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                name="name"
+                class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+              <i
+                class="fas fa-user absolute top-3 right-3 text-gray-400"
+              ></i>
+            </div>
+          </div>
+          <!-- Username Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600"
+              >Username</label
+            >
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Enter your username"
+                name="username"
+                class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+              <i
+                class="fas fa-user absolute top-3 right-3 text-gray-400"
+              ></i>
+            </div>
+          </div>
+          <!-- Email Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">Email</label>
+            <div class="relative">
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+              <i
+                class="fas fa-envelope absolute top-3 right-3 text-gray-400"
+              ></i>
+            </div>
+          </div>
+          <!-- Password Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600"
+              >Password</label
+            >
+            <div class="relative">
+              <input
+                type="password"
+                placeholder="Enter your password"
+                class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+                name="password"
+              />
+              <i class="fas fa-lock absolute top-3 right-3 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div>
+            <button
+              type="submit"
+              class="w-full px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+        <div class="flex items-center my-6">
+          <span class="mx-2 text-sm text-gray-400">
+            Already have an account?</span
+          >
+          <a href="/login" class="text-sm text-blue-500 hover:underline"
+            >Login</a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

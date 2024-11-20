@@ -1,36 +1,15 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Management</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.4/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <!-- Include Font Awesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
-    />
-    <style>
+﻿{% extends 'base.html' %} 
+{% block title %}Product Management{% endblock %} 
+{% block styles %} 
+  <style> 
         /* Ensure the arrows are also white for both asc and desc sorting */
         #gsc_data_table thead .sorting_asc::before,
         #gsc_data_table thead .sorting_desc::before {
-          color: black;
+          color: white;
         }
         #gsc_data_table thead .sorting_asc::after,
         #gsc_data_table thead .sorting_desc::after {
-          color: black;
+          color: white;
         }
 
         /* Move sorting icons to the start of the th */
@@ -48,689 +27,585 @@
         #gsc_data_table th {
           position: relative; /* Required for absolute positioning of icons */
         }
-
     </style>
-  </head>
-  <body class="bg-gray-200 font-sans">
-    <header
-      class="bg-gray-900 text-white p-5 flex justify-between items-center flex-wrap"
-    >
-      <!-- Logo Section -->
-      <div class="logo flex items-center">
-        <img
-          src="https://cdn11.bigcommerce.com/s-99oa2tso/images/stencil/original/logo_hotel_supplies_1551335679__80870.original.png"
-          class="h-10 mr-4"
-          alt="Hotel Supplies Logo"
-        />
-        <span class="text-xl font-bold">Hotel Supplies</span>
-      </div>
+{% endblock %}
 
-      <!-- Hamburger Menu Button (Visible on Small Screens) -->
-      <button
-        class="block md:hidden text-white focus:outline-none"
-        id="menu-toggle"
-        aria-label="Toggle navigation"
-      >
-        <svg
-          class="h-6 w-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          ></path>
-        </svg>
-      </button>
-
-      <!-- Navigation Buttons (Hidden on Small Screens) -->
-      <div class="tab-navigation hidden md:flex md:gap-4">
-        <button
-          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-        >
-          Product Management
-        </button>
-        <button
-          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-        >
-          Logistics
-        </button>
-        <button
-          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-        >
-          Competitors
-        </button>
-        <button
-          class="tab-button font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-        >
-          Order History
-        </button>
-      </div>
-
-      <!-- User Welcome Section -->
-      <div class="user-welcome flex items-center text-sm">
-        Welcome, User
-        <div class="ml-2 text-lg">👤</div>
-      </div>
-
-      <!-- Mobile Menu (Visible on Small Screens when Toggled) -->
-      <div class="w-full md:hidden hidden" id="mobile-menu">
-        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <button
-            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-          >
-            Product Management
-          </button>
-          <button
-            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-          >
-            Logistics
-          </button>
-          <button
-            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-          >
-            Competitors
-          </button>
-          <button
-            class="block w-full text-left font-bold text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
-          >
-            Order History
-          </button>
-        </div>
-      </div>
-    </header>
-
+{% block content %}
     {% if product %}
-    <main class="p-5">
-      <div class="flex flex-wrap -mx-2">
-        <div class="w-full md:w-2/3 px-2 mb-4">
-          <div class="bg-white p-5 shadow rounded">
-            <!-- Left Column Content -->
-            <div class="mb-4">
-              <label
-                for="supplier"
-                class="block text-gray-700 text-sm font-bold mb-2"
-                >Supplier</label
-              >
-              <input
-                type="text"
-                id="supplier"
-                name="supplier"
-                value="{{ supplier_name }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-            </div>
-            <div class="mb-4">
-              <label
-                for="parent-product"
-                class="block text-gray-700 text-sm font-bold mb-2"
-                >Parent Product</label
-              >
-              <input
-                type="text"
-                id="parent-product"
-                name="parent_product"
-                value="{{ product.parent_product }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-            </div>
-            <div class="mb-4">
-              <label
-                for="title"
-                class="block text-gray-700 text-sm font-bold mb-2"
-                >Product Title</label
-              >
-              <input
-                type="text"
-                id="product_title"
-                name="product_title"
-                value="{{ generated_product_title }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-            </div>
-            <div class="mb-4">
-              <label
-                for="category"
-                class="block text-gray-700 text-sm font-bold mb-2"
-                >Category</label
-              >
-              <input
-                type="text"
-                id="category"
-                name="category"
-                value="{{ category_urls }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-              <!-- <select
-                id="category"
-                name="category"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              >
-                Category Options
-              </select> -->
-            </div>
-            <div class="mb-4">
-              <label
-                for="meta title"
-                class="block text-gray-700 text-sm font-bold mb-2"
-                >Meta Title</label
-              >
-              <input
-                type="text"
-                id="meta-title"
-                name="meta_title"
-                value="{{ generated_meta_title }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-            </div>
-            <div class="mb-4">
-              <label
-                for="meta-keyword"
-                class="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Meta Key Word</label
-              >
-              <input
-                type="text"
-                id="meta-keyword"
-                name="meta_keyword"
-                value="{{ generated_keywords }}"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-            </div>
-            <div class="mb-4">
-              <label
-                for="meta descriptiom"
-                class="block text-gray-700 text-sm font-bold mb-2"
-                >Meta Descriptiom</label
-              >
-              <input
-                type="text"
-                id="meta_description"
-                name="meta_descriptiom"
-                value="{{ generated_meta_description }}</textarea>"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                readonly
-              />
-            </div>
-          </div>
-        </div>
-        <div class="w-full md:w-1/3 px-2 mb-4">
-          <div class="bg-white p-5 shadow rounded">
-            <!-- Right Column Content -->
-            <div class="mb-4">
-              <!-- Image Upload and Product Details Here -->
-              <h3 class="font-bold text-xl mb-3">Images</h3>
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Upload Images
-              </button>
-              <div class="mb-4">
-                <label
-                  for="alt images"
-                  class="block text-gray-700 text-sm font-bold mb-2"
-                  >alt images</label
-                >
-                <textarea
-                  id="Alt images"
-                  name="alt_images"
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-{{ generated_alt_image_descriptions }}</textarea
-                >
-              </div>
-              <!-- Text Area for Product Descriptions -->
-              <div class="mt-4">
-                <label
-                  for="product-description"
-                  class="block text-gray-700 text-sm font-bold mb-2"
-                  >Product Description</label
-                >
-                <textarea
-                  id="product-description"
-                  name="Description"
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-{{ generated_description }}</textarea
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Product Variants Table -->
-      <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded overflow-x-auto">
-          <h3 class="font-bold text-xl mb-3">Product Variants</h3>
-          <table class="table-auto w-full mb-4 text-sm md:text-base">
-            <thead>
-              <tr class="bg-blue-500 text-white">
-                <th class="px-2 py-1 md:px-4 md:py-2">Title</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">SKU</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Type</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Size</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Weight</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Color</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">QTY</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Cost Per Each</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Cost Per Case</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Image</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for child in product['variants'] %}
-              <tr>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['title']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child.get('sku') }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['type']|remove_none_str}}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child.get('size') }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['weight']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child.get('color', 'N/A') }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['case_qty']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {% if child['each_cost'] %}${% endif %} {{
-                  child['each_cost']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {% if child['case_cost'] %} $ {% endif %} {{
-                  child['case_cost']|remove_none_str }}
-                </td>
-                <td class="border px-2 py-1 md:px-4 md:py-2">
-                  {% if child.get('images') %} {% for image in
-                  child['images']|format_images %}
-                  <div class="mb-2">
-                    <a href="{{ image }}" target="_blank">
-                      <img
-                        src="{{ image }}"
-                        alt="Product Image"
-                        class="h-12 md:h-16"
-                        title="{{ image }}"
-                      />
-                    </a>
-                  </div>
-                  {% endfor %} {% else %}
-                  <i class="fas fa-image"></i>
-                  {% endif %}
-                </td>
-                <td class="border px-2 py-1 md:px-4 md:py-2">
-                  <a href="{{ child.get('url') }}" target="_blank">
-                    <i class="fas fa-eye" title="View Similar Products"></i>
-                  </a>
-                  <!-- Edit product icon -->
-                  <i class="fas fa-pen" title="Edit Product"></i>
-                  <!-- Hide product icon -->
-                  {% if child.get('active') %}
-                  <i class="fas fa-toggle-on" title="Hide Product"></i>
-                  {% else %}
-                  <i class="fas fa-toggle-off" title="Hide Product"></i>
-                  {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Product Logistics Table -->
-      <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded overflow-x-auto">
-          <h3 class="font-bold text-xl mb-3">Logistics</h3>
-          <table class="table-auto w-full mb-4 text-sm md:text-base">
-            <thead class="bg-blue-500 text-white">
-              <tr>
-                <th class="px-2 py-1 md:px-4 md:py-2">SKU</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Case Quantity</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Case Length</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Case Width</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Case Height</th>
-                <th class="px-2 py-1 md:px-4 md:py-2">Case Weight</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for child in product['variants'] %}
-              <tr>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['sku'] }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['case_qty']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['case_length']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['case_width']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['case_height']|remove_none_str }}
-                </td>
-                <td
-                  class="border px-2 py-1 md:px-4 md:py-2"
-                  contenteditable="true"
-                >
-                  {{ child['case_weight']|remove_none_str }}
-                </td>
-              </tr>
-              {% else %}
-              <tr>
-                <td
-                  colspan="6"
-                  class="border px-2 py-1 md:px-4 md:py-2 text-center"
-                >
-                  No child products found.
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Product Compeitors Table -->
-      <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded">
-          <h3 class="font-bold text-xl mb-3">Competitors Data</h3>
-          {% if competitor_data %}
-          <div class="overflow-auto">
-            <table class="table-auto w-full">
-              <thead class="bg-blue-500 text-white">
-                <tr>
-                  <!-- Generate table headers dynamically -->
-                  {% for key, _ in competitor_data[0].items() %}
-                  <th class="px-4 py-2">{{ key|replace("_", " ")|title }}</th>
-                  {% endfor %}
-                </tr>
-              </thead>
-              <tbody>
-                {% for product in competitor_data %}
-                <tr>
-                  <!-- Populate table rows dynamically -->
-                  {% for _key, value in product.items() %} {% if _key ==
-                  'images' %}
-                  <td class="border px-4 py-2">
-                    {% if product['images'] %} {% for image in product['images']
-                    %}
-                    <div class="mb-2">
-                      <a href="{{ image }}" target="_blank">
-                        <img
-                          src="{{ image }}"
-                          alt="Product Image"
-                          style="height: 50px"
-                          title="{{ image }}"
-                        />
-                      </a>
-                    </div>
-                    {% endfor %} {% else %}
-                    <i class="fas fa-image"></i>
-                    {% endif %}
-                  </td>
-                  {% elif _key == 'url' %}
-                  <td class="border px-4 py-2">
-                    <a href="{{ value }}" target="_blank">View</a>
-                  </td>
-                  {% else %}
-                  <td
-                    class="border px-4 py-2"
-                    style="min-width: 
-                                    {% if _key == 'title' or
-                                        _key == 'description' %}
-                                        400px 
-                                    {% endif %}"
+        <main class="p-5">
+          <div class="flex flex-wrap -mx-2">
+            <div class="w-full md:w-2/3 px-2 mb-4">
+              <div class="bg-white p-5 shadow rounded">
+                <!-- Left Column Content -->
+                <div class="mb-4">
+                  <label
+                    for="supplier"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Supplier</label
                   >
-                    {{ value }}
-                  </td>
-                  {% endif %} {% endfor %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          {% else %}
-          <p>No competitor data found for this product.</p>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Product Order History -->
-      <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded overflow-x-auto">
-          <h3 class="font-bold text-xl mb-3">Order History</h3>
-          <table class="table-auto w-full mb-4">
-            <thead class="bg-blue-500 text-white">
-              <tr class="bg-blue-500 text-white">
-                <th class="px-4 py-2">SKU</th>
-                <th class="px-4 py-2">Number of Orders</th>
-                <th class="px-4 py-2">Quantity Sold</th>
-                <th class="px-4 py-2">Days Since Last Sold</th>
-                <th class="px-4 py-2">Selling Price</th>
-                <th class="px-4 py-2">Purchase Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for child in orders_data %}
-              <tr>
-                <td class="border px-4 py-2" contenteditable="true">
-                  {{ child['sku'] }}
-                </td>
-                <td class="border px-4 py-2">{{ child['num_orders'] }}</td>
-                <td class="border px-4 py-2">{{ child['qty_sold'] }}</td>
-                <td class="border px-4 py-2">
-                  {{ child['days_since_last_sold'] }}
-                </td>
-                <td class="border px-4 py-2">{{ child['selling_price'] }}</td>
-                <td class="border px-4 py-2">{{ child['purchase_date'] }}</td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="10">No child products found.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- KeyWord Analytics -->
-      <div class="mt-8">
-        <div class="bg-white p-5 shadow rounded overflow-x-auto">
-          <div class="flex d-flex justify-between items-center mb-4">
-            <h3 class="font-bold text-xl mb-3">Product Search Performance</h3>
-            <!-- <div
-              id="reportrange"
-              class="bg-white p-2 rounded border border-gray-300"
-            >
-              <i class="fa fa-calendar"></i>&nbsp; <span></span>
-              <i class="fa fa-caret-down"></i>
-            </div> -->
-          </div>
-
-          <!-- Tabs -->
-          <div class="mb-4 border-b border-gray-200">
-            <ul class="flex space-x-4">
-              {% if product_url %}
-              <li>
-                <button
-                  class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
-                  onclick="switchTab('url')"
-                >
-                  URLs
-                </button>
-              </li>
-              {% endif %} {% if category_urls %}
-              <li>
-                <button
-                  class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
-                  onclick="switchTab('type-category')"
-                >
-                  Type Category
-                </button>
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-          <!-- Tab Content -->
-          {% if product_url %}
-          <div id="url" class="tab-content">
-            <label class="block mb-4 text-gray-700 font-semibold"
-              >URL:
-              <a
-                href="https://www.hotels4humanity.com{{ product_url }}"
-                target="_blank"
-                class="text-blue-500 hover:underline"
-                >{{ product_url }}</a
-              >
-            </label>
-          </div>
-          {% endif %} {% if category_urls %}
-          <div id="type-category" class="tab-content hidden">
-            <label class="block mb-4 text-gray-700 font-semibold">
-              Categories URL:<br />
-              {% for category in category_urls.split(', ') %} {{ loop.index }}.
-              <a
-                href="https://www.hotels4humanity.com{{ category }}"
-                target="_blank"
-                class="text-blue-500 hover:underline"
-                >{{ category }}</a
-              >
-              {% endfor %}
-            </label>
-          </div>
-          {% endif %}
-          <!-- Table for Google Analytics Data -->
-          <div class="relative">
-            <!-- Loader -->
-            <div id="table-loader" class="absolute inset-0 flex justify-center items-start bg-gray-100 bg-opacity-50 z-10" style="display: none;">
-              <span class="text-black text-lg absolute top-40">Loading data...</span>
+                  <input
+                    type="text"
+                    id="supplier"
+                    name="supplier"
+                    value="{{ supplier_name }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                </div>
+                <div class="mb-4">
+                  <label
+                    for="parent-product"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Parent Product</label
+                  >
+                  <input
+                    type="text"
+                    id="parent-product"
+                    name="parent_product"
+                    value="{{ product.parent_product }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                </div>
+                <div class="mb-4">
+                  <label
+                    for="title"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Product Title</label
+                  >
+                  <input
+                    type="text"
+                    id="product_title"
+                    name="product_title"
+                    value="{{ generated_product_title }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                </div>
+                <div class="mb-4">
+                  <label
+                    for="category"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Category</label
+                  >
+                  <input
+                    type="text"
+                    id="category"
+                    name="category"
+                    value="{{ category_urls }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                  <!-- <select
+                    id="category"
+                    name="category"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  >
+                    Category Options
+                  </select> -->
+                </div>
+                <div class="mb-4">
+                  <label
+                    for="meta title"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Meta Title</label
+                  >
+                  <input
+                    type="text"
+                    id="meta-title"
+                    name="meta_title"
+                    value="{{ generated_meta_title }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                </div>
+                <div class="mb-4">
+                  <label
+                    for="meta-keyword"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Meta Key Word</label
+                  >
+                  <input
+                    type="text"
+                    id="meta-keyword"
+                    name="meta_keyword"
+                    value="{{ generated_keywords }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                </div>
+                <div class="mb-4">
+                  <label
+                    for="meta descriptiom"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    >Meta Descriptiom</label
+                  >
+                  <input
+                    type="text"
+                    id="meta_description"
+                    name="meta_descriptiom"
+                    value="{{ generated_meta_description }}</textarea>"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    readonly
+                  />
+                </div>
+              </div>
             </div>
-            <table class="table-auto w-full mb-4" id="gsc_data_table">
-            <thead class="bg-blue-500 text-white text-center">
-              <tr>
-                <th class="px-4 py-2">Page</th>
-                <th class="px-4 py-2">Query (Keyword)</th>
-                <th class="px-4 py-2">Clicks</th>
-                <th class="px-4 py-2">Impressions</th>
-                <th class="px-4 py-2">CTR (%)</th>
-                <th class="px-4 py-2">Position</th>
-              </tr>
-            </thead>
-            <tbody id="gsc_data_tbody">
-              <!-- Table Data will be populated here -->
-            </tbody>
-          </table>
+            <div class="w-full md:w-1/3 px-2 mb-4">
+              <div class="bg-white p-5 shadow rounded">
+                <!-- Right Column Content -->
+                <div class="mb-4">
+                  <!-- Image Upload and Product Details Here -->
+                  <h3 class="font-bold text-xl mb-3">Images</h3>
+                  <button
+                    class="tab-button text-white text-lg px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-900 transition-colors"
+
+                  >
+                  <i class="fas fa-upload"></i>
+                    Upload Images
+                  </button>
+                  <div class="mb-4 mt-2">
+                    <label
+                      for="alt images"
+                      class="block text-gray-700 text-sm font-bold mb-2"
+                      >alt images</label
+                    >
+                    <textarea
+                      id="Alt images"
+                      name="alt_images"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+    {{ generated_alt_image_descriptions }}</textarea
+                    >
+                  </div>
+                  <!-- Text Area for Product Descriptions -->
+                  <div class="mt-4">
+                    <label
+                      for="product-description"
+                      class="block text-gray-700 text-sm font-bold mb-2"
+                      >Product Description</label
+                    >
+                    <textarea
+                      id="product-description"
+                      name="Description"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+    {{ generated_description }}</textarea
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+          <!-- Product Variants Table -->
+          <div class="mt-8">
+            <div class="bg-white p-5 shadow rounded overflow-x-auto">
+              <h3 class="font-bold text-xl mb-3">Product Variants</h3>
+              <table class="table-auto w-full mb-4 text-sm md:text-base">
+                <thead>
+                  <tr class="bg-gray-800 text-white">
+                    <th class="px-2 py-1 md:px-4 md:py-2">Title</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">SKU</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Type</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Size</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Weight</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Color</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">QTY</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Cost Per Each</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Cost Per Case</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Image</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for child in product['variants'] %}
+                  <tr>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['title']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child.get('sku') }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['type']|remove_none_str}}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child.get('size') }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['weight']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child.get('color', 'N/A') }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['case_qty']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {% if child['each_cost'] %}${% endif %} {{
+                      child['each_cost']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {% if child['case_cost'] %} $ {% endif %} {{
+                      child['case_cost']|remove_none_str }}
+                    </td>
+                    <td class="border px-2 py-1 md:px-4 md:py-2">
+                      {% if child.get('images') %} {% for image in
+                      child['images']|format_images %}
+                      <div class="mb-2">
+                        <a href="{{ image }}" target="_blank">
+                          <img
+                            src="{{ image }}"
+                            alt="Product Image"
+                            class="h-12 md:h-16"
+                            title="{{ image }}"
+                          />
+                        </a>
+                      </div>
+                      {% endfor %} {% else %}
+                      <i class="fas fa-image"></i>
+                      {% endif %}
+                    </td>
+                    <td class="border px-2 py-1 md:px-4 md:py-2">
+                      <a href="{{ child.get('url') }}" target="_blank">
+                        <i class="fas fa-eye" title="View Similar Products"></i>
+                      </a>
+                      <!-- Edit product icon -->
+                      <i class="fas fa-pen" title="Edit Product"></i>
+                      <!-- Hide product icon -->
+                      {% if child.get('active') %}
+                      <i class="fas fa-toggle-on" title="Hide Product"></i>
+                      {% else %}
+                      <i class="fas fa-toggle-off" title="Hide Product"></i>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      <!-- Navigation Buttons -->
-      <div class="flex justify-start space-x-4 mt-4">
-        <!-- Previous Button (page decreases by 1) -->
-        <a
-          href="{{ url_for('main.product_management', page=page-1 if page > 1 else 1, supplier=supplier) }}"
-          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded {{ 'opacity-50 cursor-not-allowed' if page <= 1 else '' }}"
-          {% if page <= 1 %} disabled {% endif %}
-        >
-          Previous
-        </a>
+          <!-- Product Logistics Table -->
+          <div class="mt-8">
+            <div class="bg-white p-5 shadow rounded overflow-x-auto">
+              <h3 class="font-bold text-xl mb-3">Logistics</h3>
+              <table class="table-auto w-full mb-4 text-sm md:text-base">
+                <thead>
+                  <tr class="bg-gray-800 text-white">
+                    <th class="px-2 py-1 md:px-4 md:py-2">SKU</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Case Quantity</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Case Length</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Case Width</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Case Height</th>
+                    <th class="px-2 py-1 md:px-4 md:py-2">Case Weight</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for child in product['variants'] %}
+                  <tr>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['sku'] }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['case_qty']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['case_length']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['case_width']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['case_height']|remove_none_str }}
+                    </td>
+                    <td
+                      class="border px-2 py-1 md:px-4 md:py-2"
+                      contenteditable="true"
+                    >
+                      {{ child['case_weight']|remove_none_str }}
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td
+                      colspan="6"
+                      class="border px-2 py-1 md:px-4 md:py-2 text-center"
+                    >
+                      No child products found.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-        <!-- Next Button (page increases by 1) -->
-        <a
-          href="{{ url_for('main.product_management', page=page+1, supplier=supplier) }}"
-          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Next
-        </a>
-      </div>
-    </main>
+          <!-- Product Compeitors Table -->
+          <div class="mt-8">
+            <div class="bg-white p-5 shadow rounded">
+              <h3 class="font-bold text-xl mb-3">Competitors Data</h3>
+              {% if competitor_data %}
+              <div class="overflow-auto">
+                <table class="table-auto w-full">
+                  <thead>
+                    <tr  class="bg-gray-800 text-white">
+                      <!-- Generate table headers dynamically -->
+                      {% for key, _ in competitor_data[0].items() %}
+                      <th class="px-4 py-2">{{ key|replace("_", " ")|title }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for product in competitor_data %}
+                    <tr>
+                      <!-- Populate table rows dynamically -->
+                      {% for _key, value in product.items() %} {% if _key ==
+                      'images' %}
+                      <td class="border px-4 py-2">
+                        {% if product['images'] %} {% for image in product['images']
+                        %}
+                        <div class="mb-2">
+                          <a href="{{ image }}" target="_blank">
+                            <img
+                              src="{{ image }}"
+                              alt="Product Image"
+                              style="height: 50px"
+                              title="{{ image }}"
+                            />
+                          </a>
+                        </div>
+                        {% endfor %} {% else %}
+                        <i class="fas fa-image"></i>
+                        {% endif %}
+                      </td>
+                      {% elif _key == 'url' %}
+                      <td class="border px-4 py-2">
+                        <a href="{{ value }}" target="_blank">View</a>
+                      </td>
+                      {% else %}
+                      <td
+                        class="border px-4 py-2"
+                        style="min-width: 
+                                        {% if _key == 'title' or
+                                            _key == 'description' %}
+                                            400px 
+                                        {% endif %}"
+                      >
+                        {{ value }}
+                      </td>
+                      {% endif %} {% endfor %}
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p>No competitor data found for this product.</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Product Order History -->
+          <div class="mt-8">
+            <div class="bg-white p-5 shadow rounded overflow-x-auto">
+              <h3 class="font-bold text-xl mb-3">Order History</h3>
+              <table class="table-auto w-full mb-4">
+                <thead>
+                  <tr class="bg-gray-800 text-white">
+                    <th class="px-4 py-2">SKU</th>
+                    <th class="px-4 py-2">Number of Orders</th>
+                    <th class="px-4 py-2">Quantity Sold</th>
+                    <th class="px-4 py-2">Days Since Last Sold</th>
+                    <th class="px-4 py-2">Selling Price</th>
+                    <th class="px-4 py-2">Purchase Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for child in orders_data %}
+                  <tr>
+                    <td class="border px-4 py-2" contenteditable="true">
+                      {{ child['sku'] }}
+                    </td>
+                    <td class="border px-4 py-2">{{ child['num_orders'] }}</td>
+                    <td class="border px-4 py-2">{{ child['qty_sold'] }}</td>
+                    <td class="border px-4 py-2">
+                      {{ child['days_since_last_sold'] }}
+                    </td>
+                    <td class="border px-4 py-2">{{ child['selling_price'] }}</td>
+                    <td class="border px-4 py-2">{{ child['purchase_date'] }}</td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td colspan="10">No child products found.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- KeyWord Analytics -->
+          <div class="mt-8">
+            <div class="bg-white p-5 shadow rounded overflow-x-auto">
+              <div class="flex d-flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl mb-3">Product Search Performance</h3>
+                <!-- <div
+                  id="reportrange"
+                  class="bg-white p-2 rounded border border-gray-300"
+                >
+                  <i class="fa fa-calendar"></i>&nbsp; <span></span>
+                  <i class="fa fa-caret-down"></i>
+                </div> -->
+              </div>
+
+              <!-- Tabs -->
+              <div class="mb-4 border-b border-gray-200">
+                <ul class="flex space-x-4">
+                  {% if product_url %}
+                  <li>
+                    <button
+                      class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
+                      onclick="switchTab('url')"
+                    >
+                      URLs
+                    </button>
+                  </li>
+                  {% endif %} {% if category_urls %}
+                  <li>
+                    <button
+                      class="text-gray-700 hover:text-gray-900 p-2 border-b-2 border-transparent focus:border-blue-500 focus:outline-none"
+                      onclick="switchTab('type-category')"
+                    >
+                      Type Category
+                    </button>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+              <!-- Tab Content -->
+              {% if product_url %}
+              <div id="url" class="tab-content">
+                <label class="block mb-4 text-gray-700 font-semibold"
+                  >URL:
+                  <a
+                    href="https://www.hotels4humanity.com{{ product_url }}"
+                    target="_blank"
+                    class="text-blue-500 hover:underline"
+                    >{{ product_url }}</a
+                  >
+                </label>
+              </div>
+              {% endif %} {% if category_urls %}
+              <div id="type-category" class="tab-content hidden">
+                <label class="block mb-4 text-gray-700 font-semibold">
+                  Categories URL:<br />
+                  {% for category in category_urls.split(', ') %} {{ loop.index }}.
+                  <a
+                    href="https://www.hotels4humanity.com{{ category }}"
+                    target="_blank"
+                    class="text-blue-500 hover:underline"
+                    >{{ category }}</a
+                  >
+                  {% endfor %}
+                </label>
+              </div>
+              {% endif %}
+              <!-- Table for Google Analytics Data -->
+              <div class="relative">
+                <!-- Loader -->
+                <div id="table-loader" class="absolute inset-0 flex justify-center items-start bg-gray-100 bg-opacity-50 z-10" style="display: none;">
+                  <span class="text-black text-lg absolute top-40">Loading data...</span>
+                </div>
+                <table class="table-auto w-full mb-4" id="gsc_data_table">
+                <thead>
+                  <tr class="bg-gray-800 text-white text-center">
+                    <th class="px-4 py-2">Page</th>
+                    <th class="px-4 py-2">Query (Keyword)</th>
+                    <th class="px-4 py-2">Clicks</th>
+                    <th class="px-4 py-2">Impressions</th>
+                    <th class="px-4 py-2">CTR (%)</th>
+                    <th class="px-4 py-2">Position</th>
+                  </tr>
+                </thead>
+                <tbody id="gsc_data_tbody">
+                  <!-- Table Data will be populated here -->
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-center space-x-4 mt-4 mb-4">
+            <!-- Previous Button (page decreases by 1) -->
+            <a
+              href="{{ url_for('main.product_management', page=page-1 if page > 1 else 1, supplier=supplier) }}"
+              class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded {{ 'opacity-50 cursor-not-allowed' if page <= 1 else '' }}"
+              {% if page <= 1 %} disabled {% endif %}
+            >
+              Previous
+            </a>
+
+            <!-- Next Button (page increases by 1) -->
+            <a
+              href="{{ url_for('main.product_management', page=page+1, supplier=supplier) }}"
+              class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Next Product
+            </a>
+          </div>
+        </main>
     {% else %}
-    <p>No parent product selected or found.</p>
+        <p>No parent product selected or found.</p>
     {% endif %}
-  </body>
-  <script
-    type="text/javascript"
-    src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"
-  ></script>
+{% endblock %}
 
-  <!-- Load DataTables -->
-  <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-
-  <script
-    type="text/javascript"
-    src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
-  ></script>
-  <script
-    type="text/javascript"
-    src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
-  ></script>
+{% block scripts %}
   <script type="text/javascript">
     let gsc_filter_from = "{{ gsc_filter_from }}";
     let gsc_filter_to = "{{ gsc_filter_to }}";
@@ -779,15 +654,6 @@
 
     // Initialize the DateRangePicker and Load the DataTable with the initial data
     $(function () {
-      // Check if the product URL is available
-      // if (product_url !== "None" && product_url) {
-      //   search_value = product_url;
-      //   switchTab("url");
-      // } else if (category_urls) {
-      //     search_value = category_urls;
-      //     switchTab("type-category");
-      //   }
-
       var start = moment(gsc_filter_from);
       var end = moment(gsc_filter_to);
 
@@ -893,4 +759,4 @@
       }
     }
   </script>
-</html>
+{% endblock %}
