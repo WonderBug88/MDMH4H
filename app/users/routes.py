@@ -48,7 +48,9 @@ def login():
 @user_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        first_name, last_name = request.form.get('name', '').split(' ')
+        name = request.form.get('name', '').split(' ')
+        first_name = name[0] if len(name) > 0 else ''
+        last_name = name[1] if len(name) > 1 else ''
         password = request.form.get('password')
         email = request.form.get('email')
         username = request.form.get('username')
