@@ -32,6 +32,17 @@ class DataRetriever:
         """Close the database connection."""
         close_connection(self.conn, self.cursor)
 
+    def commit(self):
+        """Commit the transaction."""
+        self.conn.commit()
+
+    def execute_commit_query(self, query, params=None):
+        """Execute the SQL query."""
+        self.connect()
+        self.cursor.execute(query, params)
+        self.commit()
+        self.close()
+
     def execute_query(self, query, limit=None, offset=None):
         """Execute the SQL query."""
 
@@ -53,11 +64,20 @@ class DataRetriever:
         self.close()
         return result
 
-    def get_one(self, query):
+    def get_one(self, query, params=None):
         """Return a single row as a dictionary."""
         self.connect()
-        self.cursor.execute(query)
+        self.cursor.execute(query, params)
         columns = [col[0] for col in self.cursor.description]
         result = dict(zip(columns, self.cursor.fetchone()))
+        self.close()
+        return result
+
+    # function to check if enetry exists in database
+    def check_if_exists(self, query, params=None):
+        """Check if a record exists in the database."""
+        self.connect()
+        self.cursor.execute(query, params)
+        result = self.cursor.fetchone()
         self.close()
         return result

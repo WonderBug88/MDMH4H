@@ -64,8 +64,11 @@ def index():
         #     "table": "products"
         # }
     ]
-
-    return render_template('index.html', brands=schmas)
+    if 'logged_in' not in session:
+        return redirect(url_for('user.login'))
+    return render_template('index.html', brands=schmas,
+                           name=session.get('name')
+                           )
 
 
 @main_bp.route('/product-management', methods=['GET'])
@@ -89,7 +92,8 @@ def product_management():
 
         limit = 1
         offset = (current_page - 1) * limit
-        brand_products = DataRetriever(schema=brand_id).query(query, limit, offset)
+        brand_products = DataRetriever(
+            schema=brand_id).query(query, limit, offset)
         if not brand_products:
             flash(f'No products found for {brand_id}', 'error')
             return redirect(url_for('main.index'))
@@ -118,7 +122,7 @@ def product_management():
         parent_product_sku = variants[0].get('sku', '') if variants else ''
         parent_product_description = variants[0]['description'] if variants else 'No description available'
         product_url = variants[0].get('custom_url', '') if variants else ''
-        category_urls=''
+        category_urls = ''
         # product_category = variants[0].get('category', '') if variants else '' # As of now, category is not available for every supplier
         # product_subcategories = list({variant.get('sub_category', '') for variant in variants if variant.get('sub_category')})
 
@@ -173,7 +177,8 @@ def product_management():
                                competitor_data=competitor_data,
                                gsc_filter_from=gsc_filter_from,
                                gsc_filter_to=gsc_filter_to,
-                               orders_data=orders_data
+                               orders_data=orders_data,
+                               name = session.get('name')
                                )
     except Exception as e:
         logging.error(f"Error in product_management: {e}")

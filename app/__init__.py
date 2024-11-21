@@ -28,7 +28,11 @@ def create_app(config_class=load_config[Config.FLASK_ENV]):
 
     # Register Blueprints
     from app.main.routes import main_bp
+    from app.pam.routes import pam_bp
+    from app.users.routes import user_bp
     app.register_blueprint(main_bp)
+    app.register_blueprint(pam_bp)
+    app.register_blueprint(user_bp)
 
     # Configure APScheduler
     scheduler = BackgroundScheduler()
