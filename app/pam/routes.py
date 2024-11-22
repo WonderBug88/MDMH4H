@@ -36,8 +36,8 @@ def pam_main():
     SELECT 
         brand_name, 
         category_name, 
-        ARRAY_AGG(product_name) AS product_names,
-        COUNT(product_name) AS total_products
+        ARRAY_AGG(DISTINCT product_name) AS product_names, -- Ensuring unique product names
+        COUNT(DISTINCT product_name) AS total_products -- Ensuring count matches unique products
     FROM product_categories
     WHERE product_name ILIKE '%%{search}%%' OR 
     category_name ILIKE '%%{search}%%' OR 
