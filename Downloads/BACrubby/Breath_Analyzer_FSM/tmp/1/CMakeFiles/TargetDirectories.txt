@@ -1,0 +1,7 @@
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/database.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/Breath_Analyzer_PY32F003x8+Target.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/Group_Src.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/Group_HAL_Drivers_Src.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/Puya_Device_Startup_1_0_0.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/edit_cache.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/1/CMakeFiles/rebuild_cache.dir

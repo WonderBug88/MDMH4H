@@ -1,0 +1,152 @@
+project:
+  packs:
+    - pack: Puya::PY32F0xx_DFP
+    - pack: ARM::CMSIS
+    - pack: ARM::CMSIS-NN
+    - pack: ARM::CMSIS-DSP
+  setups:
+    - setup: Options for Target_1
+      add-path:
+        - Inc
+        - Drivers/PY32F0xx_HAL_Driver/Inc
+      debug: "on"
+      define:
+        - USE_HAL_DRIVER
+        - PY32F003x8
+      misc:
+        - C:
+            - -std=c99
+          C-CPP:
+            - -fno-rtti
+            - -funsigned-char
+            - -fshort-enums
+            - -fshort-wchar
+            - -ffunction-sections
+            - -Wall
+            - -Wextra
+            - -Wno-packed
+            - -Wno-reserved-id-macro
+            - -Wno-unused-macros
+            - -Wno-documentation-unknown-command
+            - -Wno-documentation
+            - -Wno-license-management
+            - -Wno-parentheses-equality
+          CPP:
+            - -xc++
+            - -std=c++11
+          ASM:
+            - -masm=auto
+          Link:
+            - --map
+            - --load_addr_map_info
+            - --xref
+            - --callgraph
+            - --symbols
+            - --info sizes
+            - --info totals
+            - --info unused
+            - --info veneers
+            - --strict
+            - --summary_stderr
+            - --info summarysizes
+  groups:
+    - group: Src
+      files:
+        - file: Src/fonts.c
+        - file: Src/main.c
+        - file: Src/init.c
+        - file: Src/py32f0xx_hal_msp.c
+        - file: Src/py32f0xx_it.c
+        - file: Src/ssd1306.c
+        - file: Src/oled.c
+        - file: Src/button.c
+        - file: Src/led.c
+        - file: Src/mq303b.c
+        - file: Src/fsm.c
+        - file: Src/motor.c
+    - group: HAL_Drivers/Inc
+      files:
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_adc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_adc_ex.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_comp.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_cortex.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_crc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_def.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_exti.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_gpio.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_gpio_ex.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_i2c.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_led.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_pwr.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_rcc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_tim.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_uart.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_adc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_bus.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_comp.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_cortex.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_crc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_dma.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_exti.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_gpio.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_i2c.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_iwdg.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_led.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_lptim.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_pwr.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_rcc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_rtc.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_spi.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_system.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_tim.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_dma.h
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_tim_ex.h
+    - group: HAL_Drivers/Src
+      files:
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_adc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_adc_ex.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_comp.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_cortex.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_crc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_exti.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_gpio.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_i2c.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_led.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_pwr.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_rcc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_tim.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_uart.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_adc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_comp.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_crc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_dma.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_exti.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_gpio.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_i2c.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_led.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_lptim.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_pwr.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_rcc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_rtc.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_spi.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_tim.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_dma.c
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_tim_ex.c
+    - group: Inc
+      files:
+        - file: Inc/fonts.h
+        - file: Inc/init.h
+        - file: Inc/py32f0xx_hal_conf.h
+        - file: Inc/py32f0xx_it.h
+        - file: Inc/ssd1306.h
+        - file: Inc/oled.h
+        - file: Inc/button.h
+        - file: Inc/led.h
+        - file: Inc/mq303b.h
+        - file: Inc/fsm.h
+        - file: Inc/motor.h
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: Puya::Device:Startup

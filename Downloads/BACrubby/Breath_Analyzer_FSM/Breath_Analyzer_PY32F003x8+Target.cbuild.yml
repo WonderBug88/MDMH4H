@@ -1,0 +1,339 @@
+build:
+  generated-by: csolution version 2.6.0
+  solution: Breath_Analyzer_PY32F003x8.csolution.yml
+  project: Breath_Analyzer_PY32F003x8.cproject.yml
+  context: Breath_Analyzer_PY32F003x8+Target
+  compiler: AC6
+  device: Puya::PY32F003x8
+  device-pack: Puya::PY32F0xx_DFP@1.2.2
+  processor:
+    endian: little
+    fpu: off
+    core: Cortex-M0+
+  packs:
+    - pack: ARM::CMSIS@6.1.0
+      path: ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0
+    - pack: Puya::PY32F0xx_DFP@1.2.2
+      path: ${CMSIS_PACK_ROOT}/Puya/PY32F0xx_DFP/1.2.2
+  optimize: debug
+  debug: on
+  misc:
+    ASM:
+      - -masm=auto
+    C:
+      - -std=c99
+      - -fno-rtti
+      - -funsigned-char
+      - -fshort-enums
+      - -fshort-wchar
+      - -ffunction-sections
+      - -Wall
+      - -Wextra
+      - -Wno-packed
+      - -Wno-reserved-id-macro
+      - -Wno-unused-macros
+      - -Wno-documentation-unknown-command
+      - -Wno-documentation
+      - -Wno-license-management
+      - -Wno-parentheses-equality
+    CPP:
+      - -xc++
+      - -std=c++11
+      - -fno-rtti
+      - -funsigned-char
+      - -fshort-enums
+      - -fshort-wchar
+      - -ffunction-sections
+      - -Wall
+      - -Wextra
+      - -Wno-packed
+      - -Wno-reserved-id-macro
+      - -Wno-unused-macros
+      - -Wno-documentation-unknown-command
+      - -Wno-documentation
+      - -Wno-license-management
+      - -Wno-parentheses-equality
+    Link:
+      - --map
+      - --load_addr_map_info
+      - --xref
+      - --callgraph
+      - --symbols
+      - --info sizes
+      - --info totals
+      - --info unused
+      - --info veneers
+      - --strict
+      - --summary_stderr
+      - --info summarysizes
+  define:
+    - USE_HAL_DRIVER
+    - PY32F003x8
+    - _RTE_
+  define-asm:
+    - _RTE_
+  add-path:
+    - Inc
+    - Drivers/PY32F0xx_HAL_Driver/Inc
+    - RTE/_Target
+    - ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Core/Include
+    - ${CMSIS_PACK_ROOT}/Puya/PY32F0xx_DFP/1.2.2/Drivers/CMSIS/Device/PY32F0xx/Include
+  add-path-asm:
+    - RTE/_Target
+    - ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Core/Include
+    - ${CMSIS_PACK_ROOT}/Puya/PY32F0xx_DFP/1.2.2/Drivers/CMSIS/Device/PY32F0xx/Include
+  output-dirs:
+    intdir: tmp
+    outdir: out/Breath_Analyzer_PY32F003x8/Target
+    rtedir: RTE
+  output:
+    - type: elf
+      file: Breath_Analyzer_PY32F003x8.axf
+  components:
+    - component: ARM::CMSIS:CORE@6.1.0
+      condition: ARMv6_7_8-M Device
+      from-pack: ARM::CMSIS@6.1.0
+      selected-by: ARM::CMSIS:CORE
+      files:
+        - file: ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Core/Include
+          category: include
+          version: 6.1.0
+        - file: ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Core/Include/tz_context.h
+          category: header
+          version: 6.1.0
+        - file: ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Core/Template/ARMv8-M/main_s.c
+          category: sourceC
+          attr: template
+          version: 1.1.1
+          select: Secure mode 'main' module for ARMv8-M
+        - file: ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Core/Template/ARMv8-M/tz_context.c
+          category: sourceC
+          attr: template
+          version: 1.1.1
+          select: RTOS Context Management (TrustZone for ARMv8-M)
+        - file: ${CMSIS_PACK_ROOT}/ARM/CMSIS/6.1.0/CMSIS/Documentation/html/Core/index.html
+          category: doc
+          version: 6.1.0
+    - component: Puya::Device:Startup@1.0.0
+      condition: PY32F0 CMSIS
+      from-pack: Puya::PY32F0xx_DFP@1.2.2
+      selected-by: Puya::Device:Startup
+      files:
+        - file: ${CMSIS_PACK_ROOT}/Puya/PY32F0xx_DFP/1.2.2/Drivers/CMSIS/Device/PY32F0xx/Include
+          category: include
+          version: 1.0.0
+        - file: ${CMSIS_PACK_ROOT}/Puya/PY32F0xx_DFP/1.2.2/Drivers/CMSIS/Device/PY32F0xx/Include/py32f0xx.h
+          category: header
+          version: 1.0.0
+        - file: RTE/Device/PY32F003x8/startup_py32f003x8.s
+          category: source
+          attr: config
+          version: 1.0.0
+        - file: RTE/Device/PY32F003x8/system_py32f0xx.c
+          category: source
+          attr: config
+          version: 1.0.0
+  linker:
+    script: RTE/Device/PY32F003x8/ac6_linker_script.sct.src
+    regions: RTE/Device/PY32F003x8/regions_PY32F003x8.h
+  groups:
+    - group: Src
+      files:
+        - file: Src/fonts.c
+          category: sourceC
+        - file: Src/main.c
+          category: sourceC
+        - file: Src/init.c
+          category: sourceC
+        - file: Src/py32f0xx_hal_msp.c
+          category: sourceC
+        - file: Src/py32f0xx_it.c
+          category: sourceC
+        - file: Src/ssd1306.c
+          category: sourceC
+        - file: Src/oled.c
+          category: sourceC
+        - file: Src/button.c
+          category: sourceC
+        - file: Src/led.c
+          category: sourceC
+        - file: Src/mq303b.c
+          category: sourceC
+        - file: Src/fsm.c
+          category: sourceC
+        - file: Src/motor.c
+          category: sourceC
+    - group: HAL_Drivers/Inc
+      files:
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_adc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_adc_ex.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_comp.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_cortex.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_crc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_def.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_exti.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_gpio.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_gpio_ex.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_i2c.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_led.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_pwr.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_rcc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_tim.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_uart.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_adc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_bus.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_comp.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_cortex.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_crc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_dma.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_exti.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_gpio.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_i2c.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_iwdg.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_led.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_lptim.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_pwr.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_rcc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_rtc.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_spi.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_system.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_ll_tim.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_dma.h
+          category: header
+        - file: Drivers/PY32F0xx_HAL_Driver/Inc/py32f0xx_hal_tim_ex.h
+          category: header
+    - group: HAL_Drivers/Src
+      files:
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_adc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_adc_ex.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_comp.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_cortex.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_crc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_exti.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_gpio.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_i2c.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_led.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_pwr.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_rcc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_tim.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_uart.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_adc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_comp.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_crc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_dma.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_exti.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_gpio.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_i2c.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_led.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_lptim.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_pwr.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_rcc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_rtc.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_spi.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_ll_tim.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_dma.c
+          category: sourceC
+        - file: Drivers/PY32F0xx_HAL_Driver/Src/py32f0xx_hal_tim_ex.c
+          category: sourceC
+    - group: Inc
+      files:
+        - file: Inc/fonts.h
+          category: header
+        - file: Inc/init.h
+          category: header
+        - file: Inc/py32f0xx_hal_conf.h
+          category: header
+        - file: Inc/py32f0xx_it.h
+          category: header
+        - file: Inc/ssd1306.h
+          category: header
+        - file: Inc/oled.h
+          category: header
+        - file: Inc/button.h
+          category: header
+        - file: Inc/led.h
+          category: header
+        - file: Inc/mq303b.h
+          category: header
+        - file: Inc/fsm.h
+          category: header
+        - file: Inc/motor.h
+          category: header
+  constructed-files:
+    - file: RTE/_Target/RTE_Components.h
+      category: header
+  licenses:
+    - license: <unknown>
+      packs:
+        - pack: Puya::PY32F0xx_DFP@1.2.2
+      components:
+        - component: Puya::Device:Startup@1.0.0
+    - license: Apache-2.0
+      packs:
+        - pack: ARM::CMSIS@6.1.0
+      components:
+        - component: ARM::CMSIS:CORE@6.1.0

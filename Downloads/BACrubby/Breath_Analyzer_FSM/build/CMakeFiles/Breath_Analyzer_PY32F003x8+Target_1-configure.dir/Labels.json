@@ -1,0 +1,34 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-configure"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-configure.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-configure.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-patch.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-update.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-download.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-mkdir.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Breath_Analyzer_PY32F003x8+Target_1"
+		],
+		"name" : "Breath_Analyzer_PY32F003x8+Target_1-configure"
+	}
+}

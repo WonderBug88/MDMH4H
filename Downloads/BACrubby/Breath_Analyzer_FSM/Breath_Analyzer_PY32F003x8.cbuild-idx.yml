@@ -1,0 +1,15 @@
+build-idx:
+  generated-by: csolution version 2.6.0
+  csolution: Breath_Analyzer_PY32F003x8.csolution.yml
+  tmpdir: tmp
+  cprojects:
+    - cproject: Breath_Analyzer_PY32F003x8.cproject.yml
+  cbuilds:
+    - cbuild: Breath_Analyzer_PY32F003x8+Target.cbuild.yml
+      project: Breath_Analyzer_PY32F003x8
+      configuration: +Target
+      messages:
+        info:
+          - Breath_Analyzer_PY32F003x8.cbuild-set.yml - file is already up-to-date
+          - Breath_Analyzer_PY32F003x8.cbuild-pack.yml - file is already up-to-date
+          - Breath_Analyzer_PY32F003x8+Target.cbuild.yml - file is already up-to-date

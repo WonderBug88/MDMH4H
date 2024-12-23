@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/CMakeFiles/Breath_Analyzer_PY32F003x8+Target"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/CMakeFiles/Breath_Analyzer_PY32F003x8+Target.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/CMakeFiles/Breath_Analyzer_PY32F003x8+Target-complete.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-build.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-configure.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-download.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-install.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-mkdir.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-patch.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-test.rule"
+		},
+		{
+			"file" : "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target/src/Breath_Analyzer_PY32F003x8+Target-stamp/Breath_Analyzer_PY32F003x8+Target-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Breath_Analyzer_PY32F003x8+Target"
+		],
+		"name" : "Breath_Analyzer_PY32F003x8+Target"
+	}
+}

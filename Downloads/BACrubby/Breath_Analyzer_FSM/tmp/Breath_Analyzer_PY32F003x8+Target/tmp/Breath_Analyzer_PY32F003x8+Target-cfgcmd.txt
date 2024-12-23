@@ -1,0 +1,1 @@
+cmd='/Users/amr/.vcpkg/artifacts/2139c4c6/tools.kitware.cmake/3.28.4/bin/cmake;-G;Ninja;-S;<SOURCE_DIR>;-B;<BINARY_DIR>;-DSOLUTION_ROOT=/Users/amr/myworkspace/Breath_Analyzer_FSM;-DCMSIS_PACK_ROOT=/Users/amr/.cache/arm/packs;-DCMSIS_COMPILER_ROOT=/Users/amr/.vcpkg/artifacts/2139c4c6/tools.open.cmsis.pack.cmsis.toolbox/2.6.1/etc'

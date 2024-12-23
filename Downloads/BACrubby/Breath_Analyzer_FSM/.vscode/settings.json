@@ -1,0 +1,23 @@
+{
+    "cmsis-csolution.actions": [
+        {
+            "path": "Breath_Analyzer_PY32F003x8.csolution.yml",
+            "target": "Target_1",
+            "config": {
+                "run": "arm-debugger.flash: Flash Device"
+            }
+        },
+        {
+            "path": "Breath_Analyzer_PY32F003x8.csolution.yml",
+            "target": "Target",
+            "config": {
+                "run": "arm-debugger.flash: Flash Device"
+            }
+        }
+    ],
+    "cmake.sourceDirectory": "/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp",
+    "files.associations": {
+        "oled.h": "c",
+        "ssd1306.h": "c"
+    }
+}

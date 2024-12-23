@@ -1,0 +1,11 @@
+# Target labels
+ Breath_Analyzer_PY32F003x8+Target_1
+# Source files and their labels
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-build
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-build.rule
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-build.rule
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-configure.rule
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-patch.rule
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-update.rule
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-download.rule
+/Users/amr/myworkspace/Breath_Analyzer_FSM/tmp/Breath_Analyzer_PY32F003x8+Target_1/src/Breath_Analyzer_PY32F003x8+Target_1-stamp/Breath_Analyzer_PY32F003x8+Target_1-mkdir.rule

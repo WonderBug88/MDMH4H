@@ -1,0 +1,6 @@
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-build.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-configure.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/Breath_Analyzer_PY32F003x8+Target_1-database.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/edit_cache.dir
+/Users/amr/myworkspace/Breath_Analyzer_FSM/build/CMakeFiles/rebuild_cache.dir
