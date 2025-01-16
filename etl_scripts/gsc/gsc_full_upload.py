@@ -18,7 +18,7 @@ DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 
 # Path to your service account key file
-SERVICE_ACCOUNT_FILE = f'{BASE_DIR}/etl_scripts/gsc/triple-skein-418601-0d9a35a7da48.json'
+SERVICE_ACCOUNT_FILE = os.environ.get('GMAIL_CREDENTIALS_FILE')
 
 # Define the scopes and API service name/version
 SCOPES = ['https://www.googleapis.com/auth/webmasters.readonly']

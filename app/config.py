@@ -23,7 +23,7 @@ class Config:
     ALLOWED_EXTENSIONS = {"pdf", "doc", "docx", "xls", "xlsx"}
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
     ETL_SCRIPTS_PATH = os.path.join(BASE_DIR, "etl_scripts")
-    GSC_CREDENTIALS_FILE_PATH = environ.get("GSC_CREDENTIALS_FILE_PATH")
+    GMAIL_CREDENTIALS_FILE = environ.get("GMAIL_CREDENTIALS_FILE")
     BIG_COMMERCE_ACCESS_TOKEN = environ.get("BIG_COMMERCE_ACCESS_TOKEN")
     BIG_COMMERCE_STORE_HASH = environ.get("BIG_COMMERCE_STORE_HASH")
     # DB
