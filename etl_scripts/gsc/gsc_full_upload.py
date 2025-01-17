@@ -18,7 +18,7 @@ DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 
 # Path to your service account key file
-SERVICE_ACCOUNT_FILE = os.environ.get('GMAIL_CREDENTIALS_FILE')
+SERVICE_ACCOUNT_FILE = os.environ.get('GOOGLE_SERVICE_ACCOUNT_FILE')
 
 # Define the scopes and API service name/version
 SCOPES = ['https://www.googleapis.com/auth/webmasters.readonly']

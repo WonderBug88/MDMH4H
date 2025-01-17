@@ -10,3 +10,5 @@ mysql-connector-python
 google
 google-api-python-client
 APScheduler
+openpyxl
+google-auth-oauthlib
