@@ -30,10 +30,6 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 CREDENTIALS_FILE = os.getenv('GMAIL_CREDENTIALS_FILE')
 TOKEN_FILE = os.getenv('GMAIL_TOKEN_FILE')
 
-print("SCOPES", SCOPES)
-print("CREDENTIALS_FILE", CREDENTIALS_FILE)
-print("TOKEN_FILE", TOKEN_FILE)
-
 def authenticate_gmail():
     """Authenticate and return the Gmail API service."""
     creds = None
