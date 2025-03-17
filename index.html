@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Mapping & Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<header class="bg-gray-800 text-white">
+  <div class="container mx-auto flex items-center justify-between px-4 py-3">
+    <!-- Logo and Title -->
+    <div class="flex items-center space-x-4">
+      <div class="h-8 w-8 bg-green-500 rounded-full"></div> <!-- Placeholder for Logo -->
+      <h1 class="text-lg font-semibold">hotels4humanity.com 
+        <span class="font-light">Product Attribute Matrix</span>
+      </h1>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="hidden md:flex items-center space-x-4">
+      <a href="http://intellipamm.com/pam" class="text-sm hover:underline">Table of Contents</a>
+      <a href="http://intellipamm.com/" class="text-sm hover:underline">Data Import</a>
+      <a href="https://play.tailwindcss.com/i3t7x8mcTJ?layout=preview" class="text-sm hover:underline">Options Mapping</a>
+      <a href="#" class="text-sm hover:underline">Product Review</a>
+      <a href="#" class="text-sm hover:underline">Dashboard</a>
+    </nav>
+
+    <!-- User Profile and Logout -->
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2">
+        <div class="h-6 w-6 bg-blue-500 rounded-full"></div> <!-- Placeholder for Profile Icon -->
+        <span class="text-sm">Admin U</span>
+      </div>
+      <button class="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded">
+        Logout
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Dynamic Breadcrumb -->
+<nav class="bg-white text-sm text-green-600 py-2 px-4 rounded shadow mb-4">
+  <ol class="flex flex-wrap items-center space-x-2">
+    <li>
+      <a href="/" class="hover:underline">hotels4humanity</a>
+      <span class="text-gray-400 mx-2">›</span>
+    </li>
+    <li class="text-gray-700">
+      {{ parent_category }}
+      <span class="text-gray-400 mx-2">›</span>
+    </li>
+    <li class="text-gray-700">
+      {{ subcategory_name }}
+      <span class="text-gray-400 mx-2">›</span>
+    </li>
+    <li class="text-gray-700">
+      {{ collection_name }}
+      <span class="text-gray-400 mx-2">›</span>
+    </li>
+    <li class="text-gray-700">
+      {{ product_name }}
+    </li>
+  </ol>
+</nav>
+
+<body class="bg-gray-100">
+  <div class="min-h-screen flex flex-col">
+    <!-- Main Content: Options Mapping and Comparison Grids -->
+    <main class="flex-grow p-6 overflow-y-auto">
+      <div class="bg-white p-8 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold mb-6">Options Mapping</h2>
+        <!-- Mapping Instructions -->
+        <p class="text-gray-600 mb-6">
+          Map the source attribute columns to your store options by selecting one or more fields for each column.
+        </p>
+
+        <!-- SINGLE FORM -->
+    <form method="POST" action="/">
+      <!-- (A) Option 1 / Option 2 Names -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Option 1 Name:</label>
+        <input type="text" 
+               name="option1_name" 
+               placeholder="e.g., Size"
+               value="{{ session.option1_name if session.option1_name else 'Option 1' }}"
+               class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Option 2 Name:</label>
+        <input type="text" 
+               name="option2_name" 
+               placeholder="e.g., Color"
+               value="{{ session.option2_name if session.option2_name else 'Option 2' }}"
+               class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+      </div>
+
+      <!-- (B) The Mapping Table (radio buttons for each attribute) -->
+      <h2 class="text-xl font-semibold mb-4">
+        Options Mapping for SKU: {{ variant_sku }}
+      </h2>
+      <div class="overflow-x-auto mb-8">
+        <table class="min-w-full bg-white border border-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                Label
+              </th>
+              <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                Attribute
+              </th>
+              <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">
+                Mapping Options
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if mapping_data %}
+              {% for item in mapping_data %}
+              <tr>
+                <td class="border border-gray-300 px-4 py-2">{{ item.label }}</td>
+                <td class="border border-gray-300 px-4 py-2">
+                  {{ item.value if item.value else "N/A" }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                  <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                      <input type="radio" name="mapping_{{ item.label }}" 
+                             value="none" class="form-radio"
+                             {% if user_selections[item.label] == "none" %} checked {% endif %}>
+                      <span class="ml-2">None</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                      <input type="radio" name="mapping_{{ item.label }}" 
+                             value="option1" class="form-radio"
+                             {% if user_selections[item.label] == "option1" %} checked {% endif %}>
+                      <span class="ml-2">Option 1</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                      <input type="radio" name="mapping_{{ item.label }}" 
+                             value="option2" class="form-radio"
+                             {% if user_selections[item.label] == "option2" %} checked {% endif %}>
+                      <span class="ml-2">Option 2</span>
+                    </label>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="3" class="border px-4 py-2 text-center text-red-500">
+                  ❌ No attributes found for this SKU!
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- (C) Optional: Add a custom attribute row button (JS) -->
+      <button type="button" id="add-custom-attribute"
+              class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 mb-4">
+        Add Custom Attribute
+      </button>
+      <script>
+        document.getElementById('add-custom-attribute').addEventListener('click', () => {
+          const tbody = document.querySelector('#mapping-table tbody');
+          const newRow = document.createElement('tr');
+
+          // Label cell
+          const labelCell = document.createElement('td');
+          labelCell.className = "border px-4 py-2";
+          labelCell.innerHTML = '<input type="text" name="custom_attribute_label" placeholder="Custom Label" class="border p-2 rounded">';
+
+          // Attribute cell
+          const attributeCell = document.createElement('td');
+          attributeCell.className = "border px-4 py-2";
+          attributeCell.innerHTML = '<input type="text" name="custom_attribute_value" placeholder="Custom Value" class="border p-2 rounded">';
+
+          // Mapping cell
+          const optionsCell = document.createElement('td');
+          optionsCell.className = "border px-4 py-2";
+          optionsCell.innerHTML = `
+            <div class="flex space-x-4">
+              <label class="inline-flex items-center">
+                <input type="radio" name="custom_attribute_mapping" value="none" class="form-radio" checked>
+                <span class="ml-2">None</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" name="custom_attribute_mapping" value="option1" class="form-radio">
+                <span class="ml-2">Option 1</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" name="custom_attribute_mapping" value="option2" class="form-radio">
+                <span class="ml-2">Option 2</span>
+              </label>
+            </div>
+          `;
+          newRow.appendChild(labelCell);
+          newRow.appendChild(attributeCell);
+          newRow.appendChild(optionsCell);
+          tbody.appendChild(newRow);
+        });
+      </script>
+
+        <!-- Comparison Grids -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+
+          <!-- Option Mapping & Review - Single SKU -->
+<div class="mt-6">
+  <h3 class="text-xl font-semibold mb-4">Option Mapping & Review - Uploaded Data (Single SKU)</h3>
+
+  <!-- If you want to capture these changes, wrap this table in the same form as your main POST
+       Or use a separate form that also POSTs to the same route. -->
+  <form method="POST" action="/">
+    <!-- Additional hidden fields if needed -->
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">SKU</th>
+            <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">Option Name</th>
+            <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">Option Value</th>
+          </tr>
+        </thead>
+        <tbody id="uploaded-data-body-option">
+          {% if uploaded_data %}
+            {% for item in uploaded_data %}
+            <tr>
+              <!-- SKU -->
+              <td class="border border-gray-300 px-4 py-2">
+                {{ item.sku }}
+                <!-- Possibly store the SKU in a hidden input -->
+                <input type="hidden" name="sku_{{ loop.index0 }}" value="{{ item.sku }}">
+              </td>
+              <!-- Option Name (editable) -->
+              <td class="border border-gray-300 px-4 py-2">
+                <input type="text"
+                name="option_name_{{ i }}"
+                value="{{ item.label }}"
+                class="border border-gray-300 p-2 w-full rounded">
+       </td>
+              <!-- Option Value -->
+              <td class="border border-gray-300 px-4 py-2">
+                {% if item.option_value_display %}
+                  {{ item.option_value_display }}
+                {% else %}
+                  No Display Name Chosen
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="3" class="border border-gray-300 px-4 py-2 text-center text-red-500">
+                ❌ No Data Found!
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>        
+      </table>
+    </div>
+    
+ <!-- (D) Single Submit Button merges "Save Option Names" and "Update Variant Sku Options" -->
+ <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+  Save & Update
+</button>
+</form>
+</div>
+</body>
+</html>
+
+
+          <!-- Old Option Mapping -->
+          <div>
+            <h3 class="text-xl font-semibold mb-4">Old Option Mapping</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-300">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">Option ID</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">SKU</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">Option Name</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">Option Value</th>
+                  </tr>
+                </thead>
+                <tbody id="mapped-data-body-option">
+                  {% for item in old_option_mappings %}
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2">{{ item.option_id }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ item.sku }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ item.option_name }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ item.option_value }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between mb-8">
+          <button class="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400">
+            Back
+          </button>
+          <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+            Next
+          </button>
+        </div>
+
+        <!-- Additional Buttons -->
+        <div class="mt-6 flex gap-4">
+          <button id="highlight-differences" 
+                  class="w-1/4 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600">
+            Highlight Differences
+          </button>
+          <!-- Button to open modal with parent product list -->
+          <button id="openParentProductList" 
+                  class="w-1/4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            View Variant SKU Options
+          </button>
+
+          <button class="w-1/4 bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600">
+            Map SKU
+          </button>
+          <button id="map-all" 
+                  class="w-1/4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">
+            Map All
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Popup: Parent Product List & Mapped Data -->
+<div id="parentProductModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-5xl">
+    <h3 class="text-xl font-semibold mb-4">Parent Product List & Mapped Data</h3>
+    
+    <!-- Two-column layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <!-- LEFT COLUMN: Option Mapping & Review - using all_skus_data -->
+      <div>
+        <h4 class="text-lg font-semibold mb-2">Option Mapping & Review - Uploaded Data</h4>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white border border-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="border px-4 py-2 text-left">SKU</th>
+                <th class="border px-4 py-2 text-left">Option Name</th>
+                <th class="border px-4 py-2 text-left">Option Value</th>
+                <th class="border px-4 py-2 text-left">Available</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in all_skus_data %}
+              <tr>
+                <td class="border px-4 py-2">{{ item.sku }}</td>
+                <td class="border px-4 py-2">{{ item.label }}</td>
+                <td class="border px-4 py-2">
+                  {% if item.option_value_display %}
+                    {{ item.option_value_display }}
+                  {% else %}
+                    No Display Name Chosen
+                  {% endif %}
+                </td>
+                <td class="border px-4 py-2">
+                  <label class="inline-flex items-center mr-4">
+                    <input type="radio" name="availability-{{ item.sku }}" value="yes" class="form-radio">
+                    <span class="ml-2">Yes</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="availability-{{ item.sku }}" value="no" class="form-radio">
+                    <span class="ml-2">No</span>
+                  </label>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div> <!-- end of grid -->
+
+    <!-- Data Warnings -->
+    {% if flagged_data %}
+      <div class="bg-yellow-200 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4">
+        <p class="font-bold">⚠️ Data Warnings:</p>
+        <ul class="list-disc pl-5">
+          {% for warning in flagged_data %}
+            <li>{{ warning }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <!-- Modal Buttons -->
+    <div class="mt-4 flex justify-end">
+      <button id="closeParentModal" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+        Close
+      </button>
+      <button id="saveAvailability" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+
+      <!-- ⚠️ Data Warning Section -->
+      {% if flagged_data %}
+      <div class="bg-yellow-200 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4">
+        <p class="font-bold">⚠️ Data Warnings:</p>
+        <ul class="list-disc pl-5">
+          {% for warning in flagged_data %}
+            <li>{{ warning }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Modal Buttons -->
+      <div class="mt-4 flex justify-end">
+        <button id="closeParentModal" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          Close
+        </button>
+        <button id="saveAvailability" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Popup for Map All -->
+  <div id="mapAllModal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-2xl">
+      <h3 class="text-xl font-bold mb-4">Mapping for All Available Products</h3>
+      <div id="modalContent"></div>
+      <div class="mt-4 flex justify-end">
+        <button id="closeModal" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Close</button>
+        <button id="confirmMapping" class="ml-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          Confirm Mapping
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript: Show/Hide the Parent Product List Modal -->
+  <script>
+    const parentModal = document.getElementById('parentProductModal');
+    const openParentBtn = document.getElementById('openParentProductList');
+    const closeParentBtn = document.getElementById('closeParentModal');
+    const saveAvailabilityBtn = document.getElementById('saveAvailability');
+
+    openParentBtn.addEventListener('click', () => {
+      parentModal.classList.remove('hidden');
+    });
+
+    closeParentBtn.addEventListener('click', () => {
+      parentModal.classList.add('hidden');
+    });
+
+    // Save availability choices for each SKU in both tables
+    saveAvailabilityBtn.addEventListener('click', () => {
+      const rows = document.querySelectorAll('#parentProductModal table tbody tr');
+      const updates = [];
+
+      rows.forEach((row) => {
+        const skuCell = row.querySelector('td:first-child');
+        if (!skuCell) return;
+
+        const sku = skuCell.textContent.trim();
+        // Skip header rows like "Product ID: 112110"
+        if (!sku || sku.startsWith("Product ID")) return;
+
+        // Check which radio is selected
+        const yesRadio = row.querySelector(`input[name="availability-${sku}"][value="yes"]`) 
+                         || row.querySelector(`input[name="availability-${sku}"][value="available"]`);
+        const noRadio  = row.querySelector(`input[name="availability-${sku}"][value="no"]`) 
+                         || row.querySelector(`input[name="availability-${sku}"][value="not-available"]`);
+
+        let availability = null;
+        if (yesRadio && yesRadio.checked) availability = "yes";
+        if (noRadio && noRadio.checked) availability = "no";
+
+        updates.push({ sku, availability });
+      });
+
+      // Send the data to a Flask route (e.g. /save_availability)
+      fetch('/save_availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Availability saved successfully!');
+        } else {
+          alert('Error saving availability: ' + data.error);
+        }
+        // Close the modal
+        parentModal.classList.add('hidden');
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        alert('An error occurred while saving availability.');
+      });
+    });
+  </script>
+
+  <!-- JavaScript: Map All and other scripts -->
+  <script>
+    // Example definitions for testing:
+    const availableSKUs = ["SKU1", "SKU2"];
+    const option1Mapping = "Small | Medium | Large";
+    const option1Name = "Size";
+    const option2Mapping = "Red | Blue";
+    const option2Name = "Color";
+
+    document.getElementById('map-all').addEventListener('click', function() {
+      document.getElementById('mapAllModal').classList.remove('hidden');
+      let modalHTML = `
+        <table class="min-w-full border border-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border px-4 py-2">SKU</th>
+              <th class="border px-4 py-2">Mapping</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      availableSKUs.forEach(sku => {
+        modalHTML += `<tr>
+          <td class="border px-4 py-2">${sku}</td>
+          <td class="border px-4 py-2">${option1Name}: ${option1Mapping}`;
+        if (option2Mapping.trim().length > 0) {
+          modalHTML += ` | ${option2Name}: ${option2Mapping}`;
+        }
+        modalHTML += `</td></tr>`;
+      });
+      modalHTML += `</tbody></table>`;
+      document.getElementById('modalContent').innerHTML = modalHTML;
+    });
+
+    document.getElementById('confirmMapping').addEventListener('click', function() {
+      const payload = {
+        available_skus: availableSKUs,
+        option1_mapping: option1Mapping,
+        option1_name: option1Name,
+        option2_mapping: option2Mapping,
+        option2_name: option2Name
+      };
+      fetch('/map_all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+        } else {
+          alert("Error: " + data.error);
+        }
+        document.getElementById('mapAllModal').classList.add('hidden');
+      })
+      .catch(err => {
+        console.error("Error during mapping:", err);
+        alert("An error occurred while mapping all available products.");
+      });
+    });
+
+    document.getElementById('closeModal').addEventListener('click', function() {
+      document.getElementById('mapAllModal').classList.add('hidden');
+    });
+  </script>
+
+  <!-- Highlight Differences Logic -->
+  <script>
+    document.getElementById('highlight-differences').addEventListener('click', () => {
+      const compareTables = (uploadedId, mappedId) => {
+        const uploadedRows = document.querySelectorAll(`#${uploadedId} tr`);
+        const mappedRows = document.querySelectorAll(`#${mappedId} tr`);
+        uploadedRows.forEach((uploadedRow, index) => {
+          const mappedRow = mappedRows[index];
+          if (!mappedRow) return;
+          const uploadedCells = uploadedRow.querySelectorAll('td');
+          const mappedCells = mappedRow.querySelectorAll('td');
+          let differenceFound = false;
+          uploadedCells.forEach((cell, idx) => {
+            if (idx >= mappedCells.length) return;
+            if (cell.textContent.trim() !== mappedCells[idx].textContent.trim()) {
+              differenceFound = true;
+            }
+          });
+          if (differenceFound) {
+            mappedRow.classList.add('bg-red-100');
+          }
+        });
+      };
+      compareTables('uploaded-data-body-option', 'mapped-data-body-option');
+      compareTables('uploaded-data-body-pricing', 'mapped-data-body-pricing');
+      compareTables('uploaded-data-body-dimensions', 'mapped-data-body-dimensions');
+      alert('Differences have been highlighted.');
+    });
+  </script>
+</body>
+</html>
+  
