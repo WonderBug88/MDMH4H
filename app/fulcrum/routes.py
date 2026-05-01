@@ -956,6 +956,17 @@ def admin_developer_dashboard():
 @fulcrum_bp.route("/health")
 def health():
     store_hash = normalize_store_hash(request.args.get("store_hash") or "")
+    health_store_hash = store_hash or normalize_store_hash((Config.FULCRUM_ALLOWED_STORES or [""])[0])
+    product_theme_ready = theme_hook_present()
+    category_theme_ready = category_theme_hook_present()
+    if health_store_hash:
+        try:
+            snapshot = build_store_readiness_snapshot(health_store_hash)
+            theme_checks = snapshot.get("checks", {}).get("theme", {})
+            product_theme_ready = bool(theme_checks.get("product_theme_hook_ready") or product_theme_ready)
+            category_theme_ready = bool(theme_checks.get("category_theme_hook_ready") or category_theme_ready)
+        except Exception:
+            current_app.logger.exception("Fulcrum health readiness snapshot failed.")
     payload = {
         "status": "ok",
         "app": "fulcrum",
@@ -963,8 +974,8 @@ def health():
         "scheduler_enabled": bool(Config.ENABLE_SCHEDULER),
         "embedded_scheduler_enabled": bool(Config.FULCRUM_RUN_EMBEDDED_SCHEDULER),
         "allowed_store_count": len(Config.FULCRUM_ALLOWED_STORES or []),
-        "product_theme_hook_ready": theme_hook_present(),
-        "category_theme_hook_ready": category_theme_hook_present(),
+        "product_theme_hook_ready": product_theme_ready,
+        "category_theme_hook_ready": category_theme_ready,
     }
     if store_hash:
         _require_store_allowed(store_hash)

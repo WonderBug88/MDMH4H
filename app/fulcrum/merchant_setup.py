@@ -2217,8 +2217,15 @@ def build_store_readiness_snapshot(store_hash: str) -> dict[str, Any]:
     ga4_public = {**ga4, "data_summary": ga4_summary, "data_ready": bool(ga4_summary.get("has_data"))}
     readiness = get_store_readiness(normalized_hash)
     profile_summary = get_store_profile_summary(normalized_hash)
-    product_theme_ready = theme_hook_present(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
-    category_theme_ready = category_theme_hook_present(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
+    readiness_metadata = readiness.get("metadata") if isinstance(readiness.get("metadata"), dict) else {}
+    product_theme_ready = bool(
+        theme_hook_present(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
+        or readiness.get("theme_hook_ready")
+    )
+    category_theme_ready = bool(
+        category_theme_hook_present(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
+        or readiness_metadata.get("category_theme_hook_present")
+    )
     checks = {
         "bigcommerce": {
             "ready": bool(installation and (installation.get("status") or "").strip().lower() == "active"),
