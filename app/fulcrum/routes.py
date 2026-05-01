@@ -1294,8 +1294,11 @@ def integration_sync_retry(provider: str):
     return _redirect_to_setup_section(store_hash, "connections")
 
 
-@fulcrum_bp.route("/setup/theme-verify", methods=["POST"])
+@fulcrum_bp.route("/setup/theme-verify", methods=["GET", "POST"])
 def theme_verify():
+    if request.method == "GET":
+        store_hash = normalize_store_hash(request.args.get("store_hash") or _current_store_hash())
+        return _redirect_to_setup_section(store_hash, "store-checks")
     apply_runtime_schema()
     store_hash = normalize_store_hash(request.form.get("store_hash") or _current_store_hash())
     _require_store_allowed(store_hash)
@@ -1322,8 +1325,11 @@ def theme_fix_auto():
     return _redirect_to_setup_section(store_hash, "store-checks")
 
 
-@fulcrum_bp.route("/setup/publish-settings", methods=["POST"])
+@fulcrum_bp.route("/setup/publish-settings", methods=["GET", "POST"])
 def save_publish_settings():
+    if request.method == "GET":
+        store_hash = normalize_store_hash(request.args.get("store_hash") or _current_store_hash())
+        return _redirect_to_setup_section(store_hash, "publishing-settings")
     apply_runtime_schema()
     store_hash = normalize_store_hash(request.form.get("store_hash") or _current_store_hash())
     _require_store_allowed(store_hash)
