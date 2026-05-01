@@ -1,0 +1,17 @@
+Flask
+gunicorn
+APScheduler
+psycopg2-binary
+python-dotenv
+requests
+openai
+waitress
+httpx
+pandas
+portalocker
+mysql-connector-python
+google
+google-api-python-client
+google-auth-oauthlib
+google-analytics-data
+cryptography

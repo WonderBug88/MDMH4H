@@ -1,0 +1,563 @@
+﻿{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Setup{% endblock %}
+
+{% block content %}
+{% set setup_href = url_for('fulcrum.setup_page', store_hash=store_hash) %}
+{% set dashboard_href = url_for('fulcrum.dashboard', store_hash=store_hash) %}
+{% set fulcrum_base_url = (config.FULCRUM_APP_BASE_URL or '').rstrip('/') %}
+{% set gsc = integrations['gsc'] %}
+{% set ga4 = integrations['ga4'] %}
+{% set gsc_resources = gsc.metadata.available_resources if gsc.metadata else [] %}
+{% set ga4_resources = ga4.metadata.available_resources if ga4.metadata else [] %}
+{% set ns = namespace(completed=0, total=0) %}
+{% for item in checklist %}
+  {% set ns.total = ns.total + 1 %}
+  {% if item.complete %}{% set ns.completed = ns.completed + 1 %}{% endif %}
+{% endfor %}
+{% set progress_percent = (((ns.completed / ns.total) * 100) | round(0, 'common') | int) if ns.total else 0 %}
+
+<style>
+  .ra-checklist-row {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+  }
+
+  .ra-checklist-badge,
+  .ra-checklist-action {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  @media (min-width: 640px) {
+    .ra-checklist-row {
+      grid-template-columns: 32px minmax(0, 1fr) 112px 92px;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .ra-checklist-badge,
+    .ra-checklist-action {
+      grid-column: auto;
+    }
+
+    .ra-checklist-action {
+      justify-self: end;
+    }
+  }
+
+  .ra-status-pass {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+    color: #059669;
+  }
+
+  .ra-status-fail {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .ra-badge-pass {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .ra-badge-fail {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+
+  .ra-dot-pass {
+    background: #059669;
+  }
+
+  .ra-dot-fail {
+    background: #dc2626;
+  }
+
+  .ra-progress-pass {
+    background: #059669;
+  }
+
+  .ra-progress-fail {
+    background: #dc2626;
+  }
+
+  .ra-pill-pass {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .ra-pill-fail {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+
+  .ra-button-pass {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .ra-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .ra-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .ra-header-logo {
+    height: 3.25rem;
+    width: auto;
+    object-fit: contain;
+    flex: none;
+  }
+
+  .ra-header-copy {
+    min-width: 0;
+    max-width: 22rem;
+  }
+
+  .ra-header-eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .ra-header-subtext {
+    margin: 0.35rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: #475569;
+  }
+
+  .ra-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .ra-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.625rem 1rem;
+    border-radius: 0.9rem;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #1e293b;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    white-space: nowrap;
+  }
+
+  .ra-btn:hover {
+    background: #f8fafc;
+  }
+
+  .ra-btn-accent {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .ra-btn-accent:hover {
+    background: #dbeafe;
+  }
+
+  @media (min-width: 768px) {
+    .ra-header {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ra-header-actions {
+      justify-content: flex-end;
+    }
+
+    .ra-header-logo {
+      height: 3.5rem;
+    }
+  }
+</style>
+<div class="mx-auto max-w-6xl px-4 py-6 lg:px-6">
+  <div class="ra-header">
+    <div class="ra-header-brand">
+      <img class="ra-header-logo" src="{{ url_for('static', filename='fulcrum/route-authority-logo.png') }}" alt="Route Authority" />
+      <div class="ra-header-copy">
+        <p class="ra-header-eyebrow">BigCommerce store setup</p>
+        <p class="ra-header-subtext">Finish install, connect required data sources, verify the storefront, and turn on publishing for this store.</p>
+      </div>
+    </div>
+    <div class="ra-header-actions">
+      <a class="ra-btn" href="{{ url_for('fulcrum.guide_page', store_hash=store_hash) }}">Open guide</a>
+      <a class="ra-btn" href="{{ setup_href }}#store-checks">Run checks again</a>
+      <a class="ra-btn" href="{{ dashboard_href }}">Open results</a>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+      {% for category, message in messages %}
+      <div class="rounded border px-3 py-2 text-sm {{ 'border-red-200 bg-red-50 text-red-800' if category in ['danger', 'error'] else 'border-green-200 bg-green-50 text-green-800' }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
+    <div class="border-t-4 border-[#1478f2]">
+      <section class="border-b border-slate-200 px-5 py-5 md:px-6">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div class="flex items-center gap-3">
+            <span class="flex h-11 w-11 items-center justify-center rounded-full border {{ 'ra-status-pass' if setup_complete else 'ra-status-fail' }}">
+              {% if setup_complete %}<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>{% endif %}
+            </span>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Route Authority setup</p>
+              <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ readiness_label if setup_complete else 'Needs attention' }}</h1>
+              <p class="mt-1 text-sm leading-6 text-slate-600">{{ readiness_detail if setup_complete else 'Complete the required items below before Route Authority is ready.' }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-b border-slate-200 px-5 py-4 md:px-6">
+        <div class="grid gap-4 md:grid-cols-3">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Progress</p>
+            <p class="mt-1 text-lg font-semibold text-slate-900">{{ ns.completed }} of {{ ns.total }} complete</p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Catalog</p>
+            <p class="mt-1 text-lg font-semibold text-slate-900">{{ profile_summary.profile_count or 0 }} products</p>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Categories</p>
+            <p class="mt-1 text-lg font-semibold text-slate-900">{{ profile_summary.category_profile_count or 0 }} synced</p>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="mb-2 flex items-center justify-between text-xs font-semibold text-slate-600">
+            <span>Setup completion</span>
+            <span>{{ progress_percent }}%</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+            <div class="h-2 rounded-full {{ 'ra-progress-pass' if setup_complete else 'ra-progress-fail' }}" style="width: {{ progress_percent }}%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="required-setup" class="border-b border-slate-200 px-5 py-5 md:px-6">
+        <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 class="text-2xl font-semibold tracking-tight text-slate-900">Required setup</h2>
+            <p class="mt-1 text-sm leading-6 text-slate-600">Green checks are complete. Red X items need attention.</p>
+          </div>
+          <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold {{ 'ra-badge-pass' if setup_complete else 'ra-badge-fail' }}"><span class="mr-2 inline-block h-2 w-2 rounded-full {{ 'ra-dot-pass' if setup_complete else 'ra-dot-fail' }}"></span>{{ 'Complete' if setup_complete else 'Needs setup' }}</span>
+        </div>
+        <ul class="overflow-hidden rounded-xl border border-slate-200 bg-white divide-y divide-slate-200">
+          {% for item in checklist %}
+          {% set badge_label = item.status_label %}
+          {% if item.key == 'bigcommerce_install' %}{% set badge_label = 'Installed' if item.complete else 'Missing' %}{% elif item.key == 'catalog_sync' %}{% set badge_label = 'Synced' if item.complete else 'Needs sync' %}{% elif item.key == 'theme_verification' %}{% set badge_label = 'Passed' if item.complete else item.status_label %}{% elif item.key == 'readiness' %}{% set badge_label = 'Ready' if item.complete else item.status_label %}{% endif %}
+          <li class="px-4 py-3">
+            <div class="ra-checklist-row">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full border {{ 'ra-status-pass' if item.complete else 'ra-status-fail' }}">{% if item.complete %}<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-4 w-4"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-4 w-4"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>{% endif %}</span>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-slate-900">{{ item.label }}</p>
+                <p class="mt-0.5 text-sm text-slate-600">{{ item.detail }}</p>
+              </div>
+              <span class="ra-checklist-badge inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold {{ 'ra-badge-pass' if item.complete else 'ra-badge-fail' }}">{{ badge_label }}</span>
+              <div class="ra-checklist-action">
+                {% if item.key == 'bigcommerce_install' %}
+                  {% if item.complete %}<span class="text-sm font-semibold text-slate-400">No action</span>{% else %}<span class="text-sm font-semibold text-slate-400">Reconnect in BigCommerce</span>{% endif %}
+                {% elif item.key == 'search_console' %}
+                  {% if item.complete %}<a class="text-sm font-semibold text-[#1478f2] hover:underline" href="{{ setup_href }}#connections">Manage</a>{% else %}<a class="text-sm font-semibold text-[#1478f2] hover:underline" href="{{ fulcrum_base_url ~ url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Connect</a>{% endif %}
+                {% elif item.key == 'ga4' %}
+                  {% if item.complete %}<a class="text-sm font-semibold text-[#1478f2] hover:underline" href="{{ setup_href }}#connections">Manage</a>{% else %}<a class="text-sm font-semibold text-[#1478f2] hover:underline" href="{{ fulcrum_base_url ~ url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Connect</a>{% endif %}
+                {% elif item.key == 'catalog_sync' %}
+                <form class="inline-block" method="post" action="{{ url_for('fulcrum.sync_catalog') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="redirect_to" value="store_checks"><button class="text-sm font-semibold text-[#1478f2] hover:underline" type="submit">{{ 'Resync' if item.complete else 'Sync catalog' }}</button></form>
+                {% elif item.key == 'theme_verification' %}
+                  {% if not item.complete and theme_status.failure_classification == 'automatic' %}<form class="inline-block" method="post" action="{{ url_for('fulcrum.theme_fix_auto') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="text-sm font-semibold text-[#1478f2] hover:underline" type="submit">Fix automatically</button></form>{% else %}<form class="inline-block" method="post" action="{{ url_for('fulcrum.theme_verify') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="text-sm font-semibold text-[#1478f2] hover:underline" type="submit">{{ 'Recheck' if item.complete else 'Run check' }}</button></form>{% endif %}
+                {% elif item.key == 'readiness' %}
+                  {% if item.complete %}<a class="text-sm font-semibold text-[#1478f2] hover:underline" href="{{ dashboard_href }}">View</a>{% else %}<a class="text-sm font-semibold text-[#1478f2] hover:underline" href="{{ url_for('fulcrum.review_page', store_hash=store_hash) }}">Review</a>{% endif %}
+                {% endif %}
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      <section id="connections" class="border-b border-slate-200 px-6 py-8 lg:px-8">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div><div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Connections</div><h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">Connect required data sources</h2><p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Google connection and Google configuration are separate. A source is only ready after OAuth succeeds, the correct property is selected, and the property verifies against your store domain.</p></div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"><div class="font-semibold text-slate-900">{{ readiness_label }}</div><div class="mt-1">{{ readiness_detail }}</div></div>
+        </div>
+
+        <div class="mt-6 grid gap-4 xl:grid-cols-3">
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-3"><div class="text-lg font-semibold text-slate-900">BigCommerce</div><span class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ 'ra-pill-pass' if integrations['bigcommerce'].status_label == 'Ready' else 'ra-pill-fail' }}">{{ integrations['bigcommerce'].status_label }}</span></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Store identity, OAuth install context, and merchant access are managed by the BigCommerce install flow.</p>
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"><div>Store hash: <strong class="text-slate-900">{{ store_hash }}</strong></div><div class="mt-1">Install status: <strong class="text-slate-900">{{ installation.status or 'unknown' }}</strong></div></div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-3"><div class="text-lg font-semibold text-slate-900">Search Console</div><span class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ 'ra-pill-pass' if gsc.status_label == 'Ready' else 'ra-pill-fail' }}">{{ gsc.status_label }}</span></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Lets Route Authority see what people search before landing on your site so routing opportunities and misrouted demand are visible.</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {% if gsc.status_label == 'Ready' %}
+              <span class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800">Search Console data ready</span>
+              <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ fulcrum_base_url ~ url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Reconnect</a>
+              <form method="post" action="{{ url_for('fulcrum.integration_sync_retry', provider='gsc') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" type="submit">Resync</button></form>
+              {% elif gsc.selected_resource_id %}
+              <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800">{{ gsc.status_label }}</span>
+              <form method="post" action="{{ url_for('fulcrum.integration_sync_retry', provider='gsc') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="submit">Retry sync</button></form>
+              <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ fulcrum_base_url ~ url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Reconnect</a>
+              {% else %}
+              <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ fulcrum_base_url ~ url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.gsc_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Connect Search Console</a>
+              {% endif %}
+            </div>
+            {% if gsc.selected_resource_id %}
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+              <div><strong class="text-slate-900">Property:</strong> {{ gsc.selected_resource_label or gsc.selected_resource_id }}</div>
+              <div class="mt-1"><strong class="text-slate-900">Rows imported:</strong> {{ gsc.data_summary.row_count or 0 }}</div>
+              {% if gsc.data_summary.start_date and gsc.data_summary.end_date %}<div class="mt-1"><strong class="text-slate-900">Date range:</strong> {{ gsc.data_summary.start_date }} to {{ gsc.data_summary.end_date }}</div>{% endif %}
+              {% if gsc.data_summary.latest_sync_status %}<div class="mt-1"><strong class="text-slate-900">Last sync:</strong> {{ gsc.data_summary.latest_sync_status }}</div>{% endif %}
+              {% if gsc.data_summary.latest_sync_error %}<div class="mt-1 text-red-700"><strong>Last error:</strong> {{ gsc.data_summary.latest_sync_error }}</div>{% endif %}
+            </div>
+            {% endif %}
+            {% if gsc_resources and gsc.status_label != 'Ready' %}
+            <form class="js-google-resource-form mt-4 space-y-3" method="post" action="{{ url_for('fulcrum.gsc_select_resource') }}" data-integration-label="Search Console"><input type="hidden" name="store_hash" value="{{ store_hash }}"><label class="block text-sm font-semibold text-slate-700" for="gsc-resource">Select property</label><select class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" id="gsc-resource" name="selected_resource_id"><option value="">Choose a Search Console property</option>{% for option in gsc_resources %}<option value="{{ option.id }}" {% if option.id == gsc.selected_resource_id or option.id == gsc.metadata.suggested_resource_id %}selected{% endif %}>{{ option.label }}</option>{% endfor %}</select><div class="flex items-center gap-3"><button class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="submit">Verify Search Console property</button><div class="js-google-resource-status text-sm text-slate-500" aria-live="polite">Selection saves automatically.</div></div></form>
+            {% endif %}
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-3"><div class="text-lg font-semibold text-slate-900">GA4</div><span class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ 'ra-pill-pass' if ga4.status_label == 'Ready' else 'ra-pill-fail' }}">{{ ga4.status_label }}</span></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Lets Route Authority compare search demand with on-site performance so the dashboard can prioritize pages and show performance impact.</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {% if ga4.status_label == 'Ready' %}
+              <span class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800">GA4 data ready</span>
+              <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ fulcrum_base_url ~ url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Reconnect</a>
+              <form method="post" action="{{ url_for('fulcrum.integration_sync_retry', provider='ga4') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" type="submit">Resync</button></form>
+              {% elif ga4.selected_resource_id %}
+              <span class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800">{{ ga4.status_label }}</span>
+              <form method="post" action="{{ url_for('fulcrum.integration_sync_retry', provider='ga4') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="submit">Retry sync</button></form>
+              <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ fulcrum_base_url ~ url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Reconnect</a>
+              {% else %}
+              <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ fulcrum_base_url ~ url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) if fulcrum_base_url else url_for('fulcrum.ga4_oauth_start', store_hash=store_hash) }}" target="_top" rel="noopener">Connect GA4</a>
+              {% endif %}
+            </div>
+            {% if ga4.selected_resource_id %}
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+              <div><strong class="text-slate-900">Property:</strong> {{ ga4.selected_resource_label or ga4.selected_resource_id }}</div>
+              <div class="mt-1"><strong class="text-slate-900">Rows imported:</strong> {{ ga4.data_summary.row_count or 0 }}</div>
+              {% if ga4.data_summary.start_date and ga4.data_summary.end_date %}<div class="mt-1"><strong class="text-slate-900">Date range:</strong> {{ ga4.data_summary.start_date }} to {{ ga4.data_summary.end_date }}</div>{% endif %}
+              {% if ga4.data_summary.latest_sync_status %}<div class="mt-1"><strong class="text-slate-900">Last sync:</strong> {{ ga4.data_summary.latest_sync_status }}</div>{% endif %}
+              {% if ga4.data_summary.latest_sync_error %}<div class="mt-1 text-red-700"><strong>Last error:</strong> {{ ga4.data_summary.latest_sync_error }}</div>{% endif %}
+            </div>
+            {% endif %}
+            {% if ga4_resources and ga4.status_label != 'Ready' %}
+            <form class="js-google-resource-form mt-4 space-y-3" method="post" action="{{ url_for('fulcrum.ga4_select_resource') }}" data-integration-label="GA4"><input type="hidden" name="store_hash" value="{{ store_hash }}"><label class="block text-sm font-semibold text-slate-700" for="ga4-resource">Select property</label><select class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" id="ga4-resource" name="selected_resource_id"><option value="">Choose a GA4 property</option>{% for option in ga4_resources %}<option value="{{ option.id }}" {% if option.id == ga4.selected_resource_id or option.id == ga4.metadata.suggested_resource_id %}selected{% endif %}>{{ option.account_name }} - {{ option.label }}</option>{% endfor %}</select><div class="flex items-center gap-3"><button class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="submit">Verify GA4 property</button><div class="js-google-resource-status text-sm text-slate-500" aria-live="polite">Selection saves automatically.</div></div></form>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+      <section id="store-checks" class="border-b border-slate-200 px-6 py-8 lg:px-8">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div><div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Store setup</div><h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">Catalog sync, theme verification, and readiness</h2><p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Route Authority needs fresh catalog data and a verified storefront hook before publishing can run safely.</p></div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"><div class="font-semibold text-slate-900">{{ readiness_label }}</div><div class="mt-1">{{ readiness_detail }}</div></div>
+        </div>
+
+        <div class="mt-6 grid gap-4 xl:grid-cols-3">
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="text-lg font-semibold text-slate-900">Catalog sync</div>
+            <p class="mt-2 text-sm leading-6 text-slate-600">{{ profile_summary.profile_count or 0 }} products, {{ profile_summary.category_profile_count or 0 }} categories, and {{ profile_summary.storefront_site_count or 0 }} storefront sites are available.</p>
+            <form class="mt-4" method="post" action="{{ url_for('fulcrum.sync_catalog') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="redirect_to" value="store_checks"><button class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="submit">Run catalog sync</button></form>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-3"><div class="text-lg font-semibold text-slate-900">Theme verification</div><span class="rounded-full border px-2.5 py-1 text-xs font-semibold {{ 'ra-pill-pass' if theme_status.verification_status == 'ready' else 'ra-pill-fail' }}">{{ 'Ready' if theme_status.verification_status == 'ready' else 'Needs action' }}</span></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">{{ theme_status.summary }}</p>
+            {% if theme_status.details %}
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">{% if theme_status.details.missing %}<div><strong class="text-slate-900">Missing:</strong> {{ theme_status.details.missing }}</div>{% endif %}{% if theme_status.failure_classification %}<div class="mt-1"><strong class="text-slate-900">Fix type:</strong> {{ theme_status.failure_classification.replace('_', ' ') }}</div>{% endif %}<div class="mt-1"><strong class="text-slate-900">Next action:</strong> {{ theme_status.details.next_action }}</div></div>
+            {% endif %}
+            <div class="mt-4 flex flex-wrap gap-2">
+              <form method="post" action="{{ url_for('fulcrum.theme_verify') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" type="submit">Run theme check</button></form>
+              {% if theme_status.failure_classification == 'automatic' %}<form method="post" action="{{ url_for('fulcrum.theme_fix_auto') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><button class="ra-button-pass rounded-2xl border px-4 py-2 text-sm font-semibold" type="submit">Fix automatically</button></form>{% endif %}
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="text-lg font-semibold text-slate-900">Publishing readiness</div>
+            <p class="mt-2 text-sm leading-6 text-slate-600">Ready to generate requires BigCommerce, Search Console, GA4, and catalog sync. Ready Set Published additionally requires a verified theme hook and enabled publishing settings.</p>
+            <a class="mt-4 inline-flex rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ setup_href }}#publishing-settings">Open publishing settings</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="publishing-settings" class="border-b border-slate-200 px-6 py-8 lg:px-8">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div><div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Settings</div><h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">Enable publishing</h2><p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Publishing settings affect readiness. Ready Set Published requires generation readiness, a verified theme hook, and publishing enabled.</p></div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"><div class="font-semibold text-slate-900">{{ readiness_label }}</div><div class="mt-1">{{ readiness_detail }}</div></div>
+        </div>
+
+        <form id="publish-settings-form" class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-5" method="post" action="{{ url_for('fulcrum.save_publish_settings') }}">
+          <input type="hidden" name="store_hash" value="{{ store_hash }}">
+          <div class="space-y-4">
+            <label class="flex items-start gap-3"><input class="mt-1 h-4 w-4 rounded border-slate-300" type="checkbox" name="publishing_enabled" {% if publish_settings.publishing_enabled %}checked{% endif %}><span><span class="block text-sm font-semibold text-slate-900">Enable publishing</span><span class="block text-sm text-slate-600">Route Authority can publish once setup is complete and theme verification passes.</span></span></label>
+            <label class="flex items-start gap-3"><input class="mt-1 h-4 w-4 rounded border-slate-300" type="checkbox" name="category_publishing_enabled" {% if publish_settings.category_publishing_enabled %}checked{% endif %}><span><span class="block text-sm font-semibold text-slate-900">Enable category publishing</span><span class="block text-sm text-slate-600">Requires the category theme hook. If it is missing, readiness will stay blocked until fixed.</span></span></label>
+          </div>
+          <div class="mt-5 flex items-center gap-3"><button id="publish-settings-submit" class="rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" type="submit">Save settings</button><div id="publish-settings-status" class="text-sm text-slate-500" aria-live="polite">Changes save automatically.</div></div>
+        </form>
+
+        <div class="mt-6 rounded-3xl border border-sky-200 bg-sky-50 p-5"><div class="text-sm font-semibold text-slate-900">Store policy links</div><p class="mt-2 text-sm leading-6 text-slate-700">Privacy policy: <a class="font-semibold text-sky-700 underline" href="{{ privacy_policy_url }}">{{ privacy_policy_url }}</a><br>Support: <a class="font-semibold text-sky-700 underline" href="{{ support_url }}">{{ support_url }}</a><br>Terms of service: <a class="font-semibold text-sky-700 underline" href="{{ terms_url }}">{{ terms_url }}</a></p></div>
+      </section>
+    </div>
+  </main>
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function () {
+    const forms = Array.from(document.querySelectorAll('.js-google-resource-form'));
+    if (!forms.length) return;
+    forms.forEach((form) => {
+      const select = form.querySelector('select[name="selected_resource_id"]');
+      const button = form.querySelector('button[type="submit"]');
+      const status = form.querySelector('.js-google-resource-status');
+      const integrationLabel = form.dataset.integrationLabel || 'Google resource';
+      let timer = null;
+      function setBusy(isBusy, message, isError) {
+        if (select) select.disabled = isBusy;
+        if (button) {
+          button.disabled = isBusy;
+          button.classList.toggle('opacity-60', isBusy);
+        }
+        if (status) {
+          status.textContent = message || '';
+          status.className = 'js-google-resource-status text-sm ' + (isError ? 'text-red-700' : 'text-slate-500');
+        }
+      }
+      function submitSelection() {
+        if (!select || !select.value) {
+          setBusy(false, 'Choose a property first.', true);
+          return;
+        }
+        setBusy(true, 'Saving selection and queueing sync...', false);
+        const data = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'},
+          credentials: 'same-origin'
+        })
+          .then(async (response) => {
+            let payload = {};
+            try { payload = await response.json(); } catch (error) { payload = {}; }
+            if (!response.ok || payload.status !== 'ok') {
+              throw new Error(payload.message || ('Could not verify ' + integrationLabel + '.'));
+            }
+            setBusy(false, payload.message || (integrationLabel + ' is ready.'), false);
+            window.setTimeout(function () { window.location.reload(); }, 300);
+          })
+          .catch((error) => {
+            setBusy(false, error.message || ('Could not verify ' + integrationLabel + '.'), true);
+          });
+      }
+      if (select) {
+        select.addEventListener('change', function () {
+          if (timer) clearTimeout(timer);
+          timer = window.setTimeout(submitSelection, 150);
+        });
+      }
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (timer) clearTimeout(timer);
+        submitSelection();
+      });
+    });
+  })();
+</script>
+<script>
+  (function () {
+    const form = document.getElementById('publish-settings-form');
+    if (!form) return;
+    const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"]'));
+    const submitButton = document.getElementById('publish-settings-submit');
+    const status = document.getElementById('publish-settings-status');
+    let saveTimer = null;
+    function setBusy(isBusy, message, isError) {
+      checkboxes.forEach((input) => { input.disabled = isBusy; });
+      if (submitButton) {
+        submitButton.disabled = isBusy;
+        submitButton.classList.toggle('opacity-60', isBusy);
+      }
+      if (status) {
+        status.textContent = message || '';
+        status.className = 'text-sm ' + (isError ? 'text-red-700' : 'text-slate-500');
+      }
+    }
+    function submitSettings() {
+      setBusy(true, 'Saving settings...', false);
+      const data = new FormData(form);
+      checkboxes.forEach((input) => {
+        if (!input.checked) { data.delete(input.name); }
+      });
+      fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'},
+        credentials: 'same-origin'
+      })
+        .then(async (response) => {
+          let payload = {};
+          try { payload = await response.json(); } catch (error) { payload = {}; }
+          if (!response.ok || payload.status !== 'ok') {
+            throw new Error(payload.message || 'Could not save publishing settings.');
+          }
+          setBusy(false, payload.message || 'Settings saved.', false);
+        })
+        .catch((error) => {
+          setBusy(false, error.message || 'Could not save publishing settings.', true);
+        });
+    }
+    checkboxes.forEach((input) => {
+      input.addEventListener('change', function () {
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(submitSettings, 150);
+      });
+    });
+  })();
+</script>
+{% endblock %}
+
+
+
+
+

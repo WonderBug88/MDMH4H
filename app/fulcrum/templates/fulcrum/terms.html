@@ -1,0 +1,19 @@
+﻿{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Terms of Service{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl px-4 py-6">
+  <section class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">Terms of Service</h1>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Route Authority is provided as a merchant-facing BigCommerce app that connects store data, Google Search Console, and GA4 in order to generate internal-link recommendations, publish approved routing blocks, and report store-scoped performance.
+    </p>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Merchants remain responsible for reviewing store configuration, maintaining valid BigCommerce and Google authorizations, and confirming that any published changes match their merchandising and SEO requirements. Route Authority may pause or remove app-managed blocks when review, uninstall, or access-revocation workflows require cleanup.
+    </p>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Related links: <a class="font-semibold text-sky-700 underline" href="{{ privacy_policy_url }}">Privacy Policy</a> and <a class="font-semibold text-sky-700 underline" href="{{ support_url }}">Support</a>.
+    </p>
+  </section>
+</div>
+{% endblock %}

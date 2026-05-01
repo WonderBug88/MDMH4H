@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Route Authority Installed</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --line: #dbe4ee;
+        --accent: #0f172a;
+        --accent-soft: #e2e8f0;
+        --link: #1d4ed8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+        color: var(--text);
+      }
+      .topbar { height: 12px; background: #0f172a; }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        padding: 28px;
+      }
+      .eyebrow {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+      h1 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 1.1;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .stack { display: grid; gap: 18px; }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: fit-content;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid #bbf7d0;
+        background: #ecfdf5;
+        color: #047857;
+        font-weight: 700;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #10b981;
+      }
+      .meta {
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: #f8fafc;
+      }
+      .meta strong { color: var(--text); }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 700;
+        border: 1px solid var(--line);
+        color: var(--text);
+        background: #fff;
+      }
+      .btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        font-size: 14px;
+      }
+      .links a { color: var(--link); text-decoration: none; }
+      .links a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar"></div>
+    <div class="wrap">
+      <section class="card stack">
+        <p class="eyebrow">BigCommerce install</p>
+        <div class="status"><span class="dot"></span>Install callback completed</div>
+        <h1>Route Authority is connected.</h1>
+        <p>The install handshake completed for store <strong>{{ store_hash }}</strong>. Continue into setup to verify Google connections, storefront checks, and publishing settings.</p>
+        <div class="meta"><strong>Next step:</strong> open setup and finish store verification. If BigCommerce opened this page inside the app frame, the install itself already worked.</div>
+        <div class="actions">
+          <a class="btn btn-primary" href="{{ setup_url }}">Open setup</a>
+          <a class="btn" href="{{ dashboard_url }}">Open results</a>
+        </div>
+        <div class="links">
+          <a href="{{ privacy_policy_url }}">Privacy Policy</a>
+          <a href="{{ support_url }}">Support</a>
+          <a href="{{ terms_url }}">Terms of Service</a>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

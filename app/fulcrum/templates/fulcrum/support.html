@@ -1,0 +1,19 @@
+﻿{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Support{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl px-4 py-6">
+  <section class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">Support</h1>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Use this page as the merchant support destination for Route Authority setup, OAuth, catalog sync, theme verification, and publishing issues. If a theme verification fix is marked support-required, this is the escalation path the merchant should receive.
+    </p>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Store: <strong class="text-slate-900">{{ store_hash or 'unknown' }}</strong>
+    </p>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Legal links: <a class="font-semibold text-sky-700 underline" href="{{ privacy_policy_url }}">Privacy Policy</a> and <a class="font-semibold text-sky-700 underline" href="{{ terms_url }}">Terms of Service</a>.
+    </p>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,1269 @@
+{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Admin{% endblock %}
+
+{% block styles %}
+<style>
+  .status-pill { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.25rem 0.55rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+  .gsc-shell { margin-bottom: 1.5rem; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 32px; background: #fff; box-shadow: 0 20px 48px rgba(148, 163, 184, 0.18); }
+  .gsc-shell-inner { padding: 1.5rem; }
+  .gsc-title { font-size: 1.55rem; font-weight: 700; color: #0f172a; }
+  .gsc-subtitle { margin-top: 0.55rem; font-size: 0.95rem; line-height: 1.6; color: #475569; max-width: 70rem; }
+  .gsc-chip-row { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .gsc-chip { display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid #e2e8f0; border-radius: 9999px; background: #f8fafc; padding: 0.7rem 1rem; font-size: 0.9rem; color: #334155; }
+  .gsc-chip strong { color: #0f172a; }
+  .gsc-main-grid { margin-top: 1.5rem; display: grid; gap: 1.5rem; }
+  .gsc-card { border: 1px solid #e2e8f0; border-radius: 24px; background: #fff; padding: 1.5rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .gsc-card-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; }
+  .gsc-card-note { margin-top: 0.4rem; font-size: 0.9rem; color: #64748b; }
+  .gsc-chart-stage { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: stretch; }
+  .gsc-chart-col { display: flex; flex-direction: column; }
+  .gsc-bar-track { display: flex; height: 14rem; align-items: end; justify-content: center; gap: 0.65rem; border-bottom: 1px solid #e2e8f0; padding: 0 0.4rem 0.6rem; background: linear-gradient(to top, #f8fafc 0%, #ffffff 100%); border-radius: 1rem 1rem 0 0; }
+  .gsc-bar { width: 1.45rem; min-height: 0.5rem; border-radius: 0.9rem 0.9rem 0 0; box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08); }
+  .gsc-bar-current { background: #2563eb; }
+  .gsc-bar-prior { background: #94a3b8; }
+  .gsc-bar-year { background: #10b981; }
+  .gsc-chart-label { margin-top: 1rem; text-align: center; font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .gsc-chart-raw { margin-top: 0.45rem; text-align: center; font-size: 0.78rem; line-height: 1.55; color: #64748b; }
+  .gsc-legend { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; font-weight: 700; color: #475569; }
+  .gsc-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .gsc-legend-dot { width: 0.75rem; height: 0.75rem; border-radius: 9999px; }
+  .gsc-table-wrap { margin-top: 1.25rem; overflow-x: auto; }
+  .gsc-table-shell { min-width: 860px; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 20px; }
+  .gsc-metric-table { width: 100%; border-collapse: collapse; }
+  .gsc-metric-table thead th { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 0.95rem 1rem; text-align: left; font-size: 0.85rem; font-weight: 700; color: #334155; }
+  .gsc-metric-table tbody td { border-bottom: 1px solid #e2e8f0; padding: 1rem; vertical-align: top; font-size: 0.92rem; color: #334155; }
+  .gsc-metric-table tbody tr:last-child td { border-bottom: 0; }
+  .gsc-metric-table tbody td:first-child { font-weight: 700; color: #0f172a; }
+  .gsc-summary-pill { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 700; }
+  .gsc-pill-up { background: #dcfce7; color: #047857; }
+  .gsc-pill-down { background: #ffe4e6; color: #be123c; }
+  .gsc-pill-flat { background: #e2e8f0; color: #475569; }
+  .gsc-takeaway { margin-top: 1.5rem; border: 1px solid #dbeafe; border-radius: 24px; background: linear-gradient(90deg, #ecfdf5 0%, #ffffff 48%, #ecfeff 100%); padding: 1.5rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .gsc-takeaway-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .gsc-kicker { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #64748b; }
+  .gsc-takeaway-title { margin-top: 0.25rem; font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+  .gsc-takeaway-body { margin-top: 0.65rem; max-width: 56rem; font-size: 0.95rem; line-height: 1.7; color: #334155; }
+  .gsc-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; background: #0f172a; padding: 0.7rem 1rem; font-size: 0.85rem; font-weight: 700; color: #fff; }
+  @media (min-width: 1100px) {
+    .gsc-main-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+    .gsc-takeaway-grid { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  @media (max-width: 767px) {
+    .gsc-shell-inner { padding: 1rem; }
+    .gsc-title { font-size: 1.3rem; }
+    .gsc-chart-stage { gap: 0.6rem; }
+    .gsc-bar-track { height: 11rem; gap: 0.45rem; }
+    .gsc-bar { width: 1rem; }
+  }
+  .review-shell { margin-bottom: 1.5rem; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 32px; background: #fff; box-shadow: 0 20px 48px rgba(148, 163, 184, 0.18); }
+  .review-shell-header { border-bottom: 1px solid #e2e8f0; background: linear-gradient(90deg, #020617 0%, #0f172a 55%, #1e293b 100%); padding: 1.5rem; color: #fff; }
+  .review-shell-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .review-shell-tag { display: inline-flex; align-items: center; gap: 0.55rem; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 9999px; background: rgba(255, 255, 255, 0.10); padding: 0.45rem 0.85rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #e2e8f0; }
+  .review-shell-tag svg,
+  .review-oldest-icon svg,
+  .review-stat-icon svg,
+  .review-alert-icon svg,
+  .review-alert-button svg { width: 1rem; height: 1rem; }
+  .review-shell-title { margin-top: 0.85rem; font-size: 1.8rem; line-height: 1.1; font-weight: 700; color: #fff; }
+  .review-shell-subtitle { margin-top: 0.65rem; max-width: 52rem; font-size: 0.95rem; line-height: 1.65; color: rgba(226, 232, 240, 0.88); }
+  .review-oldest { display: flex; align-items: center; gap: 0.9rem; align-self: flex-start; border: 1px solid rgba(251, 113, 133, 0.18); border-radius: 24px; background: rgba(251, 113, 133, 0.12); padding: 0.95rem 1rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12); }
+  .review-oldest-icon { display: flex; width: 2.8rem; height: 2.8rem; align-items: center; justify-content: center; border-radius: 18px; background: rgba(254, 205, 211, 0.18); color: #ffe4e6; }
+  .review-overline { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 228, 230, 0.82); }
+  .review-oldest-value { margin-top: 0.2rem; font-size: 1.2rem; font-weight: 700; color: #fff1f2; }
+  .review-oldest-meta { margin-top: 0.2rem; font-size: 0.78rem; color: rgba(255, 228, 230, 0.82); }
+  .review-shell-body { padding: 1.5rem; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
+  .review-stats { display: grid; gap: 1rem; }
+  .review-stat { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; border: 1px solid #e2e8f0; border-radius: 24px; padding: 1.25rem; background: #fff; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
+  .review-stat-warning { border-color: #fde68a; background: #fffbeb; color: #78350f; }
+  .review-stat-calm { border-color: #a7f3d0; background: #ecfdf5; color: #065f46; }
+  .review-stat-default { border-color: #cbd5e1; background: #ffffff; color: #0f172a; }
+  .review-stat-copy { flex: 1 1 auto; }
+  .review-stat-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #64748b; }
+  .review-stat-value { margin-top: 0.5rem; font-size: 2rem; line-height: 1; font-weight: 700; letter-spacing: -0.03em; color: #0f172a; }
+  .review-stat-subtext { margin-top: 0.75rem; font-size: 0.92rem; line-height: 1.6; color: #475569; }
+  .review-stat-warning .review-stat-label,
+  .review-stat-warning .review-stat-value { color: #78350f; }
+  .review-stat-calm .review-stat-label,
+  .review-stat-calm .review-stat-value { color: #065f46; }
+  .review-stat-icon { display: flex; width: 2.8rem; height: 2.8rem; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 18px; background: #0f172a; color: #fff; box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12); }
+  .review-alert { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid #fde68a; border-radius: 24px; background: linear-gradient(90deg, #fffbeb 0%, #ffffff 52%, #fff1f2 100%); padding: 1.25rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .review-alert-main { display: flex; align-items: flex-start; gap: 1rem; }
+  .review-alert-icon { display: flex; width: 2.8rem; height: 2.8rem; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 18px; background: #fef3c7; color: #b45309; }
+  .review-alert-kicker { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #b45309; }
+  .review-alert-title { margin-top: 0.25rem; font-size: 1.12rem; font-weight: 700; color: #0f172a; }
+  .review-alert-body { margin-top: 0.55rem; font-size: 0.92rem; line-height: 1.65; color: #334155; }
+  .review-alert-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem; align-self: flex-start; border: 1px solid #cbd5e1; border-radius: 18px; background: #fff; padding: 0.8rem 1rem; font-size: 0.92rem; font-weight: 700; color: #0f172a; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05); transition: background 0.2s ease, border-color 0.2s ease; }
+  .review-alert-button:hover { background: #f8fafc; border-color: #94a3b8; }
+  .review-table-shell { margin-top: 1.25rem; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 24px; background: #fff; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .review-queue-table { width: 100%; min-width: 1150px; border-collapse: collapse; }
+  .review-queue-table thead th { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 1rem; text-align: left; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; }
+  .review-queue-table tbody td { border-top: 1px solid #f1f5f9; padding: 1rem; vertical-align: top; font-size: 0.88rem; color: #475569; }
+  .review-empty { margin-top: 1.25rem; border: 1px solid #bbf7d0; border-radius: 20px; background: #f0fdf4; padding: 1rem 1.1rem; font-size: 0.92rem; color: #166534; }
+  .review-folds { margin-top: 1.25rem; display: grid; gap: 1rem; }
+  .review-fold { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 24px; background: #fff; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .review-fold[open] { border-color: #cbd5e1; }
+  .review-fold-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; list-style: none; padding: 1rem 1.1rem; background: #f8fafc; }
+  .review-fold-summary::-webkit-details-marker { display: none; }
+  .review-fold-summary-copy { display: flex; min-width: 0; flex-direction: column; gap: 0.25rem; }
+  .review-fold-label { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .review-fold-note { font-size: 0.82rem; color: #64748b; }
+  .review-fold-meta { display: inline-flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
+  .review-fold-badge { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.35rem 0.75rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .review-fold-badge-active { background: #fee2e2; color: #b91c1c; }
+  .review-fold-badge-calm { background: #dcfce7; color: #166534; }
+  .review-fold-badge-neutral { background: #e2e8f0; color: #475569; }
+  .review-fold-chevron { color: #475569; transition: transform 0.2s ease; }
+  .review-fold[open] .review-fold-chevron { transform: rotate(90deg); }
+  .review-fold-body { padding: 0 1.1rem 1.1rem; }
+  .section-fold { overflow: hidden; }
+  .section-fold-summary { display: flex; cursor: pointer; list-style: none; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .section-fold-summary::-webkit-details-marker { display: none; }
+  .section-fold-copy { min-width: 0; }
+  .section-fold-chevron { margin-top: 0.2rem; color: #475569; transition: transform 0.2s ease; }
+  .section-fold[open] .section-fold-chevron { transform: rotate(90deg); }
+  .section-fold-body { margin-top: 1rem; }
+  @media (min-width: 900px) {
+    .review-shell-grid { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+    .review-alert { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  @media (min-width: 768px) {
+    .review-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1280px) {
+    .review-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 767px) {
+    .review-shell-header,
+    .review-shell-body { padding: 1rem; }
+    .review-shell-title { font-size: 1.45rem; }
+    .review-stat-value { font-size: 1.7rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-6">
+  <div class="mb-6 rounded-xl bg-white p-6 shadow">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-wide text-red-600">Route Authority Admin</p>
+        <h1 class="mt-1 text-3xl font-bold text-gray-900">System And Review Tools</h1>
+        <p class="mt-2 text-sm text-gray-600">
+          This page keeps the admin and debug workflow out of the user-facing results screen.
+        </p>
+        <div class="mt-3 flex flex-wrap gap-4 text-sm text-gray-500">
+          <span>Store <strong class="text-gray-700">{{ store_hash }}</strong></span>
+          <span>Latest run <strong class="text-gray-700">{{ latest_gate_run_id or 'none' }}</strong></span>
+          {% if active_run %}<span>Generation <strong class="text-amber-700">run {{ active_run.run_id }} {{ active_run.status }}</strong></span>{% endif %}
+          <span>Published blocks <strong class="text-gray-700">{{ publication_count or 0 }}</strong></span>
+          <span>Review bucket <strong class="text-gray-700">{{ review_bucket_count or 0 }}</strong></span>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <form method="post" action="{{ url_for('fulcrum.sync_catalog') }}">
+          <input type="hidden" name="store_hash" value="{{ store_hash }}">
+          <input type="hidden" name="redirect_to" value="admin">
+          <button class="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" type="submit">Sync Catalog</button>
+        </form>
+        <form method="post" action="{{ url_for('fulcrum.generate_run') }}">
+          <input type="hidden" name="store_hash" value="{{ store_hash }}">
+          <input type="hidden" name="cluster" value="">
+          <input type="hidden" name="redirect_to" value="admin">
+          <button class="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500" type="submit">Rerun Routing Pipeline</button>
+        </form>
+        <form method="post" action="{{ url_for('fulcrum.review_edge_cases_bulk') }}">
+          <input type="hidden" name="store_hash" value="{{ store_hash }}">
+          <input type="hidden" name="redirect_to" value="admin">
+          <button class="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" type="submit">Review All Edge Cases</button>
+        </form>
+        <form method="post" action="{{ url_for('fulcrum.publish_all_results') }}">
+          <input type="hidden" name="store_hash" value="{{ store_hash }}">
+          <input type="hidden" name="redirect_to" value="admin">
+          <button class="rounded border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100" type="submit">Publish All Results</button>
+        </form>
+        <a class="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="{{ url_for('fulcrum.admin_quality_dashboard', store_hash=store_hash) }}">Audit And Verification</a>
+        <a class="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="{{ url_for('fulcrum.dashboard', store_hash=store_hash) }}">Back To Results</a>
+      </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mt-4 space-y-2">
+          {% for category, message in messages %}
+            <div class="rounded border px-3 py-2 text-sm {{ 'border-red-200 bg-red-50 text-red-800' if category in ['danger', 'error'] else 'border-green-200 bg-green-50 text-green-800' }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% if active_run %}
+      <div class="mt-4 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        Route Authority is currently working on run {{ active_run.run_id }}. The latest completed run stays visible until this one finishes.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="gsc-shell">
+    <!-- Create a summary agent that reads GSC patterns, compares current vs prior vs last year, and produces a concise explanation of what likely changed, what is improving, what is weakening, and what action should be tried next. -->
+    {% set gsc_takeaway = gsc_performance_summary.get('takeaway', {}) %}
+    {% set gsc_chart_rows = gsc_performance_summary.get('comparison_chart_rows', []) %}
+    <div class="gsc-shell-inner">
+      <div>
+        <h2 class="gsc-title">GSC Data</h2>
+        <p class="gsc-subtitle">
+          This shows how pages with live Route Authority blocks are performing across the current 90 days, the prior 90 days, and the same 90-day window last year.
+        </p>
+        <div class="gsc-chip-row">
+          <span class="gsc-chip"><strong>{{ gsc_performance_summary.page_count or 0 }}</strong> live Route Authority pages</span>
+          <span class="gsc-chip"><strong>{{ gsc_performance_summary.anchor_end_date or 'No GSC data' }}</strong> current window end</span>
+          {% if gsc_performance_summary.cached_at_display %}
+          <span class="gsc-chip"><strong>{{ gsc_performance_summary.cached_at_relative or gsc_performance_summary.cached_at_display }}</strong> last refreshed</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if gsc_performance_summary.metric_rows %}
+      <div class="gsc-main-grid">
+        <div class="gsc-card">
+          <div>
+            <div class="gsc-card-title">Current vs Prior vs Last Year</div>
+            <div class="gsc-card-note">Grouped comparison for the most important search signals. Raw values sit directly under each metric.</div>
+          </div>
+          <div>
+            <div class="gsc-chart-stage">
+              {% for row in gsc_chart_rows %}
+              <div class="gsc-chart-col">
+                <div class="gsc-bar-track">
+                  <div class="gsc-bar gsc-bar-current" style="height: {{ row.current_pct }}%;" title="Current 90 Days: {{ row.current_display }}"></div>
+                  <div class="gsc-bar gsc-bar-prior" style="height: {{ row.prior_pct }}%;" title="Prior 90 Days: {{ row.prior_display }}"></div>
+                  <div class="gsc-bar gsc-bar-year" style="height: {{ row.year_prior_pct }}%;" title="Same 90 Days Last Year: {{ row.year_prior_display }}"></div>
+                </div>
+                <div class="gsc-chart-label">{{ row.metric }}</div>
+                <div class="gsc-chart-raw">
+                  <div>{{ row.current_display }}</div>
+                  <div>{{ row.prior_display }}</div>
+                  <div>{{ row.year_prior_display }}</div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="gsc-legend">
+              <span class="gsc-legend-item"><span class="gsc-legend-dot gsc-bar-current"></span>Current 90 Days</span>
+              <span class="gsc-legend-item"><span class="gsc-legend-dot gsc-bar-prior"></span>Prior 90 Days</span>
+              <span class="gsc-legend-item"><span class="gsc-legend-dot gsc-bar-year"></span>Same 90 Days Last Year</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gsc-card">
+          <div>
+            <div class="gsc-card-title">Performance Table</div>
+          </div>
+          <div class="gsc-table-wrap">
+            <div class="gsc-table-shell">
+              <table class="gsc-metric-table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Current 90 Days</th>
+                    <th>Prior 90 Days</th>
+                    <th>Vs Prior 90</th>
+                    <th>Same 90 Days Last Year</th>
+                    <th>Vs Last Year</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in gsc_performance_summary.metric_rows %}
+                  <tr>
+                    <td>{{ row.label }}</td>
+                    <td>{{ row.current_display }}</td>
+                    <td>{{ row.prior_display }}</td>
+                    <td>
+                      <span class="gsc-summary-pill {% if row.prior_change.tone == 'green' %}gsc-pill-up{% elif row.prior_change.tone == 'red' %}gsc-pill-down{% else %}gsc-pill-flat{% endif %}">{{ row.prior_change.display }}</span>
+                    </td>
+                    <td>{{ row.year_prior_display }}</td>
+                    <td>
+                      <span class="gsc-summary-pill {% if row.year_prior_change.tone == 'green' %}gsc-pill-up{% elif row.year_prior_change.tone == 'red' %}gsc-pill-down{% else %}gsc-pill-flat{% endif %}">{{ row.year_prior_change.display }}</span>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gsc-takeaway">
+        <div class="gsc-takeaway-grid">
+          <div>
+            <p class="gsc-kicker">
+              {{ gsc_takeaway.get('label', 'Route Authority takeaway') }}
+            </p>
+            <h3 class="gsc-takeaway-title">
+              {{ gsc_takeaway.get('title', 'Route Authority performance needs a fresh read') }}
+            </h3>
+            <p class="gsc-takeaway-body">
+              {{ gsc_takeaway.get('body', 'Refresh the GSC summary so Route Authority can compare the current 90 days against the prior window and the same period last year.') }}
+            </p>
+          </div>
+          <span class="gsc-badge">
+            {{ gsc_takeaway.get('badge', 'Needs refresh') }}
+          </span>
+        </div>
+      </div>
+      {% else %}
+      <div class="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        No live Route Authority pages are available to compare in GSC yet.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% set queue_alert_ns = namespace(item=None) %}
+  {% for alert in operational_snapshot.alerts or [] %}
+    {% if alert.title == 'Recent generation failures detected' %}
+      {% set queue_alert_ns.item = alert %}
+    {% endif %}
+  {% endfor %}
+  {% if not queue_alert_ns.item and (operational_snapshot.counts.urgent or operational_snapshot.counts.watch) and operational_snapshot.alerts %}
+    {% set queue_alert_ns.item = operational_snapshot.alerts[0] %}
+  {% endif %}
+  {% set queue_alert = queue_alert_ns.item %}
+  <div class="review-shell" id="customer-review-queue">
+    <div class="review-shell-header">
+      <div class="review-shell-grid">
+        <div>
+          <div class="review-shell-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"></path>
+              <path d="M19 3v4"></path>
+              <path d="M21 5h-4"></path>
+            </svg>
+            Admin support workflow
+          </div>
+          <h2 class="review-shell-title">Customer Review Queue</h2>
+          <p class="review-shell-subtitle">When a merchant sends a result to review, it becomes a support item here. Route Authority audits why it was flagged, shows what likely happened, and gives admin support a path to document the investigation or apply a live fix.</p>
+        </div>
+        <div class="review-oldest">
+          <div class="review-oldest-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="8"></circle>
+              <path d="M12 8v4l2.5 2.5"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="review-overline">Oldest request</div>
+            <div class="review-oldest-value">{{ edge_case_summary.oldest_request_relative or 'none' }}</div>
+            <div class="review-oldest-meta">{{ edge_case_summary.oldest_request_display or 'No queued requests' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-shell-body">
+      <div class="review-stats">
+        <div class="review-stat review-stat-warning">
+          <div class="review-stat-copy">
+            <div class="review-stat-label">Waiting for support</div>
+            <div class="review-stat-value">{{ edge_case_summary.open_count or 0 }}</div>
+            <div class="review-stat-subtext">
+              {% if edge_case_summary.open_count %}
+              Items needing support investigation right now.
+              {% else %}
+              No items are waiting for support investigation.
+              {% endif %}
+            </div>
+          </div>
+          <div class="review-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6.5h16"></path>
+              <path d="M6 9.5v8a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 17.5v-8"></path>
+              <path d="M9 12h6"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="review-stat review-stat-calm">
+          <div class="review-stat-copy">
+            <div class="review-stat-label">Live fixes applied</div>
+            <div class="review-stat-value">{{ resolved_edge_case_summary.approved_live_count or 0 }}</div>
+            <div class="review-stat-subtext">
+              {% if resolved_edge_case_summary.approved_live_count %}
+              Support fixes applied live.
+              {% else %}
+              No support items have been restored live recently.
+              {% endif %}
+            </div>
+          </div>
+          <div class="review-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="review-stat review-stat-default">
+          <div class="review-stat-copy">
+            <div class="review-stat-label">Needs human review</div>
+            <div class="review-stat-value">{{ edge_case_summary.needs_human_review_count or 0 }}</div>
+            <div class="review-stat-subtext">
+              {% if edge_case_summary.needs_human_review_count %}
+              Requests the audit flagged for manual escalation.
+              {% else %}
+              No cases currently require escalation.
+              {% endif %}
+            </div>
+          </div>
+          <div class="review-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="5"></circle>
+              <path d="M20 20l-3.5-3.5"></path>
+              <path d="M11 8.5v2.5l1.5 1.5"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="review-stat review-stat-calm">
+          <div class="review-stat-copy">
+            <div class="review-stat-label">Live blocks paused</div>
+            <div class="review-stat-value">{{ edge_case_summary.paused_live_blocks or 0 }}</div>
+            <div class="review-stat-subtext">
+              {% if edge_case_summary.paused_live_blocks %}
+              Customer-facing blocks held until review.
+              {% else %}
+              No customer-facing blocks are paused.
+              {% endif %}
+            </div>
+          </div>
+          <div class="review-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 7v10"></path>
+              <path d="M15 7v10"></path>
+              <circle cx="12" cy="12" r="9"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {% if queue_alert %}
+      <div class="review-alert">
+        <div class="review-alert-main">
+          <div class="review-alert-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.3 4.9L2.6 18a1.2 1.2 0 0 0 1 1.8h16.8a1.2 1.2 0 0 0 1-1.8L13.7 4.9a1.2 1.2 0 0 0-2 0Z"></path>
+              <path d="M12 9v4"></path>
+              <path d="M12 16.5h.01"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="review-alert-kicker">{{ queue_alert.severity_label or 'Warning' }}</div>
+            <div class="review-alert-title">{{ queue_alert.title }}</div>
+            <div class="review-alert-body">{{ queue_alert.detail }}</div>
+          </div>
+        </div>
+        <a class="review-alert-button" href="{{ url_for('fulcrum.admin_quality_dashboard', store_hash=store_hash) }}">
+          {% if queue_alert.title == 'Recent generation failures detected' %}
+          View failure details
+          {% else %}
+          Review system status
+          {% endif %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 6l6 6-6 6"></path>
+          </svg>
+        </a>
+      </div>
+      {% endif %}
+
+      {% set waiting_complete = not edge_case_requests %}
+      {% set resolved_pending_count = resolved_edge_case_summary.pending_approval_count or 0 %}
+      <div class="review-folds">
+        <details class="review-fold" {% if edge_case_requests %}open{% endif %}>
+          <summary class="review-fold-summary">
+            <div class="review-fold-summary-copy">
+              <div class="review-fold-label">{{ 'Complete' if waiting_complete else 'Waiting for Support Investigation' }}</div>
+              <div class="review-fold-note">
+                {% if waiting_complete %}
+                No support items are waiting for investigation.
+                {% else %}
+                Merchant-flagged items waiting for support investigation or live fix.
+                {% endif %}
+              </div>
+            </div>
+            <div class="review-fold-meta">
+              <span class="review-fold-badge {% if waiting_complete %}review-fold-badge-calm{% else %}review-fold-badge-active{% endif %}">
+                {% if waiting_complete %}Complete{% else %}{{ edge_case_requests|length }} waiting{% endif %}
+              </span>
+              <svg class="review-fold-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6"></path>
+              </svg>
+            </div>
+          </summary>
+          <div class="review-fold-body">
+            {% if edge_case_requests %}
+            <div class="review-table-shell">
+              <div class="overflow-x-auto">
+                <table class="review-queue-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Family Query</th>
+                      <th>Current Page</th>
+                      <th>New Target</th>
+                      <th>Why It Was Queued</th>
+                      <th>Agent Diagnosis</th>
+                      <th>Requested</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in edge_case_requests %}
+                    <tr>
+                      <td>
+                        <div class="font-semibold text-gray-900">#{{ row.request_id }}</div>
+                        <div class="mt-1 text-xs text-gray-500">Gate #{{ row.gate_record_id }}</div>
+                      </td>
+                      <td>
+                        <div class="font-medium text-gray-900">{{ row.representative_query }}</div>
+                        <div class="text-xs text-gray-500">{{ row.normalized_query_key }}</div>
+                      </td>
+                      <td>
+                        <div class="font-medium text-gray-900">{{ row.source_name }}</div>
+                        <div class="text-xs text-gray-500">{{ row.source_url }}</div>
+                      </td>
+                      <td>
+                        <div class="font-medium text-gray-900">{{ row.display_target_name or 'No target stored' }}</div>
+                        <div class="text-xs text-gray-500">{{ row.display_target_url or '' }}</div>
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        <div class="font-semibold text-gray-700">{{ row.applied_status_label }}</div>
+                        <div class="mt-1">{{ row.review_status_label }}</div>
+                        <div class="mt-1 text-gray-500">{{ row.resolution_status_label }}</div>
+                        {% if row.reason_summary %}
+                        <div class="mt-1 text-gray-500">{{ row.reason_summary }}</div>
+                        {% endif %}
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        {% if row.agent_review %}
+                        {% set review = row.agent_review %}
+                        <div>
+                          <span class="status-pill {% if review.verdict == 'correct' %}bg-green-100 text-green-800{% elif review.verdict == 'incorrect' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ review.verdict or 'unclear' }}</span>
+                        </div>
+                        <div class="mt-2">{{ review.rationale or 'The agent flagged this route but did not include extra detail.' }}</div>
+                        <div class="mt-2 text-gray-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>
+                        {% else %}
+                        <div class="text-amber-700">Agent diagnosis pending.</div>
+                        {% endif %}
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        <div class="font-semibold text-gray-700">{{ row.requested_at_relative or 'unknown' }}</div>
+                        <div class="mt-1 text-gray-500">{{ row.requested_at_display or '' }}</div>
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        <div class="space-y-2">
+                          {% if row.source_live_url %}
+                          <div><a class="text-red-600 hover:underline" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a></div>
+                          {% endif %}
+                          {% if row.display_target_live_url %}
+                          <div><a class="text-red-600 hover:underline" href="{{ row.display_target_live_url }}" target="_blank" rel="noopener noreferrer">Open new target</a></div>
+                          {% endif %}
+                          <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                            <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                            <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                            <input type="hidden" name="redirect_to" value="admin">
+                            <button class="rounded border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50" type="submit">Mark Investigation Complete</button>
+                          </form>
+                          {% if row.allow_live_approval %}
+                          <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                            <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                            <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                            <input type="hidden" name="restore_live" value="1">
+                            <input type="hidden" name="redirect_to" value="admin">
+                            <button class="rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-100" type="submit">Apply Fix Live</button>
+                          </form>
+                          {% endif %}
+                          {% if row.human_review_mailto %}
+                          <div><a class="text-red-600 hover:underline" href="{{ row.human_review_mailto }}">Escalate support email</a></div>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% else %}
+            <div class="review-empty">All review requests are complete right now.</div>
+            {% endif %}
+          </div>
+        </details>
+
+        <details class="review-fold" {% if resolved_edge_case_requests %}open{% endif %}>
+          <summary class="review-fold-summary">
+            <div class="review-fold-summary-copy">
+              <div class="review-fold-label">{{ 'Support Items Needing Live Fix' if resolved_pending_count else 'Complete' }}</div>
+              <div class="review-fold-note">
+                {% if resolved_pending_count %}
+                Support items that were investigated but still need a live fix stay here.
+                {% else %}
+                All investigated support items have either been fixed live or need no further action.
+                {% endif %}
+              </div>
+            </div>
+            <div class="review-fold-meta">
+              <span class="review-fold-badge {% if resolved_pending_count %}review-fold-badge-neutral{% else %}review-fold-badge-calm{% endif %}">
+                {% if resolved_pending_count %}{{ resolved_pending_count }} need live fix{% else %}Complete{% endif %}
+              </span>
+              <svg class="review-fold-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6"></path>
+              </svg>
+            </div>
+          </summary>
+          <div class="review-fold-body">
+            {% if resolved_edge_case_requests %}
+            <div class="mb-4 grid gap-3 text-sm text-gray-700 sm:grid-cols-2">
+              <div class="rounded border border-gray-200 p-3">
+                <div class="text-xs font-semibold uppercase text-gray-500">Needs Live Fix</div>
+                <div class="mt-1 text-lg font-semibold text-gray-900">{{ resolved_edge_case_summary.pending_approval_count or 0 }}</div>
+              </div>
+              <div class="rounded border border-gray-200 p-3">
+                <div class="text-xs font-semibold uppercase text-gray-500">Latest Needs Live Fix</div>
+                <div class="mt-1 font-semibold text-gray-900">{{ resolved_edge_case_summary.latest_pending_approval_relative or 'none' }}</div>
+                <div class="mt-1 text-xs text-gray-500">{{ resolved_edge_case_summary.latest_pending_approval_display or 'No pending live fixes' }}</div>
+              </div>
+            </div>
+            <div class="review-table-shell">
+              <div class="overflow-x-auto">
+                <table class="review-queue-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Family Query</th>
+                      <th>Current Page</th>
+                      <th>New Target</th>
+                      <th>Resolution</th>
+                      <th>Agent Diagnosis</th>
+                      <th>Investigation Action</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in resolved_edge_case_requests %}
+                    <tr>
+                      <td>
+                        <div class="font-semibold text-gray-900">#{{ row.request_id }}</div>
+                        <div class="mt-1 text-xs text-gray-500">Gate #{{ row.gate_record_id }}</div>
+                      </td>
+                      <td>
+                        <div class="font-medium text-gray-900">{{ row.representative_query }}</div>
+                        <div class="text-xs text-gray-500">{{ row.normalized_query_key }}</div>
+                      </td>
+                      <td>
+                        <div class="font-medium text-gray-900">{{ row.source_name }}</div>
+                        <div class="text-xs text-gray-500">{{ row.source_url }}</div>
+                      </td>
+                      <td>
+                        <div class="font-medium text-gray-900">{{ row.display_target_name or 'No target stored' }}</div>
+                        <div class="text-xs text-gray-500">{{ row.display_target_url or '' }}</div>
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        <div class="font-semibold text-gray-700">{{ row.applied_status_label }}</div>
+                        <div class="mt-1">{{ row.review_status_label }}</div>
+                        <div class="mt-1 text-gray-500">{{ row.resolution_status_label }}</div>
+                        {% if row.reason_summary %}
+                        <div class="mt-1 text-gray-500">{{ row.reason_summary }}</div>
+                        {% endif %}
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        {% if row.agent_review %}
+                        {% set review = row.agent_review %}
+                        <div>
+                          <span class="status-pill {% if review.verdict == 'correct' %}bg-green-100 text-green-800{% elif review.verdict == 'incorrect' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ review.verdict or 'unclear' }}</span>
+                        </div>
+                        <div class="mt-2">{{ review.rationale or 'The agent flagged this route but did not include extra detail.' }}</div>
+                        <div class="mt-2 text-gray-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>
+                        {% else %}
+                        <div class="text-amber-700">Agent diagnosis unavailable.</div>
+                        {% endif %}
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        <div class="font-semibold text-gray-700">{{ row.resolved_at_relative or 'unknown' }}</div>
+                        <div class="mt-1 text-gray-500">{{ row.resolved_at_display or '' }}</div>
+                      </td>
+                      <td class="text-xs text-gray-600">
+                        <div class="space-y-2">
+                          {% if row.source_live_url %}
+                          <div><a class="text-red-600 hover:underline" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a></div>
+                          {% endif %}
+                          {% if row.display_target_live_url %}
+                          <div><a class="text-red-600 hover:underline" href="{{ row.display_target_live_url }}" target="_blank" rel="noopener noreferrer">Open new target</a></div>
+                          {% endif %}
+                          {% if row.can_approve_live %}
+                          <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                            <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                            <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                            <input type="hidden" name="restore_live" value="1">
+                            <input type="hidden" name="redirect_to" value="admin">
+                            <button class="rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-100" type="submit">Apply Fix Live</button>
+                          </form>
+                          {% endif %}
+                          {% if row.human_review_mailto %}
+                          <div><a class="text-red-600 hover:underline" href="{{ row.human_review_mailto }}">Escalate support email</a></div>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% else %}
+            <div class="review-empty">No investigated support items are waiting for a live fix.</div>
+            {% endif %}
+          </div>
+        </details>
+      </div>
+
+      {% if false %}
+      {% if edge_case_requests %}
+      <div class="review-table-shell">
+        <div class="overflow-x-auto">
+          <table class="review-queue-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Family Query</th>
+            <th>Current Page</th>
+            <th>New Target</th>
+            <th>Why It Was Queued</th>
+            <th>Agent Diagnosis</th>
+            <th>Requested</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in edge_case_requests %}
+          <tr>
+            <td>
+              <div class="font-semibold text-gray-900">#{{ row.request_id }}</div>
+              <div class="mt-1 text-xs text-gray-500">Gate #{{ row.gate_record_id }}</div>
+            </td>
+            <td>
+              <div class="font-medium text-gray-900">{{ row.representative_query }}</div>
+              <div class="text-xs text-gray-500">{{ row.normalized_query_key }}</div>
+            </td>
+            <td>
+              <div class="font-medium text-gray-900">{{ row.source_name }}</div>
+              <div class="text-xs text-gray-500">{{ row.source_url }}</div>
+            </td>
+            <td>
+              <div class="font-medium text-gray-900">{{ row.display_target_name or 'No target stored' }}</div>
+              <div class="text-xs text-gray-500">{{ row.display_target_url or '' }}</div>
+            </td>
+            <td class="text-xs text-gray-600">
+              <div class="font-semibold text-gray-700">{{ row.applied_status_label }}</div>
+              <div class="mt-1">{{ row.review_status_label }}</div>
+              <div class="mt-1 text-gray-500">{{ row.resolution_status_label }}</div>
+              {% if row.reason_summary %}
+              <div class="mt-1 text-gray-500">{{ row.reason_summary }}</div>
+              {% endif %}
+            </td>
+            <td class="text-xs text-gray-600">
+              {% if row.agent_review %}
+              {% set review = row.agent_review %}
+              <div>
+                <span class="status-pill {% if review.verdict == 'correct' %}bg-green-100 text-green-800{% elif review.verdict == 'incorrect' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ review.verdict or 'unclear' }}</span>
+              </div>
+              <div class="mt-2">{{ review.rationale or 'The agent flagged this route but did not include extra detail.' }}</div>
+              <div class="mt-2 text-gray-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>
+              {% else %}
+              <div class="text-amber-700">Agent diagnosis pending.</div>
+              {% endif %}
+            </td>
+            <td class="text-xs text-gray-600">
+              <div class="font-semibold text-gray-700">{{ row.requested_at_relative or 'unknown' }}</div>
+              <div class="mt-1 text-gray-500">{{ row.requested_at_display or '' }}</div>
+            </td>
+            <td class="text-xs text-gray-600">
+              <div class="space-y-2">
+                {% if row.source_live_url %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a></div>
+                {% endif %}
+                {% if row.display_target_live_url %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.display_target_live_url }}" target="_blank" rel="noopener noreferrer">Open new target</a></div>
+                {% endif %}
+                <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                  <input type="hidden" name="redirect_to" value="admin">
+                  <button class="rounded border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50" type="submit">Mark Investigation Complete</button>
+                </form>
+                {% if row.allow_live_approval %}
+                <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                  <input type="hidden" name="restore_live" value="1">
+                  <input type="hidden" name="redirect_to" value="admin">
+                  <button class="rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-100" type="submit">Apply Fix Live</button>
+                </form>
+                {% endif %}
+                {% if row.human_review_mailto %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.human_review_mailto }}">Escalate support email</a></div>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+          </table>
+        </div>
+      </div>
+      {% else %}
+      <div class="review-empty">No user-requested edge cases are waiting for review right now.</div>
+      {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  {% if false %}
+  <div class="mb-6 rounded-xl bg-white p-5 shadow" id="recently-resolved">
+    <div class="mb-4">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900">Recent Support Investigations</h2>
+          <p class="mt-1 text-sm text-gray-600">Investigated support items stay here briefly so you can confirm whether a live recommendation still needs to be applied.</p>
+        </div>
+        <span class="status-pill {% if resolved_edge_case_summary.recent_count %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-700{% endif %}">
+          {{ resolved_edge_case_summary.recent_count or 0 }} recent
+        </span>
+      </div>
+      <div class="mt-4 grid gap-3 text-sm text-gray-700 sm:grid-cols-2">
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Recent Support Investigations</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ resolved_edge_case_summary.recent_count or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Latest Investigation</div>
+          <div class="mt-1 font-semibold text-gray-900">{{ resolved_edge_case_summary.latest_resolved_relative or 'none' }}</div>
+          <div class="mt-1 text-xs text-gray-500">{{ resolved_edge_case_summary.latest_resolved_display or 'No investigations yet' }}</div>
+        </div>
+      </div>
+    </div>
+    {% if resolved_edge_case_requests %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="border-b text-left text-gray-500">
+            <th class="pb-2 pr-3">ID</th>
+            <th class="pb-2 pr-3">Family Query</th>
+            <th class="pb-2 pr-3">Current Page</th>
+            <th class="pb-2 pr-3">New Target</th>
+            <th class="pb-2 pr-3">Resolution</th>
+            <th class="pb-2 pr-3">Agent Diagnosis</th>
+            <th class="pb-2 pr-3">Investigation Action</th>
+            <th class="pb-2 pr-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for row in resolved_edge_case_requests %}
+          <tr>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-semibold text-gray-900">#{{ row.request_id }}</div>
+              <div class="mt-1 text-xs text-gray-500">Gate #{{ row.gate_record_id }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-medium text-gray-900">{{ row.representative_query }}</div>
+              <div class="text-xs text-gray-500">{{ row.normalized_query_key }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-medium text-gray-900">{{ row.source_name }}</div>
+              <div class="text-xs text-gray-500">{{ row.source_url }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-medium text-gray-900">{{ row.display_target_name or 'No target stored' }}</div>
+              <div class="text-xs text-gray-500">{{ row.display_target_url or '' }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              <div class="font-semibold text-gray-700">{{ row.applied_status_label }}</div>
+              <div class="mt-1">{{ row.review_status_label }}</div>
+              <div class="mt-1 text-gray-500">{{ row.resolution_status_label }}</div>
+              {% if row.reason_summary %}
+              <div class="mt-1 text-gray-500">{{ row.reason_summary }}</div>
+              {% endif %}
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              {% if row.agent_review %}
+              {% set review = row.agent_review %}
+              <div>
+                <span class="status-pill {% if review.verdict == 'correct' %}bg-green-100 text-green-800{% elif review.verdict == 'incorrect' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ review.verdict or 'unclear' }}</span>
+              </div>
+              <div class="mt-2">{{ review.rationale or 'The agent flagged this route but did not include extra detail.' }}</div>
+              <div class="mt-2 text-gray-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>
+              {% else %}
+              <div class="text-amber-700">Agent diagnosis unavailable.</div>
+              {% endif %}
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              <div class="font-semibold text-gray-700">{{ row.resolved_at_relative or 'unknown' }}</div>
+              <div class="mt-1 text-gray-500">{{ row.resolved_at_display or '' }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              <div class="space-y-2">
+                {% if row.source_live_url %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a></div>
+                {% endif %}
+                {% if row.display_target_live_url %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.display_target_live_url }}" target="_blank" rel="noopener noreferrer">Open new target</a></div>
+                {% endif %}
+                {% if row.can_approve_live %}
+                <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                  <input type="hidden" name="restore_live" value="1">
+                  <input type="hidden" name="redirect_to" value="admin">
+                  <button class="rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-100" type="submit">Apply Fix Live</button>
+                </form>
+                {% endif %}
+                {% if row.human_review_mailto %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.human_review_mailto }}">Escalate support email</a></div>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="rounded border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">No recent investigations yet.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <details class="section-fold mb-6 rounded-xl bg-white p-5 shadow" {% if changed_route_search %}open{% endif %}>
+    <summary class="section-fold-summary">
+      <div class="section-fold-copy">
+        <h2 class="text-xl font-semibold text-gray-900">GSC Data Routed Into Route Authority Families</h2>
+        <p class="mt-1 text-sm text-gray-600">
+          This shows how much eligible GSC query data Route Authority grouped into families and how much of that data it actually routed in the latest completed run.
+        </p>
+      </div>
+      <span class="section-fold-chevron text-sm font-medium text-gray-500">Open</span>
+    </summary>
+    <div class="section-fold-body">
+    <div class="grid gap-3 text-sm text-gray-700 md:grid-cols-3 xl:grid-cols-6">
+      <div class="rounded border border-gray-200 p-3">
+        <div class="text-xs font-semibold uppercase text-gray-500">Raw GSC Query Variants</div>
+        <div class="mt-1 text-lg font-semibold text-gray-900">{{ gsc_routing_coverage.raw_variant_count or 0 }}</div>
+      </div>
+      <div class="rounded border border-gray-200 p-3">
+        <div class="text-xs font-semibold uppercase text-gray-500">Families Created</div>
+        <div class="mt-1 text-lg font-semibold text-gray-900">{{ gsc_routing_coverage.family_count or 0 }}</div>
+      </div>
+      <div class="rounded border border-gray-200 p-3">
+        <div class="text-xs font-semibold uppercase text-gray-500">Families Routed</div>
+        <div class="mt-1 text-lg font-semibold text-gray-900">{{ gsc_routing_coverage.pass_count or 0 }}</div>
+        <div class="mt-1 text-xs text-gray-500">{{ gsc_routing_coverage.pass_family_pct or 0 }}% of families</div>
+      </div>
+      <div class="rounded border border-gray-200 p-3">
+        <div class="text-xs font-semibold uppercase text-gray-500">GSC Data Routed</div>
+        <div class="mt-1 text-lg font-semibold text-gray-900">{{ gsc_routing_coverage.pass_variant_count or 0 }}</div>
+        <div class="mt-1 text-xs text-gray-500">{{ gsc_routing_coverage.pass_variant_pct or 0 }}% of raw variants</div>
+      </div>
+      <div class="rounded border border-gray-200 p-3">
+        <div class="text-xs font-semibold uppercase text-gray-500">Held</div>
+        <div class="mt-1 text-lg font-semibold text-gray-900">{{ gsc_routing_coverage.hold_count or 0 }}</div>
+        <div class="mt-1 text-xs text-gray-500">{{ gsc_routing_coverage.hold_family_pct or 0 }}% of families</div>
+      </div>
+      <div class="rounded border border-gray-200 p-3">
+        <div class="text-xs font-semibold uppercase text-gray-500">Rejected</div>
+        <div class="mt-1 text-lg font-semibold text-gray-900">{{ gsc_routing_coverage.reject_count or 0 }}</div>
+        <div class="mt-1 text-xs text-gray-500">{{ gsc_routing_coverage.reject_family_pct or 0 }}% of families</div>
+      </div>
+    </div>
+    <form method="get" action="{{ url_for('fulcrum.admin_dashboard') }}" class="mt-4 rounded border border-gray-200 bg-gray-50 p-4">
+      <input type="hidden" name="store_hash" value="{{ store_hash }}">
+      <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <input class="rounded border border-gray-300 px-3 py-2 text-sm text-gray-700" type="text" name="changed_route_search" value="{{ changed_route_search or '' }}" placeholder="Search gate id, query, current page, or new route">
+        <button class="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500" type="submit">Submit</button>
+      </div>
+    </form>
+
+  <details class="section-fold mt-4 rounded-xl bg-white p-5 shadow" {% if changed_route_search %}open{% endif %}>
+    <summary class="section-fold-summary">
+      <div class="section-fold-copy">
+        <h2 class="text-xl font-semibold text-gray-900">Where: Route Authority Changed The Route</h2>
+        <p class="mt-1 text-sm text-gray-600">
+          This shows only the results where Route Authority changed the destination from the page Google was already using.
+        </p>
+        <p class="mt-1 text-xs text-gray-500">
+          Showing {{ changed_route_results|length }} of {{ changed_route_filtered_count or 0 }} filtered routes{% if changed_route_search %} for "{{ changed_route_search }}"{% endif %}. Total changed routes in this run: {{ changed_route_total_count or 0 }}.
+        </p>
+      </div>
+      <span class="section-fold-chevron text-sm font-medium text-gray-500">Open</span>
+    </summary>
+    <div class="section-fold-body">
+      <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div class="grid gap-3 text-sm text-gray-700 sm:grid-cols-3">
+          <div class="rounded border border-gray-200 px-3 py-2">
+            <div class="text-xs font-semibold uppercase text-gray-500">Changed Routes</div>
+            <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_summary.changed_count or 0 }}</div>
+          </div>
+          <div class="rounded border border-gray-200 px-3 py-2">
+            <div class="text-xs font-semibold uppercase text-gray-500">Same Type, New Page</div>
+            <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_summary.same_type_changes or 0 }}</div>
+          </div>
+          <div class="rounded border border-gray-200 px-3 py-2">
+            <div class="text-xs font-semibold uppercase text-gray-500">New Page Type</div>
+            <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_summary.wrong_type_changes or 0 }}</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-start justify-end gap-3">
+          <form method="post" action="{{ url_for('fulcrum.run_gate_agent_review') }}">
+            <input type="hidden" name="store_hash" value="{{ store_hash }}">
+            <input type="hidden" name="changed_only" value="1">
+            <input type="hidden" name="limit" value="{{ changed_route_filtered_count or changed_route_total_count or 25 }}">
+            <input type="hidden" name="redirect_to" value="admin">
+            <button class="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" type="submit">Audit Changed Routes</button>
+          </form>
+        </div>
+      </div>
+      <div class="mb-4 grid gap-3 text-sm text-gray-700 md:grid-cols-3 xl:grid-cols-6">
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Audited</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_review_summary.reviewed_count or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Not Audited Yet</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_review_summary.unaudited_count or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Correct</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_review_summary.correct or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Incorrect</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_review_summary.incorrect or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Unclear</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ changed_route_review_summary.unclear or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Reasoning Updated</div>
+          <div class="mt-1 text-sm font-semibold text-gray-900">{{ changed_route_review_reasoning.generated_at or 'not yet' }}</div>
+        </div>
+      </div>
+      {% if changed_route_results %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b text-left text-gray-500">
+              <th class="pb-2 pr-3">Family Query</th>
+              <th class="pb-2 pr-3">GSC Current Page</th>
+              <th class="pb-2 pr-3">Route Authority New Route</th>
+              <th class="pb-2 pr-3">Why It Changed</th>
+              <th class="pb-2 pr-3">AI Review</th>
+              <th class="pb-2 pr-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for row in changed_route_results %}
+            {% set winner = row.suggested_target or {} %}
+            {% set review = row.agent_review or {} %}
+            <tr>
+              <td class="py-3 pr-3 align-top">
+                <div class="font-medium text-gray-900">{{ row.representative_query }}</div>
+                <div class="mt-1 text-xs text-gray-500">Gate ID #{{ row.gate_record_id }}</div>
+                <div class="mt-1 text-xs text-gray-500">Family: {{ row.normalized_query_key }}</div>
+                <div class="mt-2">
+                  <span class="status-pill {{ 'bg-blue-100 text-blue-800' if row.route_change_type == 'same_page_type_new_page' else 'bg-purple-100 text-purple-800' }}">{{ row.route_change_label }}</span>
+                </div>
+              </td>
+              <td class="py-3 pr-3 align-top">
+                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ row.source_entity_type or row.current_page_type or 'unknown' }}</div>
+                <div class="mt-1 font-medium text-gray-900">{{ row.source_name or 'No current page' }}</div>
+                {% if row.source_url %}
+                <div class="mt-1 text-xs text-gray-500">{{ row.source_url }}</div>
+                {% endif %}
+              </td>
+              <td class="py-3 pr-3 align-top">
+                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ winner.entity_type or 'unknown' }}</div>
+                <div class="mt-1 font-medium text-gray-900">{{ winner.name or 'No new route' }}</div>
+                {% if winner.url %}
+                <div class="mt-1 text-xs text-gray-500">{{ winner.url }}</div>
+                {% endif %}
+              </td>
+              <td class="py-3 pr-3 align-top">
+                <div class="text-gray-800">{{ row.reason_summary or 'No reason recorded.' }}</div>
+                {% if row.avg_position_90d is not none %}
+                <div class="mt-1 text-xs text-gray-500">Avg position {{ '%.1f'|format(row.avg_position_90d) }}</div>
+                {% endif %}
+              </td>
+              <td class="py-3 pr-3 align-top">
+                {% if review %}
+                <div class="font-medium text-gray-900">{{ review.verdict or 'unclear' }}</div>
+                {% if review.rationale %}
+                <div class="mt-1 text-xs text-gray-600">{{ review.rationale }}</div>
+                {% endif %}
+                {% else %}
+                <div class="text-gray-500">Not audited yet</div>
+                {% endif %}
+              </td>
+              <td class="py-3 pr-3 align-top">
+                <div class="flex flex-wrap gap-2">
+                  {% if row.source_url %}
+                  <a class="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50" href="{{ row.source_live_url or row.source_url }}" target="_blank" rel="noreferrer">Open current page</a>
+                  {% endif %}
+                  {% if winner.url %}
+                  <a class="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50" href="{{ winner.live_url or winner.url }}" target="_blank" rel="noreferrer">Open new target</a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="rounded border border-dashed border-gray-300 bg-gray-50 px-4 py-5 text-sm text-gray-600">
+        No changed routes match the current search.
+      </div>
+      {% endif %}
+    </div>
+  </details>
+    </div>
+  </details>
+
+  {% if false %}
+  <div class="mb-6 rounded-xl bg-white p-5 shadow">
+    <div class="mb-4">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900">Customer Review Queue</h2>
+          <p class="mt-1 text-sm text-gray-600">When a merchant sends a result to review, it becomes a support item here. Route Authority audits why it was flagged, shows what likely happened, and gives admin support a path to document the investigation or apply a live fix.</p>
+        </div>
+        <span class="status-pill {% if edge_case_summary.open_count %}bg-amber-100 text-amber-800{% else %}bg-green-100 text-green-800{% endif %}">
+          {{ edge_case_summary.open_count or 0 }} waiting
+        </span>
+      </div>
+      <div class="mt-4 grid gap-3 text-sm text-gray-700 sm:grid-cols-3">
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Waiting For Review</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ edge_case_summary.open_count or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Live Blocks Paused</div>
+          <div class="mt-1 text-lg font-semibold text-gray-900">{{ edge_case_summary.paused_live_blocks or 0 }}</div>
+        </div>
+        <div class="rounded border border-gray-200 p-3">
+          <div class="text-xs font-semibold uppercase text-gray-500">Oldest Request</div>
+          <div class="mt-1 font-semibold text-gray-900">{{ edge_case_summary.oldest_request_relative or 'none' }}</div>
+          <div class="mt-1 text-xs text-gray-500">{{ edge_case_summary.oldest_request_display or 'No queued requests' }}</div>
+        </div>
+      </div>
+      {% if operational_snapshot.counts.urgent or operational_snapshot.counts.watch %}
+      <div class="mt-4 rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        {% set top_alert = operational_snapshot.alerts[0] if operational_snapshot.alerts else None %}
+        {% if top_alert %}
+        <strong>{{ top_alert.title }}.</strong> {{ top_alert.detail }}
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% if edge_case_requests %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="border-b text-left text-gray-500">
+            <th class="pb-2 pr-3">ID</th>
+            <th class="pb-2 pr-3">Family Query</th>
+            <th class="pb-2 pr-3">Current Page</th>
+            <th class="pb-2 pr-3">Route Authority Target</th>
+            <th class="pb-2 pr-3">Why It Was Queued</th>
+            <th class="pb-2 pr-3">Agent Diagnosis</th>
+            <th class="pb-2 pr-3">Requested</th>
+            <th class="pb-2 pr-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for row in edge_case_requests %}
+          <tr>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-semibold text-gray-900">#{{ row.request_id }}</div>
+              <div class="mt-1 text-xs text-gray-500">Gate #{{ row.gate_record_id }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-medium text-gray-900">{{ row.representative_query }}</div>
+              <div class="text-xs text-gray-500">{{ row.normalized_query_key }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-medium text-gray-900">{{ row.source_name }}</div>
+              <div class="text-xs text-gray-500">{{ row.source_url }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top">
+              <div class="font-medium text-gray-900">{{ row.target_name or 'No target stored' }}</div>
+              <div class="text-xs text-gray-500">{{ row.target_url or '' }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              <div class="font-semibold text-gray-700">{{ row.applied_status_label }}</div>
+              <div class="mt-1">{{ row.review_status_label }}</div>
+              <div class="mt-1 text-gray-500">{{ row.resolution_status_label }}</div>
+              {% if row.reason_summary %}
+              <div class="mt-1 text-gray-500">{{ row.reason_summary }}</div>
+              {% endif %}
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              {% if row.agent_review %}
+              {% set review = row.agent_review %}
+              <div>
+                <span class="status-pill {% if review.verdict == 'correct' %}bg-green-100 text-green-800{% elif review.verdict == 'incorrect' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ review.verdict or 'unclear' }}</span>
+              </div>
+              <div class="mt-2">{{ review.rationale or 'The agent flagged this route but did not include extra detail.' }}</div>
+              <div class="mt-2 text-gray-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>
+              {% else %}
+              <div class="text-amber-700">Agent diagnosis pending.</div>
+              {% endif %}
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              <div class="font-semibold text-gray-700">{{ row.requested_at_relative or 'unknown' }}</div>
+              <div class="mt-1 text-gray-500">{{ row.requested_at_display or '' }}</div>
+            </td>
+            <td class="py-3 pr-3 align-top text-xs text-gray-600">
+              <div class="space-y-2">
+                {% if row.source_live_url %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a></div>
+                {% endif %}
+                {% if row.target_live_url %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.target_live_url }}" target="_blank" rel="noopener noreferrer">Open Route Authority target</a></div>
+                {% endif %}
+                <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                  <input type="hidden" name="redirect_to" value="admin">
+                  <button class="rounded border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50" type="submit">Mark Investigation Complete</button>
+                </form>
+                <form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="request_id" value="{{ row.request_id }}">
+                  <input type="hidden" name="restore_live" value="1">
+                  <input type="hidden" name="redirect_to" value="admin">
+                  <button class="rounded border border-green-200 bg-green-50 px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-100" type="submit">Apply Fix Live</button>
+                </form>
+                {% if row.human_review_mailto %}
+                <div><a class="text-red-600 hover:underline" href="{{ row.human_review_mailto }}">Escalate support email</a></div>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="rounded border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-800">No user-requested edge cases are waiting for review right now.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

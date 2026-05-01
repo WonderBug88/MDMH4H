@@ -1,0 +1,60 @@
+{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Installation Guide{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl px-4 py-6">
+  <section class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">Installation Guide</h1>
+    <p class="mt-4 text-sm leading-7 text-slate-600">
+      Route Authority installs as a BigCommerce embedded app and then guides merchants through setup, review, and publishing from one hosted workflow.
+    </p>
+    <div class="mt-6 grid gap-6 md:grid-cols-2">
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <h2 class="text-lg font-semibold text-slate-900">Merchant install flow</h2>
+        <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm leading-7 text-slate-600">
+          <li>Install Route Authority from BigCommerce and approve the requested app scopes.</li>
+          <li>After the BigCommerce callbacks complete, Route Authority opens the embedded setup flow.</li>
+          <li>Connect Search Console and GA4, confirm catalog sync, then verify publishing readiness.</li>
+          <li>Use Results to review publishable recommendations and Review to track rows moved out of Results.</li>
+        </ol>
+      </div>
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <h2 class="text-lg font-semibold text-slate-900">Public URLs</h2>
+        <ul class="mt-3 space-y-2 text-sm leading-7 text-slate-600">
+          <li><a class="font-semibold text-sky-700 underline" href="{{ url_for('fulcrum.setup_page', store_hash=store_hash) if store_hash else url_for('fulcrum.setup_page') }}">Setup</a></li>
+          <li><a class="font-semibold text-sky-700 underline" href="{{ url_for('fulcrum.dashboard', store_hash=store_hash) if store_hash else url_for('fulcrum.dashboard') }}">Results</a></li>
+          <li><a class="font-semibold text-sky-700 underline" href="{{ url_for('fulcrum.review_page', store_hash=store_hash) if store_hash else url_for('fulcrum.review_page') }}">Review queue</a></li>
+          <li><a class="font-semibold text-sky-700 underline" href="{{ support_url }}">Support</a></li>
+          <li><a class="font-semibold text-sky-700 underline" href="{{ privacy_policy_url }}">Privacy Policy</a></li>
+          <li><a class="font-semibold text-sky-700 underline" href="{{ terms_url }}">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+      <h2 class="text-lg font-semibold text-slate-900">How to read Results</h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-3">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div class="text-sm font-semibold text-slate-900">Gate decision</div>
+          <p class="mt-2 text-sm leading-7 text-slate-600">Gate status answers whether a query family cleared Route Authority checks. Pass means the family can move toward publishing. Hold or reject means Route Authority did not approve that family for a live block.</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div class="text-sm font-semibold text-slate-900">Routing decision</div>
+          <p class="mt-2 text-sm leading-7 text-slate-600">Routing explains why Route Authority kept Google on the current page or recommended a different target. The current page shows where Google already linked the family, and the Route Authority target shows the preferred landing page when a better route was found.</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div class="text-sm font-semibold text-slate-900">Publish status</div>
+          <p class="mt-2 text-sm leading-7 text-slate-600">Only <strong>Published live</strong> means the result is live on the storefront now. Every other publish label means the row is not live yet, whether it is awaiting publish, blocked by review, held by gating, or kept on the same page.</p>
+        </div>
+      </div>
+      <p class="mt-4 text-sm leading-7 text-slate-600">If a merchant disagrees with a result, sending it to Review moves it out of the active Results workflow and into the admin support queue while support investigates what happened or applies a live fix.</p>
+    </div>
+
+    <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-5">
+      <h2 class="text-lg font-semibold text-slate-900">Reviewer notes</h2>
+      <p class="mt-3 text-sm leading-7 text-slate-600">
+        The current Marketplace packet includes production screenshots for setup, results, review, developer readiness, and terms. Callback verification evidence for install, load, remove-user, uninstall, and reinstall is recorded separately for the submission bundle.
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Route Authority{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='fulcrum/route-authority-icon.png') }}" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.4/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
+    />
+    {% block styles %}{% endblock %}
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900">
+    {% set current_store_hash = store_hash if store_hash is defined and store_hash else request.args.get("store_hash", "") %}
+    {% set endpoint = request.endpoint or "" %}
+    {% set is_internal_page = endpoint.startswith("fulcrum.admin") %}
+    {% set is_setup_page = endpoint == "fulcrum.setup_page" %}
+    {% if is_internal_page %}
+    <header class="border-b border-slate-200 bg-slate-950 text-white shadow-sm">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+        <a class="rounded-2xl bg-white px-4 py-3 shadow-sm" href="{{ url_for('fulcrum.setup_page', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.setup_page') }}">
+          <img class="h-14 w-auto object-contain md:h-16" src="{{ url_for('static', filename='fulcrum/route-authority-logo.png') }}" alt="Route Authority" />
+        </a>
+        <nav class="flex flex-wrap items-center gap-2 text-sm">
+          <a class="rounded px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800' if endpoint == 'fulcrum.setup_page' else '' }}" href="{{ url_for('fulcrum.setup_page', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.setup_page') }}">Setup</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800' if endpoint in ['fulcrum.dashboard', 'fulcrum.dashboard_full'] else '' }}" href="{{ url_for('fulcrum.dashboard', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.dashboard') }}">Results</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800' if endpoint == 'fulcrum.admin_dashboard' else '' }}" href="{{ url_for('fulcrum.admin_dashboard', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.admin_dashboard') }}">Admin</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800' if endpoint == 'fulcrum.admin_quality_dashboard' else '' }}" href="{{ url_for('fulcrum.admin_quality_dashboard', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.admin_quality_dashboard') }}">Audit</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800' if endpoint == 'fulcrum.admin_developer_dashboard' else '' }}" href="{{ url_for('fulcrum.admin_developer_dashboard', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.admin_developer_dashboard') }}">Developer</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-800" href="{{ url_for('fulcrum.health', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.health') }}">Health</a>
+        </nav>
+      </div>
+    </header>
+    {% elif is_setup_page %}
+    <div class="h-3 bg-slate-800"></div>
+    {% else %}
+    <header class="border-b border-slate-200 bg-white shadow-sm">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+        <a class="rounded-2xl bg-white px-2 py-1" href="{{ url_for('fulcrum.setup_page', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.setup_page') }}">
+          <img class="h-14 w-auto object-contain md:h-16" src="{{ url_for('static', filename='fulcrum/route-authority-logo.png') }}" alt="Route Authority" />
+        </a>
+        <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+          <a class="rounded px-3 py-2 hover:bg-slate-100 {{ 'bg-slate-100 font-semibold text-slate-900' if endpoint == 'fulcrum.setup_page' else '' }}" href="{{ url_for('fulcrum.setup_page', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.setup_page') }}">Setup</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-100 {{ 'bg-slate-100 font-semibold text-slate-900' if endpoint in ['fulcrum.dashboard', 'fulcrum.dashboard_full'] else '' }}" href="{{ url_for('fulcrum.dashboard', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.dashboard') }}">Results</a>
+          <a class="rounded px-3 py-2 hover:bg-slate-100" href="{{ url_for('fulcrum.health', store_hash=current_store_hash) if current_store_hash else url_for('fulcrum.health') }}">Health</a>
+        </nav>
+      </div>
+    </header>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"
+    ></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+    ></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

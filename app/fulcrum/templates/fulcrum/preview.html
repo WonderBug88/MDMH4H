@@ -1,0 +1,102 @@
+{% extends "fulcrum/base.html" %}
+
+{% block title %}Route Authority Preview{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl px-4 py-6">
+  <div class="mb-6 rounded-lg bg-white p-6 shadow">
+    <h1 class="text-2xl font-bold text-gray-900">Preview · {{ (source_entity_type or 'product')|title }} {{ source_product_id }}</h1>
+    <p class="mt-2 text-sm text-gray-600">Store {{ store_hash }} · {{ row_count }} approved links</p>
+  </div>
+
+  <div class="mb-6 rounded-lg bg-white p-6 shadow">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Rendered HTML</h2>
+    {% if html %}
+      <div class="rounded border border-gray-200 p-4">
+        {{ html|safe }}
+      </div>
+    {% else %}
+      <p class="text-sm text-gray-600">No approved links yet for this source product.</p>
+    {% endif %}
+  </div>
+
+  <div class="rounded-lg bg-white p-6 shadow">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Rows</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-500">
+            <th class="pb-2 pr-3">Target</th>
+            <th class="pb-2 pr-3">Anchor</th>
+            <th class="pb-2 pr-3">Query</th>
+            <th class="pb-2 pr-3">Hits</th>
+            <th class="pb-2 pr-3">Score</th>
+            <th class="pb-2 pr-3">Why It Fits</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for row in rows %}
+          <tr>
+            <td class="py-2 pr-3">
+              <div class="font-medium text-gray-900">{{ row.target_name }}</div>
+              <div class="text-xs text-gray-500">{{ row.target_url }}</div>
+            </td>
+            <td class="py-2 pr-3">{{ row.anchor_label }}</td>
+            <td class="py-2 pr-3">{{ row.example_query }}</td>
+            <td class="py-2 pr-3">{{ row.hit_count }}</td>
+            <td class="py-2 pr-3">{{ row.score }}</td>
+            <td class="py-2 pr-3 text-xs text-gray-600">
+              {% if row.metadata %}
+                {% if row.metadata.gate_reason_summary %}
+                  <div><strong>Gate:</strong> {{ row.metadata.gate_reason_summary }}</div>
+                {% endif %}
+                <div class="mt-1">{{ row.metadata.reason_summary or 'Related product relationship' }}</div>
+                {% if row.metadata.gate_scores %}
+                  <div class="mt-1 text-gray-400">
+                    Demand {{ row.metadata.gate_scores.demand_score }} · Opportunity {{ row.metadata.gate_scores.opportunity_score }} · Intent {{ row.metadata.gate_scores.intent_clarity_score }} · Noise {{ row.metadata.gate_scores.noise_penalty }}
+                  </div>
+                {% endif %}
+                {% if row.metadata.fuzzy_signal and row.metadata.fuzzy_signal.active %}
+                  <div class="mt-1 text-gray-400">
+                    Fuzzy signal: {{ row.metadata.fuzzy_signal.matched_text }}
+                    {% if row.metadata.fuzzy_signal.matched_kind %}
+                      ({{ row.metadata.fuzzy_signal.matched_kind }})
+                    {% endif %}
+                    (+{{ row.metadata.fuzzy_signal.score }})
+                  </div>
+                {% endif %}
+                {% if row.metadata.ga4_signal and row.metadata.ga4_signal.active %}
+                  <div class="mt-1 text-gray-400">
+                    GA4 signal: {{ row.metadata.ga4_signal.summary or row.metadata.ga4_signal.reason }}
+                    ({% if row.metadata.ga4_signal.delta >= 0 %}+{% endif %}{{ row.metadata.ga4_signal.delta }})
+                  </div>
+                {% endif %}
+                {% if row.metadata.review_feedback_signal and row.metadata.review_feedback_signal.active %}
+                  <div class="mt-1 text-gray-400">
+                    Review memory: {{ row.metadata.review_feedback_signal.summary or row.metadata.review_feedback_signal.reason }}
+                    ({% if row.metadata.review_feedback_signal.delta >= 0 %}+{% endif %}{{ row.metadata.review_feedback_signal.delta }})
+                  </div>
+                {% endif %}
+                {% if row.metadata.shared_tokens %}
+                  <div class="mt-1 text-gray-400">Shared: {{ row.metadata.shared_tokens|join(', ') }}</div>
+                {% endif %}
+                {% if row.metadata.attributes %}
+                  {% if row.metadata.attributes.query %}
+                    <div class="mt-1 text-gray-400">Query attrs: {{ row.metadata.attributes.query }}</div>
+                  {% endif %}
+                  {% if row.metadata.attributes.target %}
+                    <div class="mt-1 text-gray-400">Target attrs: {{ row.metadata.attributes.target }}</div>
+                  {% endif %}
+                {% endif %}
+              {% else %}
+                <div>Related product relationship</div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

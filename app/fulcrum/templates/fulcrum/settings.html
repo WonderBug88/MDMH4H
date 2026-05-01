@@ -1,0 +1,138 @@
+﻿{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Settings{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-6">
+  <section class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Settings</div>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">Merchant-facing settings</h1>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+          Publishing settings affect readiness. Ready Set Published requires generation readiness, a verified theme hook, and publishing enabled.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        <div class="font-semibold text-slate-900">{{ readiness_label }}</div>
+        <div class="mt-1">{{ readiness_detail }}</div>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="mt-5 space-y-2">
+        {% for category, message in messages %}
+        <div class="rounded border px-3 py-2 text-sm {{ 'border-red-200 bg-red-50 text-red-800' if category in ['danger', 'error'] else 'border-green-200 bg-green-50 text-green-800' }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <form id="publish-settings-form" class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-5" method="post" action="{{ url_for('fulcrum.save_publish_settings') }}">
+      <input type="hidden" name="store_hash" value="{{ store_hash }}">
+      <div class="space-y-4">
+        <label class="flex items-start gap-3">
+          <input class="mt-1 h-4 w-4 rounded border-slate-300" type="checkbox" name="publishing_enabled" {% if publish_settings.publishing_enabled %}checked{% endif %}>
+          <span>
+            <span class="block text-sm font-semibold text-slate-900">Enable publishing</span>
+            <span class="block text-sm text-slate-600">Route Authority can publish once setup is complete and theme verification passes.</span>
+          </span>
+        </label>
+        <label class="flex items-start gap-3">
+          <input class="mt-1 h-4 w-4 rounded border-slate-300" type="checkbox" name="category_publishing_enabled" {% if publish_settings.category_publishing_enabled %}checked{% endif %}>
+          <span>
+            <span class="block text-sm font-semibold text-slate-900">Enable category publishing</span>
+            <span class="block text-sm text-slate-600">Requires the category theme hook. If it is missing, readiness will stay blocked until fixed.</span>
+          </span>
+        </label>
+      </div>
+      <div class="mt-5 flex items-center gap-3">
+        <button id="publish-settings-submit" class="rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" type="submit">Save settings</button>
+        <div id="publish-settings-status" class="text-sm text-slate-500" aria-live="polite">Changes save automatically.</div>
+      </div>
+    </form>
+
+    <div class="mt-6 rounded-3xl border border-sky-200 bg-sky-50 p-5">
+      <div class="text-sm font-semibold text-slate-900">Store policy links</div>
+      <p class="mt-2 text-sm leading-6 text-slate-700">
+        Privacy policy: <a class="font-semibold text-sky-700 underline" href="{{ privacy_policy_url }}">{{ privacy_policy_url }}</a><br>
+        Support: <a class="font-semibold text-sky-700 underline" href="{{ support_url }}">{{ support_url }}</a><br>
+        Terms of service: <a class="font-semibold text-sky-700 underline" href="{{ terms_url }}">{{ terms_url }}</a>
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const form = document.getElementById('publish-settings-form');
+    if (!form) return;
+
+    const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"]'));
+    const submitButton = document.getElementById('publish-settings-submit');
+    const status = document.getElementById('publish-settings-status');
+    let saveTimer = null;
+
+    function setBusy(isBusy, message, isError) {
+      checkboxes.forEach((input) => {
+        input.disabled = isBusy;
+      });
+      if (submitButton) {
+        submitButton.disabled = isBusy;
+        submitButton.classList.toggle('opacity-60', isBusy);
+      }
+      if (status) {
+        status.textContent = message || '';
+        status.className = 'text-sm ' + (isError ? 'text-red-700' : 'text-slate-500');
+      }
+    }
+
+    function submitSettings() {
+      setBusy(true, 'Saving settings...', false);
+      const data = new FormData(form);
+      checkboxes.forEach((input) => {
+        if (!input.checked) {
+          data.delete(input.name);
+        }
+      });
+      fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+      })
+        .then(async (response) => {
+          let payload = {};
+          try {
+            payload = await response.json();
+          } catch (error) {
+            payload = {};
+          }
+          if (!response.ok || payload.status !== 'ok') {
+            throw new Error(payload.message || 'Could not save publishing settings.');
+          }
+          setBusy(false, payload.message || 'Settings saved.', false);
+        })
+        .catch((error) => {
+          setBusy(false, error.message || 'Could not save publishing settings.', true);
+        });
+    }
+
+    checkboxes.forEach((input) => {
+      input.addEventListener('change', function () {
+        if (saveTimer) {
+          clearTimeout(saveTimer);
+        }
+        saveTimer = window.setTimeout(submitSettings, 150);
+      });
+    });
+  })();
+</script>
+{% endblock %}
+
+

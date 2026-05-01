@@ -1,0 +1,143 @@
+services:
+  - type: web
+    name: fulcrum-web
+    runtime: python
+    plan: starter
+    region: virginia
+    buildCommand: pip install -r requirements-fulcrum-alpha.txt
+    preDeployCommand: python deploy/apply_fulcrum_runtime_schema.py
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 wsgi_fulcrum:application
+    healthCheckPath: /fulcrum/health
+    domains:
+      - fulcrum.fulcrumagentics.com
+    envVars:
+      - fromGroup: fulcrum-production-settings
+      - key: SECRET_KEY
+        sync: false
+      - key: FULCRUM_INTEGRATION_SECRET
+        sync: false
+      - key: FULCRUM_SHARED_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: BIG_COMMERCE_ACCESS_TOKEN
+        sync: false
+      - key: FULCRUM_BC_CLIENT_ID
+        sync: false
+      - key: FULCRUM_BC_CLIENT_SECRET
+        sync: false
+      - key: FULCRUM_BC_ACCOUNT_UUID
+        sync: false
+      - key: ROUTE_AUTHORITY_GOOGLE_CLIENT_ID
+        sync: false
+      - key: ROUTE_AUTHORITY_GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+  - type: worker
+    name: fulcrum-sync-worker
+    runtime: python
+    plan: starter
+    region: virginia
+    buildCommand: pip install -r requirements-fulcrum-alpha.txt
+    startCommand: python run_fulcrum_integration_sync_worker.py --limit 5 --sleep 10 --expire-running-after-minutes 30
+    envVars:
+      - fromGroup: fulcrum-production-settings
+      - key: SECRET_KEY
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: SECRET_KEY
+      - key: FULCRUM_INTEGRATION_SECRET
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: FULCRUM_INTEGRATION_SECRET
+      - key: FULCRUM_SHARED_SECRET
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: FULCRUM_SHARED_SECRET
+      - key: DATABASE_URL
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: DATABASE_URL
+      - key: BIG_COMMERCE_ACCESS_TOKEN
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: BIG_COMMERCE_ACCESS_TOKEN
+      - key: FULCRUM_BC_CLIENT_ID
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: FULCRUM_BC_CLIENT_ID
+      - key: FULCRUM_BC_CLIENT_SECRET
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: FULCRUM_BC_CLIENT_SECRET
+      - key: FULCRUM_BC_ACCOUNT_UUID
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: FULCRUM_BC_ACCOUNT_UUID
+      - key: ROUTE_AUTHORITY_GOOGLE_CLIENT_ID
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: ROUTE_AUTHORITY_GOOGLE_CLIENT_ID
+      - key: ROUTE_AUTHORITY_GOOGLE_CLIENT_SECRET
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: ROUTE_AUTHORITY_GOOGLE_CLIENT_SECRET
+      - key: OPENAI_API_KEY
+        fromService:
+          type: web
+          name: fulcrum-web
+          envVarKey: OPENAI_API_KEY
+
+envVarGroups:
+  - name: fulcrum-production-settings
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: ENABLE_SCHEDULER
+        value: "0"
+      - key: FULCRUM_RUN_EMBEDDED_SCHEDULER
+        value: "0"
+      - key: FULCRUM_APP_BASE_URL
+        value: https://fulcrum.fulcrumagentics.com
+      - key: FULCRUM_AUTH_CALLBACK_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/auth
+      - key: FULCRUM_LOAD_CALLBACK_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/load
+      - key: FULCRUM_UNINSTALL_CALLBACK_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/uninstall
+      - key: FULCRUM_REMOVE_USER_CALLBACK_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/remove-user
+      - key: FULCRUM_GSC_OAUTH_CALLBACK_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/integrations/gsc/callback
+      - key: FULCRUM_GA4_OAUTH_CALLBACK_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/integrations/ga4/callback
+      - key: FULCRUM_PRIVACY_POLICY_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/privacy
+      - key: FULCRUM_SUPPORT_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/support
+      - key: FULCRUM_TERMS_OF_SERVICE_URL
+        value: https://fulcrum.fulcrumagentics.com/fulcrum/terms
+      - key: FULCRUM_ALLOWED_STORES
+        value: 99oa2tso
+      - key: FULCRUM_GSC_SYNC_LOOKBACK_DAYS
+        value: "180"
+      - key: FULCRUM_GSC_SYNC_MIN_IMPRESSIONS
+        value: "3"
+      - key: FULCRUM_GSC_SYNC_MAX_ROWS
+        value: "100000"
+      - key: FULCRUM_GSC_API_ROW_LIMIT
+        value: "25000"
+      - key: BIG_COMMERCE_STORE_HASH
+        value: 99oa2tso

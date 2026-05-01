@@ -1,0 +1,570 @@
+{% extends "fulcrum/base.html" %}
+{% block title %}Fulcrum Admin{% endblock %}
+
+{% block styles %}
+<style>
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .admin-menu { position: relative; }
+  .admin-menu summary,
+  .admin-fold summary,
+  .inner-fold summary { list-style: none; }
+  .admin-menu summary::-webkit-details-marker,
+  .admin-fold summary::-webkit-details-marker,
+  .inner-fold summary::-webkit-details-marker { display: none; }
+  .admin-menu-chevron,
+  .admin-fold-chevron,
+  .inner-fold-chevron { transition: transform 0.2s ease; }
+  .admin-menu[open] .admin-menu-chevron { transform: rotate(180deg); }
+  .admin-fold[open] .admin-fold-chevron,
+  .inner-fold[open] .inner-fold-chevron { transform: rotate(90deg); }
+  .admin-menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    z-index: 30;
+    width: 16rem;
+  }
+  .admin-bar {
+    display: flex;
+    height: 14rem;
+    align-items: end;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 1.25rem;
+    background: linear-gradient(to top, #f8fafc 0%, #ffffff 100%);
+    padding: 0 0.75rem 0.75rem;
+  }
+  .admin-bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .admin-bar-segment {
+    width: 1.5rem;
+    min-height: 0.5rem;
+    border-radius: 0.9rem 0.9rem 0 0;
+  }
+  .admin-bar-current { background: #3b82f6; }
+  .admin-bar-prior { background: #94a3b8; }
+  .admin-bar-year { background: #10b981; }
+
+  @media (max-width: 767px) {
+    .admin-menu-panel {
+      position: static;
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+    .admin-bar {
+      height: 11rem;
+      gap: 0.55rem;
+    }
+    .admin-bar-segment { width: 1.1rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set performance_rows = gsc_performance_summary.get('metric_rows', []) %}
+{% set chart_rows = gsc_performance_summary.get('comparison_chart_rows', []) %}
+{% set gsc_takeaway = gsc_performance_summary.get('takeaway', {}) %}
+{% set coverage_cards = [
+  ('Raw GSC query variants', gsc_routing_coverage.raw_variant_count or 0),
+  ('Families created', gsc_routing_coverage.family_count or 0),
+  ('Families routed', gsc_routing_coverage.pass_count or 0),
+  ('GSC data routed', gsc_routing_coverage.pass_variant_count or 0),
+  ('Held', gsc_routing_coverage.hold_count or 0),
+  ('Rejected', gsc_routing_coverage.reject_count or 0),
+] %}
+{% set waiting_complete = not edge_case_requests %}
+{% set resolved_pending_count = resolved_edge_case_summary.pending_approval_count or 0 %}
+{% set queue_alert_ns = namespace(item=None) %}
+{% for alert in operational_snapshot.alerts or [] %}
+  {% if alert.title == 'Recent generation failures detected' %}
+    {% set queue_alert_ns.item = alert %}
+  {% endif %}
+{% endfor %}
+{% if not queue_alert_ns.item and (operational_snapshot.counts.urgent or operational_snapshot.counts.watch) and operational_snapshot.alerts %}
+  {% set queue_alert_ns.item = operational_snapshot.alerts[0] %}
+{% endif %}
+{% set queue_alert = queue_alert_ns.item %}
+
+<div class="min-h-screen bg-slate-50 text-slate-900">
+  <div class="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+    <header class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+        <div class="max-w-4xl">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-red-600">Fulcrum Admin</p>
+          <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-950">System and Review Tools</h1>
+          <p class="mt-3 text-sm leading-6 text-slate-600">A cleaner admin view for routing health, review workflows, changed routes, and gating outcomes.</p>
+          <div class="mt-4 flex flex-wrap gap-3 text-sm text-slate-500">
+            <span>Store <span class="font-semibold text-slate-700">{{ store_hash }}</span></span>
+            <span>Latest run <span class="font-semibold text-slate-700">{{ latest_gate_run_id or 'none' }}</span></span>
+            <span>Published blocks <span class="font-semibold text-slate-700">{{ publication_count or 0 }}</span></span>
+            <span>Review bucket <span class="font-semibold text-slate-700">{{ review_bucket_count or 0 }}</span></span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <details class="admin-menu">
+            <summary class="flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
+              Routing actions
+              <svg class="admin-menu-chevron h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+            </summary>
+            <div class="admin-menu-panel overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+              <form method="post" action="{{ url_for('fulcrum.sync_catalog') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="redirect_to" value="admin"><button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100" type="submit"><span>Sync catalog</span><span class="text-slate-400">›</span></button></form>
+              <form method="post" action="{{ url_for('fulcrum.generate_run') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="cluster" value=""><input type="hidden" name="redirect_to" value="admin"><button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100" type="submit"><span>Rerun routing pipeline</span><span class="text-slate-400">›</span></button></form>
+              <form method="post" action="{{ url_for('fulcrum.review_edge_cases_bulk') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="redirect_to" value="admin"><button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100" type="submit"><span>Review all edge cases</span><span class="text-slate-400">›</span></button></form>
+              <form method="post" action="{{ url_for('fulcrum.publish_all_results') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="redirect_to" value="admin"><button class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100" type="submit"><span>Publish all results</span><span class="text-slate-400">›</span></button></form>
+            </div>
+          </details>
+
+          <details class="admin-menu">
+            <summary class="flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
+              Admin tools
+              <svg class="admin-menu-chevron h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.51a.75.75 0 01-1.08 0l-4.25-4.51a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
+            </summary>
+            <div class="admin-menu-panel overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+              <a class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-100" href="{{ url_for('fulcrum.admin_quality_dashboard', store_hash=store_hash) }}"><span>Audit and verification</span><span class="text-slate-400">›</span></a>
+              <a class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-100" href="{{ url_for('fulcrum.admin_quality_dashboard', store_hash=store_hash) }}"><span>Open quality dashboard</span><span class="text-slate-400">›</span></a>
+              <a class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-100" href="{{ url_for('fulcrum.dashboard', store_hash=store_hash) }}"><span>Back to results</span><span class="text-slate-400">›</span></a>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mt-5 space-y-2">
+            {% for category, message in messages %}
+              <div class="rounded-2xl border px-4 py-3 text-sm {{ 'border-rose-200 bg-rose-50 text-rose-800' if category in ['danger', 'error'] else 'border-emerald-200 bg-emerald-50 text-emerald-800' }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% if active_run %}
+      <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">Fulcrum is currently working on run {{ active_run.run_id }}. The latest completed run stays visible until this one finishes.</div>
+      {% endif %}
+    </header>
+
+    <main class="mt-8 space-y-8">
+      <section class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight text-slate-950">GSC Data</h2>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">This shows how pages with live Fulcrum blocks are performing across the current 90 days, the prior 90 days, and the same 90-day window last year.</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-700">{{ gsc_performance_summary.page_count or 0 }} live Fulcrum pages</span>
+              <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-700">{{ gsc_performance_summary.anchor_end_date or 'No GSC data' }} current window end</span>
+              {% if gsc_performance_summary.cached_at_display %}
+              <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-700">{{ gsc_performance_summary.cached_at_relative or gsc_performance_summary.cached_at_display }} last refreshed</span>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if performance_rows %}
+          <div class="grid grid-cols-2 gap-3 lg:w-[430px]">
+            {% for row in performance_rows %}
+            <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <div class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">{{ 'Avg position' if row.key == 'avg_position' else row.label }}</div>
+              <div class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{{ row.current_display }}</div>
+              <span class="mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {% if row.prior_change.tone == 'green' %}bg-emerald-50 text-emerald-700{% elif row.prior_change.tone == 'red' %}bg-rose-50 text-rose-700{% else %}bg-slate-100 text-slate-600{% endif %}">vs prior {{ row.prior_change.display }}</span>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        {% if performance_rows %}
+        <div class="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+          <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-sm font-semibold text-slate-900">Current vs Prior vs Last Year</h3>
+                <p class="mt-1 text-xs text-slate-500">Grouped comparison for the most important search signals.</p>
+              </div>
+              <div class="flex flex-wrap gap-3 text-xs font-medium text-slate-500">
+                <span class="inline-flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-blue-500"></span>Current</span>
+                <span class="inline-flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>Prior</span>
+                <span class="inline-flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>Last year</span>
+              </div>
+            </div>
+
+            <div class="mt-5 grid gap-4 rounded-[24px] border border-slate-200 bg-white p-5 md:grid-cols-3">
+              {% for row in chart_rows %}
+              <div>
+                <div class="text-center text-sm font-semibold text-slate-900">{{ row.metric }}</div>
+                <div class="mt-4 admin-bar border border-slate-100">
+                  <div class="admin-bar-col"><div class="admin-bar-segment admin-bar-current" style="height: {{ row.current_pct }}%;"></div><span class="text-[11px] text-slate-500">{{ row.current_display }}</span></div>
+                  <div class="admin-bar-col"><div class="admin-bar-segment admin-bar-prior" style="height: {{ row.prior_pct }}%;"></div><span class="text-[11px] text-slate-500">{{ row.prior_display }}</span></div>
+                  <div class="admin-bar-col"><div class="admin-bar-segment admin-bar-year" style="height: {{ row.year_prior_pct }}%;"></div><span class="text-[11px] text-slate-500">{{ row.year_prior_display }}</span></div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="text-sm font-semibold text-slate-900">Performance Table</h3>
+              <div class="mt-4 overflow-hidden rounded-2xl ring-1 ring-slate-200">
+                <div class="overflow-x-auto">
+                  <table class="min-w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-600">
+                      <tr>
+                        <th class="px-4 py-3 text-left font-semibold">Metric</th>
+                        <th class="px-4 py-3 text-left font-semibold">Current</th>
+                        <th class="px-4 py-3 text-left font-semibold">Prior</th>
+                        <th class="px-4 py-3 text-left font-semibold">Vs prior</th>
+                        <th class="px-4 py-3 text-left font-semibold">Last year</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                      {% for row in performance_rows %}
+                      <tr>
+                        <td class="px-4 py-3 font-medium text-slate-900">{{ row.label }}</td>
+                        <td class="px-4 py-3 text-slate-700">{{ row.current_display }}</td>
+                        <td class="px-4 py-3 text-slate-700">{{ row.prior_display }}</td>
+                        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {% if row.prior_change.tone == 'green' %}bg-emerald-50 text-emerald-700{% elif row.prior_change.tone == 'red' %}bg-rose-50 text-rose-700{% else %}bg-slate-100 text-slate-600{% endif %}">{{ row.prior_change.display }}</span></td>
+                        <td class="px-4 py-3 text-slate-700">{{ row.year_prior_display }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-[28px] bg-slate-950 p-5 text-white shadow-sm">
+              <div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ gsc_takeaway.get('label', 'Fulcrum takeaway') }}</div>
+              <h3 class="mt-2 text-2xl font-semibold tracking-tight">{{ gsc_takeaway.get('title', 'Fulcrum performance needs a fresh read') }}</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-300">{{ gsc_takeaway.get('body', 'Refresh the GSC summary so Fulcrum can compare the current 90 days against the prior window and the same period last year.') }}</p>
+              <div class="mt-4 flex items-center justify-between gap-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
+                <p class="text-sm text-slate-300">Treat this as a quality signal rather than a demand surge.</p>
+                <span class="rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-slate-950">{{ gsc_takeaway.get('badge', 'Needs refresh') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">No live Fulcrum pages are available to compare in GSC yet.</div>
+        {% endif %}
+      </section>
+      <section class="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
+        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 px-6 py-6 text-white">
+          <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+              <div class="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">Admin review workflow</div>
+              <h2 class="mt-4 text-3xl font-semibold tracking-tight">Customer Review Queue</h2>
+              <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-300">If users flagged a result for review, it shows up here. Fulcrum audits it when it enters the queue. Admin decides whether to resolve it or approve the live restore.</p>
+            </div>
+            <div class="rounded-[24px] border border-rose-300/15 bg-rose-300/10 px-4 py-4">
+              <div class="text-xs font-semibold uppercase tracking-[0.18em] text-rose-100/80">Oldest request</div>
+              <div class="mt-2 text-2xl font-semibold text-white">{{ edge_case_summary.oldest_request_relative or 'none' }}</div>
+              <div class="mt-1 text-sm text-rose-100/80">{{ edge_case_summary.oldest_request_display or 'No queued requests' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-b from-white to-slate-50 px-6 py-6">
+          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-start justify-between gap-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Waiting for review</div><span class="rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 bg-amber-50 text-amber-800 ring-amber-200">Live</span></div>
+              <div class="mt-4 text-4xl font-semibold tracking-tight text-slate-950">{{ edge_case_summary.open_count or 0 }}</div>
+              <p class="mt-3 text-sm leading-6 text-slate-600">{% if edge_case_summary.open_count %}Items needing admin decision right now.{% else %}No items are waiting for admin review.{% endif %}</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-start justify-between gap-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Resolved and approved</div><span class="rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 bg-emerald-50 text-emerald-800 ring-emerald-200">Live</span></div>
+              <div class="mt-4 text-4xl font-semibold tracking-tight text-slate-950">{{ resolved_edge_case_summary.approved_live_count or 0 }}</div>
+              <p class="mt-3 text-sm leading-6 text-slate-600">{% if resolved_edge_case_summary.approved_live_count %}Cases resolved and restored live.{% else %}No cases have been restored live recently.{% endif %}</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-start justify-between gap-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Needs human review</div><span class="rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 bg-slate-50 text-slate-700 ring-slate-200">Live</span></div>
+              <div class="mt-4 text-4xl font-semibold tracking-tight text-slate-950">{{ edge_case_summary.needs_human_review_count or 0 }}</div>
+              <p class="mt-3 text-sm leading-6 text-slate-600">{% if edge_case_summary.needs_human_review_count %}Requests the audit flagged for manual escalation.{% else %}No cases currently require escalation.{% endif %}</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-start justify-between gap-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Live blocks paused</div><span class="rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 bg-slate-50 text-slate-700 ring-slate-200">Live</span></div>
+              <div class="mt-4 text-4xl font-semibold tracking-tight text-slate-950">{{ edge_case_summary.paused_live_blocks or 0 }}</div>
+              <p class="mt-3 text-sm leading-6 text-slate-600">{% if edge_case_summary.paused_live_blocks %}Customer-facing blocks held until review.{% else %}No customer-facing blocks are paused.{% endif %}</p>
+            </div>
+          </div>
+
+          {% if queue_alert %}
+          <div class="mt-5 flex flex-col gap-4 rounded-[24px] border border-amber-200 bg-gradient-to-r from-amber-50 via-white to-rose-50 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div class="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">{{ queue_alert.severity_label or 'Warning' }}</div>
+              <div class="mt-1 text-lg font-semibold text-slate-950">{{ queue_alert.title }}</div>
+              <p class="mt-1 text-sm text-slate-600">{{ queue_alert.detail }}</p>
+            </div>
+            <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50" href="{{ url_for('fulcrum.admin_quality_dashboard', store_hash=store_hash) }}">{% if queue_alert.title == 'Recent generation failures detected' %}View failure details{% else %}Review system status{% endif %}</a>
+          </div>
+          {% endif %}
+
+          <div class="mt-5 space-y-4">
+            <details class="inner-fold overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm" {% if edge_case_requests %}open{% endif %}>
+              <summary class="flex cursor-pointer items-center justify-between gap-4 bg-slate-50 px-5 py-4">
+                <div>
+                  <div class="text-base font-semibold text-slate-950">{{ 'Complete' if waiting_complete else 'Waiting for Review' }}</div>
+                  <div class="mt-1 text-sm text-slate-500">{% if waiting_complete %}No review requests are waiting for admin action.{% else %}User-requested review items waiting for resolve or approve.{% endif %}</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="rounded-full px-3 py-1 text-xs font-semibold {{ 'bg-emerald-100 text-emerald-700' if waiting_complete else 'bg-rose-100 text-rose-700' }}">{% if waiting_complete %}Complete{% else %}{{ edge_case_requests|length }} waiting{% endif %}</span>
+                  <svg class="inner-fold-chevron h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.51 4.25a.75.75 0 010 1.08l-4.51 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+                </div>
+              </summary>
+              <div class="px-5 pb-5 pt-4">
+                {% if edge_case_requests %}
+                <div class="overflow-hidden rounded-[24px] ring-1 ring-slate-200">
+                  <div class="overflow-x-auto">
+                    <table class="min-w-[1180px] text-sm">
+                      <thead class="bg-slate-50 text-slate-500">
+                        <tr>
+                          <th class="px-4 py-3 text-left font-semibold">ID</th>
+                          <th class="px-4 py-3 text-left font-semibold">Family Query</th>
+                          <th class="px-4 py-3 text-left font-semibold">Current Page</th>
+                          <th class="px-4 py-3 text-left font-semibold">New Target</th>
+                          <th class="px-4 py-3 text-left font-semibold">Why It Was Queued</th>
+                          <th class="px-4 py-3 text-left font-semibold">Agent Review</th>
+                          <th class="px-4 py-3 text-left font-semibold">Requested</th>
+                          <th class="px-4 py-3 text-left font-semibold">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-slate-200 bg-white">
+                        {% for row in edge_case_requests %}
+                        {% set review = row.agent_review or {} %}
+                        <tr class="align-top">
+                          <td class="px-4 py-4"><div class="font-semibold text-slate-900">#{{ row.request_id }}</div><div class="mt-1 text-xs text-slate-500">Gate #{{ row.gate_record_id }}</div></td>
+                          <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.representative_query }}</div><div class="mt-1 text-xs text-slate-500">{{ row.normalized_query_key }}</div></td>
+                          <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.source_name }}</div><div class="mt-1 text-xs text-slate-500">{{ row.source_url }}</div></td>
+                          <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.display_target_name or 'No target stored' }}</div><div class="mt-1 text-xs text-slate-500">{{ row.display_target_url or '' }}</div></td>
+                          <td class="px-4 py-4 text-slate-700"><div class="font-semibold text-slate-800">{{ row.applied_status_label }}</div><div class="mt-1 text-sm">{{ row.review_status_label }}</div><div class="mt-1 text-xs text-slate-500">{{ row.resolution_status_label }}</div>{% if row.reason_summary %}<div class="mt-2 text-xs text-slate-500">{{ row.reason_summary }}</div>{% endif %}</td>
+                          <td class="px-4 py-4 text-slate-700">{% if review %}<span class="status-pill {% if review.verdict == 'correct' %}bg-emerald-100 text-emerald-700{% elif review.verdict == 'incorrect' %}bg-rose-100 text-rose-700{% else %}bg-amber-100 text-amber-700{% endif %}">{{ review.verdict or 'unclear' }}</span><div class="mt-2 text-sm">{{ review.rationale or 'The AI review flagged this route but did not include extra detail.' }}</div><div class="mt-2 text-xs text-slate-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>{% else %}<div class="text-sm text-amber-700">Audit pending.</div>{% endif %}</td>
+                          <td class="px-4 py-4 text-slate-700"><div class="font-semibold text-slate-900">{{ row.requested_at_relative or 'unknown' }}</div><div class="mt-1 text-xs text-slate-500">{{ row.requested_at_display or '' }}</div></td>
+                          <td class="px-4 py-4"><div class="flex flex-col gap-2">{% if row.source_live_url %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a>{% endif %}{% if row.display_target_live_url %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.display_target_live_url }}" target="_blank" rel="noopener noreferrer">Open new target</a>{% endif %}<form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="request_id" value="{{ row.request_id }}"><input type="hidden" name="redirect_to" value="admin"><button class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" type="submit">Resolve</button></form>{% if row.allow_live_approval %}<form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="request_id" value="{{ row.request_id }}"><input type="hidden" name="restore_live" value="1"><input type="hidden" name="redirect_to" value="admin"><button class="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 hover:bg-emerald-100" type="submit">Approve</button></form>{% endif %}{% if row.human_review_mailto %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-center text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.human_review_mailto }}">Force human review email</a>{% endif %}</div></td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                {% else %}
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">All review requests are complete right now.</div>
+                {% endif %}
+              </div>
+            </details>
+            <details class="inner-fold overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm" {% if resolved_edge_case_requests %}open{% endif %}>
+              <summary class="flex cursor-pointer items-center justify-between gap-4 bg-slate-50 px-5 py-4">
+                <div>
+                  <div class="text-base font-semibold text-slate-950">{{ 'Recently Resolved' if resolved_pending_count else 'Complete' }}</div>
+                  <div class="mt-1 text-sm text-slate-500">{% if resolved_pending_count %}Only resolved cases that still need live approval stay here.{% else %}All recently resolved cases have already been approved or closed out.{% endif %}</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="rounded-full px-3 py-1 text-xs font-semibold {{ 'bg-slate-100 text-slate-700' if resolved_pending_count else 'bg-emerald-100 text-emerald-700' }}">{% if resolved_pending_count %}{{ resolved_pending_count }} pending approval{% else %}Complete{% endif %}</span>
+                  <svg class="inner-fold-chevron h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.51 4.25a.75.75 0 010 1.08l-4.51 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+                </div>
+              </summary>
+              <div class="px-5 pb-5 pt-4">
+                {% if resolved_edge_case_requests %}
+                <div class="mb-4 grid gap-3 sm:grid-cols-2">
+                  <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><div class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Pending approval</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ resolved_edge_case_summary.pending_approval_count or 0 }}</div></div>
+                  <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><div class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Latest pending approval</div><div class="mt-2 text-lg font-semibold text-slate-950">{{ resolved_edge_case_summary.latest_pending_approval_relative or 'none' }}</div><div class="mt-1 text-sm text-slate-500">{{ resolved_edge_case_summary.latest_pending_approval_display or 'No approval-pending resolutions' }}</div></div>
+                </div>
+
+                <div class="overflow-hidden rounded-[24px] ring-1 ring-slate-200">
+                  <div class="overflow-x-auto">
+                    <table class="min-w-[1180px] text-sm">
+                      <thead class="bg-slate-50 text-slate-500">
+                        <tr>
+                          <th class="px-4 py-3 text-left font-semibold">ID</th>
+                          <th class="px-4 py-3 text-left font-semibold">Family Query</th>
+                          <th class="px-4 py-3 text-left font-semibold">Current Page</th>
+                          <th class="px-4 py-3 text-left font-semibold">New Target</th>
+                          <th class="px-4 py-3 text-left font-semibold">Resolution</th>
+                          <th class="px-4 py-3 text-left font-semibold">Agent Review</th>
+                          <th class="px-4 py-3 text-left font-semibold">Resolved</th>
+                          <th class="px-4 py-3 text-left font-semibold">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-slate-200 bg-white">
+                        {% for row in resolved_edge_case_requests %}
+                        {% set review = row.agent_review or {} %}
+                        <tr class="align-top">
+                          <td class="px-4 py-4"><div class="font-semibold text-slate-900">#{{ row.request_id }}</div><div class="mt-1 text-xs text-slate-500">Gate #{{ row.gate_record_id }}</div></td>
+                          <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.representative_query }}</div><div class="mt-1 text-xs text-slate-500">{{ row.normalized_query_key }}</div></td>
+                          <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.source_name }}</div><div class="mt-1 text-xs text-slate-500">{{ row.source_url }}</div></td>
+                          <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.display_target_name or 'No target stored' }}</div><div class="mt-1 text-xs text-slate-500">{{ row.display_target_url or '' }}</div></td>
+                          <td class="px-4 py-4 text-slate-700"><div class="font-semibold text-slate-800">{{ row.applied_status_label }}</div><div class="mt-1 text-sm">{{ row.review_status_label }}</div><div class="mt-1 text-xs text-slate-500">{{ row.resolution_status_label }}</div>{% if row.reason_summary %}<div class="mt-2 text-xs text-slate-500">{{ row.reason_summary }}</div>{% endif %}</td>
+                          <td class="px-4 py-4 text-slate-700">{% if review %}<span class="status-pill {% if review.verdict == 'correct' %}bg-emerald-100 text-emerald-700{% elif review.verdict == 'incorrect' %}bg-rose-100 text-rose-700{% else %}bg-amber-100 text-amber-700{% endif %}">{{ review.verdict or 'unclear' }}</span><div class="mt-2 text-sm">{{ review.rationale or 'The AI review flagged this route but did not include extra detail.' }}</div><div class="mt-2 text-xs text-slate-500">{{ review.issue_type or 'needs_human_review' }} · {{ review.recommended_action or 'manual_review' }}</div>{% else %}<div class="text-sm text-amber-700">Audit status unavailable.</div>{% endif %}</td>
+                          <td class="px-4 py-4 text-slate-700"><div class="font-semibold text-slate-900">{{ row.resolved_at_relative or 'unknown' }}</div><div class="mt-1 text-xs text-slate-500">{{ row.resolved_at_display or '' }}</div></td>
+                          <td class="px-4 py-4"><div class="flex flex-col gap-2">{% if row.source_live_url %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.source_live_url }}" target="_blank" rel="noopener noreferrer">Open current page</a>{% endif %}{% if row.display_target_live_url %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.display_target_live_url }}" target="_blank" rel="noopener noreferrer">Open new target</a>{% endif %}{% if row.can_approve_live %}<form method="post" action="{{ url_for('fulcrum.resolve_gate_review_request') }}"><input type="hidden" name="store_hash" value="{{ store_hash }}"><input type="hidden" name="request_id" value="{{ row.request_id }}"><input type="hidden" name="restore_live" value="1"><input type="hidden" name="redirect_to" value="admin"><button class="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 hover:bg-emerald-100" type="submit">Approve live now</button></form>{% endif %}{% if row.human_review_mailto %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-center text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.human_review_mailto }}">Force human review email</a>{% endif %}</div></td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                {% else %}
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">No recently resolved cases are waiting for approval.</div>
+                {% endif %}
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+      <details class="admin-fold rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+        <summary class="flex cursor-pointer items-start justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight text-slate-950">GSC Data Routed Into Fulcrum Families</h2>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">This shows how much eligible GSC query data Fulcrum grouped into families and how much of that data it actually routed in the latest completed run.</p>
+          </div>
+          <svg class="admin-fold-chevron mt-1 h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.51 4.25a.75.75 0 010 1.08l-4.51 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+        </summary>
+
+        <div class="mt-6 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+          {% for label, value in coverage_cards %}
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{{ label }}</div>
+            <div class="mt-2 text-2xl font-semibold text-slate-950">{{ value }}</div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <form method="get" action="{{ url_for('fulcrum.admin_dashboard') }}" class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <input type="hidden" name="store_hash" value="{{ store_hash }}">
+          <div class="grid gap-3 lg:grid-cols-[1fr_auto]">
+            <input class="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 outline-none placeholder:text-slate-400" type="text" name="changed_route_search" value="{{ changed_route_search or '' }}" placeholder="Search gate id, query, current page, or new route">
+            <button class="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white hover:bg-slate-800" type="submit">Submit</button>
+          </div>
+        </form>
+
+        <details class="inner-fold mt-5 rounded-[28px] border border-slate-200 bg-slate-50 p-5" {% if changed_route_search %}open{% endif %}>
+          <summary class="flex cursor-pointer items-start justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-semibold text-slate-950">Where: Fulcrum Changed The Route</h3>
+              <p class="mt-1 text-sm text-slate-600">This shows only the results where Fulcrum changed the destination from the page Google was already using.</p>
+              <p class="mt-1 text-xs text-slate-500">Showing {{ changed_route_results|length }} of {{ changed_route_filtered_count or 0 }} filtered routes{% if changed_route_search %} for "{{ changed_route_search }}"{% endif %}. Total changed routes in this run: {{ changed_route_total_count or 0 }}.</p>
+            </div>
+            <svg class="inner-fold-chevron mt-1 h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.51 4.25a.75.75 0 010 1.08l-4.51 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+          </summary>
+
+          <div class="mt-5 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Changed routes</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ changed_route_summary.changed_count or 0 }}</div></div>
+              <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Same type, new page</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ changed_route_summary.same_type_changes or 0 }}</div></div>
+              <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">New page type</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ changed_route_summary.wrong_type_changes or 0 }}</div></div>
+            </div>
+            <form method="post" action="{{ url_for('fulcrum.run_gate_agent_review') }}">
+              <input type="hidden" name="store_hash" value="{{ store_hash }}">
+              <input type="hidden" name="changed_only" value="1">
+              <input type="hidden" name="limit" value="{{ changed_route_filtered_count or changed_route_total_count or 25 }}">
+              <input type="hidden" name="redirect_to" value="admin">
+              <button class="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50" type="submit">Audit changed routes</button>
+            </form>
+          </div>
+
+          <div class="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Audited</div><div class="mt-2 text-xl font-semibold text-slate-950">{{ changed_route_review_summary.reviewed_count or 0 }}</div></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Not audited yet</div><div class="mt-2 text-xl font-semibold text-slate-950">{{ changed_route_review_summary.unaudited_count or 0 }}</div></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Correct</div><div class="mt-2 text-xl font-semibold text-slate-950">{{ changed_route_review_summary.correct or 0 }}</div></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Incorrect</div><div class="mt-2 text-xl font-semibold text-slate-950">{{ changed_route_review_summary.incorrect or 0 }}</div></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Unclear</div><div class="mt-2 text-xl font-semibold text-slate-950">{{ changed_route_review_summary.unclear or 0 }}</div></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Reasoning updated</div><div class="mt-2 text-xl font-semibold text-slate-950">{{ changed_route_review_reasoning.generated_at or 'not yet' }}</div></div>
+          </div>
+
+          {% if changed_route_results %}
+          <div class="mt-5 overflow-hidden rounded-[24px] border border-slate-200 bg-white">
+            <div class="overflow-x-auto">
+              <table class="min-w-[1120px] text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                  <tr>
+                    <th class="px-4 py-3 text-left font-semibold">Family Query</th>
+                    <th class="px-4 py-3 text-left font-semibold">GSC Current Page</th>
+                    <th class="px-4 py-3 text-left font-semibold">Fulcrum New Route</th>
+                    <th class="px-4 py-3 text-left font-semibold">Why It Changed</th>
+                    <th class="px-4 py-3 text-left font-semibold">AI Review</th>
+                    <th class="px-4 py-3 text-left font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  {% for row in changed_route_results %}
+                  {% set winner = row.suggested_target or {} %}
+                  {% set review = row.agent_review or {} %}
+                  <tr class="align-top">
+                    <td class="px-4 py-4"><div class="font-medium text-slate-900">{{ row.representative_query }}</div><div class="mt-1 text-xs text-slate-500">Gate ID #{{ row.gate_record_id }}</div><div class="mt-1 text-xs text-slate-500">Family: {{ row.normalized_query_key }}</div><div class="mt-2"><span class="status-pill {{ 'bg-blue-100 text-blue-700' if row.route_change_type == 'same_page_type_new_page' else 'bg-violet-100 text-violet-700' }}">{{ row.route_change_label }}</span></div></td>
+                    <td class="px-4 py-4 text-slate-700"><div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{{ row.source_entity_type or row.current_page_type or 'unknown' }}</div><div class="mt-1 font-medium text-slate-900">{{ row.source_name or 'No current page' }}</div>{% if row.source_url %}<div class="mt-1 text-xs text-slate-500">{{ row.source_url }}</div>{% endif %}</td>
+                    <td class="px-4 py-4 text-slate-700"><div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{{ winner.entity_type or 'unknown' }}</div><div class="mt-1 font-medium text-slate-900">{{ winner.name or 'No new route' }}</div>{% if winner.url %}<div class="mt-1 text-xs text-slate-500">{{ winner.url }}</div>{% endif %}</td>
+                    <td class="px-4 py-4 text-slate-700"><div>{{ row.reason_summary or 'No reason recorded.' }}</div>{% if row.avg_position_90d is not none %}<div class="mt-2 text-xs text-slate-500">Avg position {{ '%.1f'|format(row.avg_position_90d) }}</div>{% endif %}</td>
+                    <td class="px-4 py-4 text-slate-700">{% if review %}<span class="status-pill {% if review.verdict == 'correct' %}bg-emerald-100 text-emerald-700{% elif review.verdict == 'incorrect' %}bg-rose-100 text-rose-700{% else %}bg-amber-100 text-amber-700{% endif %}">{{ review.verdict or 'unclear' }}</span>{% if review.rationale %}<div class="mt-2 text-sm">{{ review.rationale }}</div>{% endif %}{% else %}<div class="text-sm text-slate-500">Not audited yet</div>{% endif %}</td>
+                    <td class="px-4 py-4"><div class="flex flex-col gap-2">{% if row.source_url %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ row.source_live_url or row.source_url }}" target="_blank" rel="noreferrer">Open current page</a>{% endif %}{% if winner.url %}<a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50" href="{{ winner.live_url or winner.url }}" target="_blank" rel="noreferrer">Open new target</a>{% endif %}</div></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% else %}
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">No changed routes match the current search.</div>
+          {% endif %}
+        </details>
+      </details>
+      <details class="admin-fold rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+        <summary class="flex cursor-pointer items-start justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight text-slate-950">Gating Reject Categories</h2>
+            <p class="mt-2 text-sm leading-6 text-slate-600">This shows the main reasons Fulcrum held or rejected families in the latest completed run.</p>
+          </div>
+          <svg class="admin-fold-chevron mt-1 h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.51 4.25a.75.75 0 010 1.08l-4.51 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+        </summary>
+
+        <div class="mt-5 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Pass</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ gsc_routing_coverage.pass_count or 0 }}</div></div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Hold</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ blocked_gate_summary.hold_count or 0 }}</div></div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Reject</div><div class="mt-2 text-2xl font-semibold text-slate-950">{{ blocked_gate_summary.reject_count or 0 }}</div></div>
+        </div>
+
+        {% if blocked_gate_summary.categories %}
+        <div class="mt-5 space-y-4">
+          {% for category in blocked_gate_summary.categories %}
+          <details class="inner-fold overflow-hidden rounded-[24px] border border-slate-200 bg-white" {% if loop.first %}open{% endif %}>
+            <summary class="flex cursor-pointer items-start justify-between gap-4 px-5 py-4">
+              <div>
+                <div class="text-base font-semibold text-slate-950">{{ category.label }}</div>
+                <div class="mt-1 text-sm text-slate-600">{{ category.description }}</div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="text-right text-sm"><div class="font-semibold text-slate-950">{{ category.count }}</div><div class="text-xs text-slate-500">{{ category.hold_count }} hold · {{ category.reject_count }} reject</div></div>
+                <svg class="inner-fold-chevron mt-1 h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.51 4.25a.75.75 0 010 1.08l-4.51 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+              </div>
+            </summary>
+            {% if category.samples %}
+            <div class="border-t border-slate-200 bg-slate-50 px-5 py-4">
+              <div class="space-y-3">
+                {% for sample in category.samples %}
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700"><div class="font-medium text-slate-900">#{{ sample.gate_record_id }} · {{ sample.representative_query }}</div><div class="mt-1 text-xs text-slate-500">{{ sample.reason_summary }}</div><div class="mt-1 text-xs text-slate-500">Current {{ sample.current_page_type }} -> preferred {{ sample.preferred_entity_type }} · {{ sample.impressions_90d or 0 }} impressions</div></div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+          </details>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Fulcrum did not leave any families on hold or reject in the latest completed run.</div>
+        {% endif %}
+      </details>
+    </main>
+  </div>
+</div>
+{% endblock %}

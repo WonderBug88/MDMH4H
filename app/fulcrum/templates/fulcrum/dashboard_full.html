@@ -1,0 +1,1102 @@
+{% extends "fulcrum/base.html" %}
+{% block title %}Route Authority Results{% endblock %}
+
+{% block styles %}
+<style>
+  .fulcrum-filter-input { width: 100%; min-width: 110px; border: 1px solid #cbd5e1; border-radius: 1rem; padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.25rem; background: #fff; }
+  .fulcrum-search-input { width: 100%; min-width: 180px; border: 1px solid #cbd5e1; border-radius: 1rem; padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.25rem; background: #fff; color: #0f172a; }
+  .status-pill { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.25rem 0.55rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+  .fulcrum-row-check { width: 1rem; height: 1rem; border-radius: 0.25rem; border: 1px solid #cbd5e1; }
+  .fulcrum-review-feedback-hidden { display: none; }
+  .gsc-shell { overflow: hidden; border-top: 1px solid #e2e8f0; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
+  .gsc-shell-inner { padding: 1.5rem; }
+  .gsc-title { font-size: 1.55rem; font-weight: 700; color: #0f172a; }
+  .gsc-subtitle { margin-top: 0.55rem; font-size: 0.95rem; line-height: 1.6; color: #475569; max-width: 70rem; }
+  .gsc-chip-row { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .gsc-chip { display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid #e2e8f0; border-radius: 9999px; background: #ffffff; padding: 0.7rem 1rem; font-size: 0.9rem; color: #334155; }
+  .gsc-chip strong { color: #0f172a; }
+  .gsc-main-grid { margin-top: 1.5rem; display: grid; gap: 1.5rem; }
+  .gsc-card { border: 1px solid #e2e8f0; border-radius: 24px; background: #fff; padding: 1.5rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .gsc-card-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; }
+  .gsc-card-note { margin-top: 0.4rem; font-size: 0.9rem; color: #64748b; }
+  .gsc-chart-stage { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: stretch; }
+  .gsc-chart-col { display: flex; flex-direction: column; }
+  .gsc-bar-track { display: flex; height: 14rem; align-items: end; justify-content: center; gap: 0.65rem; border-bottom: 1px solid #e2e8f0; padding: 0 0.4rem 0.6rem; background: linear-gradient(to top, #f8fafc 0%, #ffffff 100%); border-radius: 1rem 1rem 0 0; }
+  .gsc-bar { width: 1.45rem; min-height: 0.5rem; border-radius: 0.9rem 0.9rem 0 0; box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08); }
+  .gsc-bar-current { background: #2563eb; }
+  .gsc-bar-prior { background: #94a3b8; }
+  .gsc-bar-year { background: #10b981; }
+  .gsc-chart-label { margin-top: 1rem; text-align: center; font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+  .gsc-chart-raw { margin-top: 0.45rem; text-align: center; font-size: 0.78rem; line-height: 1.55; color: #64748b; }
+  .gsc-legend { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; font-weight: 700; color: #475569; }
+  .gsc-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .gsc-legend-dot { width: 0.75rem; height: 0.75rem; border-radius: 9999px; }
+  .gsc-table-wrap { margin-top: 1.25rem; overflow-x: auto; }
+  .gsc-table-shell { min-width: 860px; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 20px; }
+  .gsc-metric-table { width: 100%; border-collapse: collapse; }
+  .gsc-metric-table thead th { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 0.95rem 1rem; text-align: left; font-size: 0.85rem; font-weight: 700; color: #334155; }
+  .gsc-metric-table tbody td { border-bottom: 1px solid #e2e8f0; padding: 1rem; vertical-align: top; font-size: 0.92rem; color: #334155; }
+  .gsc-metric-table tbody tr:last-child td { border-bottom: 0; }
+  .gsc-metric-table tbody td:first-child { font-weight: 700; color: #0f172a; }
+  .gsc-summary-pill { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 700; }
+  .gsc-pill-up { background: #dcfce7; color: #047857; }
+  .gsc-pill-down { background: #ffe4e6; color: #be123c; }
+  .gsc-pill-flat { background: #e2e8f0; color: #475569; }
+  .gsc-takeaway { margin-top: 1.5rem; border: 1px solid #bae6fd; border-radius: 24px; background: rgba(240, 249, 255, 0.8); padding: 1.5rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+  .gsc-takeaway-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .gsc-kicker { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #64748b; }
+  .gsc-takeaway-title { margin-top: 0.25rem; font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+  .gsc-takeaway-body { margin-top: 0.65rem; max-width: 56rem; font-size: 0.95rem; line-height: 1.7; color: #334155; }
+  .gsc-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; background: #0f172a; padding: 0.7rem 1rem; font-size: 0.85rem; font-weight: 700; color: #fff; }
+  .review-queue-shell { margin-top: 1.5rem; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 1.5rem; background: #f8fafc; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04); }
+  .review-queue-head { display: flex; flex-direction: column; gap: 0.9rem; border-bottom: 1px solid #e2e8f0; padding: 1.25rem 1.5rem; background: #ffffff; }
+  .review-queue-title { font-size: 1.2rem; font-weight: 700; color: #0f172a; }
+  .review-queue-copy { margin-top: 0.35rem; max-width: 48rem; font-size: 0.9rem; line-height: 1.6; color: #475569; }
+  .review-queue-link { color: #1478f2; font-weight: 700; text-decoration: none; }
+  .review-queue-link:hover { text-decoration: underline; }
+  .review-queue-count { display: inline-flex; align-items: center; gap: 0.45rem; border-radius: 9999px; background: #eff6ff; padding: 0.45rem 0.8rem; font-size: 0.8rem; font-weight: 700; color: #1d4ed8; }
+  .review-queue-count-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #2563eb; }
+  .review-queue-table-wrap { overflow-x: auto; }
+  .review-queue-table { width: 100%; border-collapse: collapse; }
+  .review-queue-table thead th { padding: 0.85rem 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; text-align: left; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; }
+  .review-queue-table tbody td { padding: 0.95rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; font-size: 0.88rem; color: #334155; }
+  .review-queue-table tbody tr:last-child td { border-bottom: 0; }
+  .review-queue-query { font-weight: 700; color: #0f172a; }
+  .review-queue-subtle { margin-top: 0.25rem; font-size: 0.78rem; color: #64748b; }
+  .review-queue-status { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.32rem 0.7rem; font-size: 0.74rem; font-weight: 800; }
+  .review-queue-status-pending { background: #fff7ed; color: #c2410c; }
+  .review-queue-status-audited { background: #eff6ff; color: #1d4ed8; }
+  .review-queue-empty { padding: 1rem 1.5rem 1.25rem; font-size: 0.9rem; color: #475569; }
+  @media (min-width: 1100px) {
+    .gsc-main-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+    .gsc-takeaway-grid { flex-direction: row; align-items: center; justify-content: space-between; }
+    .review-queue-head { flex-direction: row; align-items: end; justify-content: space-between; }
+  }
+  @media (max-width: 767px) {
+    .gsc-shell-inner { padding: 1rem; }
+    .gsc-title { font-size: 1.3rem; }
+    .gsc-chart-stage { gap: 0.6rem; }
+    .gsc-bar-track { height: 11rem; gap: 0.45rem; }
+    .gsc-bar { width: 1rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-6">
+  {% set gsc_takeaway = gsc_performance_summary.get('takeaway', {}) %}
+  {% set gsc_chart_rows = gsc_performance_summary.get('comparison_chart_rows', []) %}
+
+  <section class="mb-6 overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-100 px-6 py-5">
+      <div class="text-xs font-semibold uppercase tracking-[0.22em] text-rose-500">Route Authority for BigCommerce</div>
+      <div class="mt-2 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900">Results</h1>
+          <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+            See how Route Authority-managed pages are performing in Google Search Console, then review the latest routing results below. The GSC summary and report cards stay fixed to the latest completed run. Table filters only change what you are viewing, while setup and publishing controls stay available from the merchant app.
+          </p>
+          <div class="mt-3 flex flex-wrap gap-4 text-sm text-slate-500">
+            <span>Pages with published queries <strong class="text-slate-700">{{ publication_count or 0 }}</strong></span>
+            <span>Families in current view <strong id="fulcrum-results-count" class="text-slate-700">{{ query_family_review|length if query_family_review else 0 }}</strong></span>
+            <span>Review queue <strong id="fulcrum-review-bucket-count" class="text-slate-700">{{ review_bucket_count or 0 }}</strong></span>
+            <span>{% if latest_gate_run_id %}Latest completed run <strong class="text-slate-700">{{ latest_gate_run_id }}</strong>{% else %}No gate run yet{% endif %}</span>
+            {% if active_run %}
+            <span>Generation <strong class="text-amber-700">run {{ active_run.run_id }} {{ active_run.status }}</strong></span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50" href="{{ url_for('fulcrum.guide_page', store_hash=store_hash) }}">Open guide</a>
+          <form method="post" action="{{ url_for('fulcrum.generate_run') }}">
+            <input type="hidden" name="store_hash" value="{{ store_hash }}">
+            <input type="hidden" name="cluster" value="">
+            <button class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm transition hover:bg-rose-100" type="submit">Refresh Results</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="px-6 pt-5">
+          <div class="space-y-2">
+            {% for category, message in messages %}
+              <div class="rounded border px-3 py-2 text-sm {{ 'border-red-200 bg-red-50 text-red-800' if category in ['danger', 'error'] else 'border-green-200 bg-green-50 text-green-800' }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% if active_run %}
+    <div class="px-6 pt-5">
+      <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        Route Authority is still working on run {{ active_run.run_id }}. The sections below show the latest completed results until that refresh finishes.
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="gsc-shell">
+      <div class="gsc-shell-inner">
+        <div>
+          <h2 class="gsc-title">GSC Data</h2>
+          <p class="gsc-subtitle">
+            This shows how pages with live Route Authority blocks are performing across the current 90 days, the prior 90 days, and the same 90-day window last year.
+          </p>
+          <div class="gsc-chip-row">
+            <span class="gsc-chip"><strong>{{ gsc_performance_summary.page_count or 0 }}</strong> pages in this GSC view</span>
+            <span class="gsc-chip"><strong>{{ gsc_performance_summary.anchor_end_date or 'No GSC data' }}</strong> current window end</span>
+            {% if gsc_performance_summary.cached_at_display %}
+            <span class="gsc-chip"><strong>{{ gsc_performance_summary.cached_at_relative or gsc_performance_summary.cached_at_display }}</strong> last refreshed</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if gsc_performance_summary.metric_rows %}
+        <div class="gsc-main-grid">
+          <div class="gsc-card">
+            <div>
+              <div class="gsc-card-title">Current vs Prior vs Last Year</div>
+              <div class="gsc-card-note">Grouped comparison for the most important search signals. Raw values sit directly under each metric.</div>
+            </div>
+            <div>
+              <div class="gsc-chart-stage">
+                {% for row in gsc_chart_rows %}
+                <div class="gsc-chart-col">
+                  <div class="gsc-bar-track">
+                    <div class="gsc-bar gsc-bar-current" style="height: {{ row.current_pct }}%;" title="Current 90 Days: {{ row.current_display }}"></div>
+                    <div class="gsc-bar gsc-bar-prior" style="height: {{ row.prior_pct }}%;" title="Prior 90 Days: {{ row.prior_display }}"></div>
+                    <div class="gsc-bar gsc-bar-year" style="height: {{ row.year_prior_pct }}%;" title="Same 90 Days Last Year: {{ row.year_prior_display }}"></div>
+                  </div>
+                  <div class="gsc-chart-label">{{ row.metric }}</div>
+                  <div class="gsc-chart-raw">
+                    <div>{{ row.current_display }}</div>
+                    <div>{{ row.prior_display }}</div>
+                    <div>{{ row.year_prior_display }}</div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              <div class="gsc-legend">
+                <span class="gsc-legend-item"><span class="gsc-legend-dot gsc-bar-current"></span>Current 90 Days</span>
+                <span class="gsc-legend-item"><span class="gsc-legend-dot gsc-bar-prior"></span>Prior 90 Days</span>
+                <span class="gsc-legend-item"><span class="gsc-legend-dot gsc-bar-year"></span>Same 90 Days Last Year</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="gsc-card">
+              <div>
+                <div class="gsc-card-title">Performance Table</div>
+              </div>
+              <div class="gsc-table-wrap">
+                <div class="gsc-table-shell">
+                  <table class="gsc-metric-table">
+                    <thead>
+                      <tr>
+                        <th>Metric</th>
+                        <th>Current 90 Days</th>
+                        <th>Prior 90 Days</th>
+                        <th>Vs Prior 90</th>
+                        <th>Same Window Last Year</th>
+                        <th>Vs Last Year</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in gsc_performance_summary.metric_rows %}
+                      <tr>
+                        <td>{{ row.label }}</td>
+                        <td>{{ row.current_display }}</td>
+                        <td>{{ row.prior_display }}</td>
+                        <td>
+                          <span class="gsc-summary-pill {% if row.prior_change.tone == 'green' %}gsc-pill-up{% elif row.prior_change.tone == 'red' %}gsc-pill-down{% else %}gsc-pill-flat{% endif %}">{{ row.prior_change.display }}</span>
+                        </td>
+                        <td>{{ row.year_prior_display }}</td>
+                        <td>
+                          <span class="gsc-summary-pill {% if row.year_prior_change.tone == 'green' %}gsc-pill-up{% elif row.year_prior_change.tone == 'red' %}gsc-pill-down{% else %}gsc-pill-flat{% endif %}">{{ row.year_prior_change.display }}</span>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="gsc-takeaway">
+              <div class="gsc-takeaway-grid">
+                <div>
+                  <p class="gsc-kicker">{{ gsc_takeaway.get('label', 'Route Authority takeaway') }}</p>
+                  <h3 class="gsc-takeaway-title">{{ gsc_takeaway.get('title', 'Route Authority performance needs a fresh read') }}</h3>
+                  <p class="gsc-takeaway-body">
+                    {{ gsc_takeaway.get('body', 'Refresh the GSC summary so Route Authority can compare the current 90 days against the prior window and the same period last year.') }}
+                  </p>
+                </div>
+                <span class="gsc-badge">{{ gsc_takeaway.get('badge', 'Needs refresh') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="mt-6 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          No live Route Authority pages are available to compare in GSC yet.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-6 rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Results report</div>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">Routing coverage for the latest completed run</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+          These totals stay fixed while you filter the table. The first two cards split total raw GSC queries into queries that passed the gate with a target versus queries that are on hold or rejected. The next two cards split the publishable set into live versus not live yet.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        <span class="font-semibold text-slate-900">{{ results_report.raw_query_count or 0 }}</span> total raw GSC queries across
+        <span class="font-semibold text-slate-900">{{ results_report.family_count or 0 }}</span> families
+      </div>
+    </div>
+
+    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div class="text-sm font-medium text-slate-500">Published GSC queries</div>
+        <div class="mt-3 text-4xl font-bold tracking-tight text-slate-900">{{ results_report.published_query_count or 0 }}</div>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Queries that passed the gate and have a target page.</p>
+      </div>
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div class="text-sm font-medium text-slate-500">Not published GSC queries</div>
+        <div class="mt-3 text-4xl font-bold tracking-tight text-slate-900">{{ results_report.not_published_query_count or 0 }}</div>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Queries that are currently on hold or rejected. These two cards add up to total raw GSC queries.</p>
+      </div>
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div class="text-sm font-medium text-slate-500">Queries that pass the gate and are published</div>
+        <div class="mt-3 text-4xl font-bold tracking-tight text-slate-900">{{ results_report.pass_published_query_count or 0 }}</div>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Queries in the publishable set that are currently live on a source page.</p>
+      </div>
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div class="text-sm font-medium text-slate-500">Queries that pass the gate and are not published</div>
+        <div class="mt-3 text-4xl font-bold tracking-tight text-slate-900">{{ results_report.pass_not_published_query_count or 0 }}</div>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Queries in the publishable set that still are not live. These two cards add up to Published GSC queries.</p>
+      </div>
+      <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div class="text-sm font-medium text-slate-500">Queries in Review</div>
+        <div class="mt-3 text-4xl font-bold tracking-tight text-slate-900">{{ results_report.review_bucket_query_count or 0 }}</div>
+        <p class="mt-3 text-sm leading-6 text-slate-600">Raw GSC query count currently represented by review requests waiting for admin support.</p>
+      </div>
+    </div>
+
+    <div class="mt-6 grid gap-4 xl:grid-cols-3">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5">
+        <div class="text-sm font-semibold text-slate-900">What is a family?</div>
+        <p class="mt-2 text-sm leading-6 text-slate-600">
+          A family is a grouped set of similar GSC queries that share one routing decision. One family can represent many raw Google queries.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5">
+        <div class="text-sm font-semibold text-slate-900">When should I use Clear?</div>
+        <p class="mt-2 text-sm leading-6 text-slate-600">
+          Use Clear when the route looks correct and does not need more review. It records that you checked it and found no issue.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5">
+        <div class="text-sm font-semibold text-slate-900">When should I use Review?</div>
+        <p class="mt-2 text-sm leading-6 text-slate-600">
+          Use Review when you do not agree with the result. You do not need to decide whether it is a gate issue or a routing issue. Route Authority sends it to admin support and pauses a live block if needed.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-6 rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Results workflow</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+          Gate status shows whether a route passed Route Authority's checks. Publish status separately shows whether the source page is currently live. The user workflow is simpler than that: if you agree with the result, Clear it. If you do not agree, Review it. A Hold row already means Route Authority did not approve that family.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2 text-sm">
+        <div class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5"><span class="font-semibold" id="fulcrum-pass-count">{{ pass_count or 0 }}</span> pass</div>
+        <div class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5"><span class="font-semibold" id="fulcrum-hold-count">{{ hold_count or 0 }}</span> hold</div>
+        <div class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5"><span class="font-semibold" id="fulcrum-reject-count">{{ reject_count or 0 }}</span> reject</div>
+        <div class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5"><span class="font-semibold" id="fulcrum-published-count">{{ published_count or 0 }}</span> published</div>
+        <div class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5"><span class="font-semibold" id="fulcrum-not-published-count">{{ not_published_count or 0 }}</span> not published</div>
+      </div>
+    </div>
+
+    <div class="mt-6 grid gap-4 lg:grid-cols-3">
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <label class="text-sm font-semibold text-slate-700" for="fulcrum-gate-filter">Gate</label>
+        <select id="fulcrum-gate-filter" class="fulcrum-filter-input mt-2">
+          <option value="all">All</option>
+          <option value="pass">Pass</option>
+          <option value="hold">Hold</option>
+          <option value="reject">Reject</option>
+        </select>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <label class="text-sm font-semibold text-slate-700" for="fulcrum-publish-filter">Publish</label>
+        <select id="fulcrum-publish-filter" class="fulcrum-filter-input mt-2">
+          <option value="all">All</option>
+          <option value="published">Published</option>
+          <optgroup label="Gating">
+            <option value="gating_top_ten">Gating - Top-10</option>
+            <option value="gating_low_clarity">Gating - Low Clarity</option>
+            <option value="gating_noise">Gating - Noise</option>
+          </optgroup>
+          <optgroup label="Routing">
+            <option value="routing_same_page_winner">Routing - Same Page Winner</option>
+            <option value="routing_no_target">Routing - No Target</option>
+          </optgroup>
+          <optgroup label="Workflow">
+            <option value="awaiting_publish">Awaiting publish</option>
+            <option value="blocked_by_review">Blocked by review</option>
+          </optgroup>
+          <optgroup label="Config">
+            <option value="category_publishing_off">Category publishing off</option>
+            <option value="source_type_not_publishable">Source type not publishable</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <label class="text-sm font-semibold text-slate-700" for="fulcrum-family-search">Search families</label>
+        <input id="fulcrum-family-search" class="fulcrum-search-input mt-2" type="text" placeholder="Search query family">
+      </div>
+    </div>
+
+    <div class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <div class="text-sm font-semibold text-slate-900">Move through the list faster</div>
+          <p class="mt-1 text-sm text-slate-600">
+            Use Review when you do not agree with a result. Use Clear when the result looks correct and understood. Submit records what you cleared, what you sent to review, and what you left untouched.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="fulcrum-selection-count" class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">0 selected</span>
+          <span id="fulcrum-staged-clear-count" class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">0 cleared staged</span>
+          <span id="fulcrum-staged-review-count" class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-sky-700 ring-1 ring-sky-200">0 moved to review</span>
+          <button id="fulcrum-review-selected" class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" type="button" disabled>Review Selected</button>
+          <button id="fulcrum-clear-selected" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50" type="button" disabled>Clear Selected</button>
+          <button id="fulcrum-submit-session" class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50" type="button">Submit</button>
+          <button id="fulcrum-reset-cleared" class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" type="button">Reset Cleared</button>
+        </div>
+      </div>
+      <div id="fulcrum-action-feedback" class="fulcrum-review-feedback-hidden mt-3 rounded-lg border px-3 py-2 text-sm" aria-live="polite"></div>
+    </div>
+
+    {% if query_family_review %}
+    <div class="mt-6 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+      <table id="query-family-review-table" class="min-w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+            <th class="px-4 py-4" data-searchable="false">
+              <input id="fulcrum-select-all" class="fulcrum-row-check" type="checkbox" aria-label="Select all visible results">
+            </th>
+            <th class="px-4 py-4">Family Queries</th>
+            <th class="px-4 py-4">GSC Linked It To</th>
+            <th class="px-4 py-4">Route Authority Target</th>
+            <th class="px-4 py-4">Why</th>
+            <th class="px-4 py-4" data-searchable="false">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for row in query_family_review %}
+          <tr data-gate-record-id="{{ row.gate_record_id }}" data-gate-status="{{ row.gate_status or row.disposition or 'hold' }}" data-publish-status="{{ row.publish_status or ('published' if row.is_live_result else 'not_published') }}" data-publish-reason="{{ row.publish_reason_key or (row.publish_status or ('published' if row.is_live_result else 'not_published')) }}" data-source-key="{{ ((row.source_entity_type or row.current_page_type or 'unknown') ~ '|' ~ (row.source_entity_id or 0) ~ '|' ~ (row.source_url or '')) }}">
+            <td class="px-4 py-4 align-top">
+              <input class="fulcrum-row-check fulcrum-row-select" type="checkbox" value="{{ row.gate_record_id }}" aria-label="Select result {{ row.representative_query }}">
+            </td>
+            <td class="px-4 py-4 align-top">
+              <div class="font-medium text-slate-900">{{ row.representative_query }}</div>
+              <div class="mt-1 text-xs text-slate-500">Family: {{ row.normalized_query_key }}</div>
+              {% if row.metadata and row.metadata.query_variants %}
+              <div class="mt-2 space-y-1 text-xs text-slate-500">
+                {% for variant in row.metadata.query_variants[:3] %}
+                <div>{{ variant.query }}{% if variant.impressions_90d %} - {{ variant.impressions_90d }} impressions{% endif %}{% if variant.avg_position_90d %} - avg pos {{ variant.avg_position_90d }}{% endif %}</div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </td>
+            <td class="px-4 py-4 align-top">
+              <div class="text-xs font-semibold uppercase {{ 'text-blue-600' if (row.current_page_type or row.source_entity_type) == 'category' else ('text-purple-600' if (row.current_page_type or row.source_entity_type) == 'brand' else ('text-emerald-600' if (row.current_page_type or row.source_entity_type) == 'content' else 'text-gray-400')) }}">{{ row.current_page_type or row.source_entity_type or 'unknown' }}</div>
+              <div class="font-medium text-slate-900">{{ row.source_name or 'Unknown source' }}</div>
+              <div class="text-xs text-slate-500">{{ row.source_url }}</div>
+            </td>
+            <td class="px-4 py-4 align-top">
+              {% if row.suggested_target %}
+              <div class="text-xs font-semibold uppercase {% if row.suggested_target.entity_type == 'category' %}text-blue-600{% elif row.suggested_target.entity_type == 'brand' %}text-purple-600{% elif row.suggested_target.entity_type == 'content' %}text-emerald-600{% else %}text-gray-400{% endif %}">{{ row.suggested_target.entity_type or 'unknown' }}</div>
+              <div class="font-medium text-slate-900">{{ row.suggested_target.name }}</div>
+              <div class="text-xs text-slate-500">{{ row.suggested_target.url }}</div>
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <span class="status-pill {{ 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' if row.gate_status == 'pass' else ('bg-amber-50 text-amber-700 ring-1 ring-amber-200' if row.gate_status == 'hold' else 'bg-rose-50 text-rose-700 ring-1 ring-rose-200') }}">{{ row.gate_status_label or row.disposition|upper }}</span>
+                <span class="status-pill fulcrum-publish-pill {{ 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' if row.publish_status == 'published' else 'bg-slate-100 text-slate-700 ring-1 ring-slate-200' }}">{{ 'Published live' if row.publish_status == 'published' else (row.publish_status_label or row.live_status_label) }}</span>
+                {% if row.suggested_target.manual_override %}
+                <span class="status-pill bg-blue-100 text-blue-800">Manual</span>
+                {% endif %}
+              </div>
+              <div class="mt-2 text-xs"><a class="text-rose-600 hover:underline" href="{{ row.suggested_target.live_url or row.suggested_target.url }}" target="_blank" rel="noopener noreferrer">Open target</a></div>
+              {% else %}
+              <div class="text-slate-400">No target surfaced yet</div>
+              {% endif %}
+            </td>
+            <td class="px-4 py-4 align-top text-xs text-slate-600">
+              <div>{{ row.reason_summary }}</div>
+              <div class="mt-2 text-slate-500">
+                Current {{ row.current_page_type or row.source_entity_type or 'unknown' }} -> preferred {{ row.preferred_entity_type or 'unknown' }}
+                 - {{ row.query_intent_scope or 'mixed_or_unknown' }}
+              </div>
+            </td>
+            <td class="px-4 py-4 align-top text-xs text-slate-600">
+              <div class="flex flex-col gap-2">
+                {% if row.publish_reason_key == 'awaiting_publish' and row.gate_status == 'pass' %}
+                <form method="post" action="{{ url_for('fulcrum.publish') }}">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="source_entity_type" value="{{ row.source_entity_type or row.current_page_type or '' }}">
+                  <input type="hidden" name="source_entity_id" value="{{ row.source_entity_id or row.source_product_id or '' }}">
+                  <input type="hidden" name="source_url" value="{{ row.source_url or '' }}">
+                  <input type="hidden" name="redirect_to" value="dashboard">
+                  <button class="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 font-semibold text-rose-700 hover:bg-rose-100" type="submit">Publish</button>
+                </form>
+                {% endif %}
+                <form method="post" action="{{ url_for('fulcrum.request_gate_review') }}" class="fulcrum-review-form">
+                  <input type="hidden" name="store_hash" value="{{ store_hash }}">
+                  <input type="hidden" name="redirect_to" value="dashboard">
+                  <input type="hidden" name="gate_record_id" value="{{ row.gate_record_id }}">
+                  <input type="hidden" name="target_entity_type" value="{{ row.suggested_target.entity_type if row.suggested_target else '' }}">
+                  <input type="hidden" name="target_entity_id" value="{{ row.suggested_target.entity_id if row.suggested_target else '' }}">
+                  <input type="hidden" name="target_name" value="{{ row.suggested_target.name if row.suggested_target else '' }}">
+                  <input type="hidden" name="target_url" value="{{ row.suggested_target.url if row.suggested_target else '' }}">
+                  <input type="hidden" name="reason_summary" value="{{ row.reason_summary or '' }}">
+                  <button class="rounded-2xl border border-slate-300 bg-white px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50" type="submit">Review</button>
+                </form>
+                <button class="fulcrum-clear-button rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 font-semibold text-emerald-700 hover:bg-emerald-100" type="button">Clear</button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="mt-6 rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-800">No results are available yet.</div>
+    {% endif %}
+  </section>
+
+  <section class="review-queue-shell">
+    <div class="review-queue-head">
+      <div>
+        <div class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Review queue</div>
+        <div class="review-queue-title">Rows moved out of Results</div>
+        <p class="review-queue-copy">
+          Anything sent to review leaves the active Results workflow and waits here for admin resolution. These rows should not block the merchant-side Results workflow while review is pending.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="review-queue-count"><span class="review-queue-count-dot"></span><span id="fulcrum-review-queue-waiting-value">{{ review_bucket_count or 0 }}</span> waiting</span>
+        <a class="review-queue-link" href="{{ url_for('fulcrum.review_page', store_hash=store_hash) }}">Open full review queue</a>
+      </div>
+    </div>
+
+    <div id="fulcrum-review-queue-table-wrap" class="review-queue-table-wrap{% if not review_bucket_requests %} hidden{% endif %}">
+      <table class="review-queue-table">
+        <thead>
+          <tr>
+            <th>Query</th>
+            <th>Current page</th>
+            <th>Requested target</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="fulcrum-review-queue-body">
+          {% for row in review_bucket_requests[:8] %}
+          <tr data-request-id="{{ row.request_id or '' }}">
+            <td>
+              <div class="review-queue-query">{{ row.representative_query or row.source_name or row.source_url }}</div>
+              <div class="review-queue-subtle">Request #{{ row.request_id or 'n/a' }}{% if row.requested_at_relative %} &middot; {{ row.requested_at_relative }}{% endif %}</div>
+            </td>
+            <td>
+              <div>{{ row.source_name or 'Unknown page' }}</div>
+              <div class="review-queue-subtle">{{ row.source_url or 'unknown' }}</div>
+            </td>
+            <td>
+              <div>{{ row.target_name or 'Pending support investigation' }}</div>
+              <div class="review-queue-subtle">{{ row.target_url or 'No target stored yet' }}</div>
+            </td>
+            <td>
+              <div>
+                <span class="review-queue-status {{ 'review-queue-status-audited' if row.review_status_label == 'Agent diagnosis ready for support' else 'review-queue-status-pending' }}">
+                  {{ row.review_status_label or 'Agent diagnosis pending' }}
+                </span>
+              </div>
+              <div class="review-queue-subtle">{{ row.applied_status_label or 'Not live yet' }}</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="fulcrum-review-queue-empty" class="review-queue-empty{% if review_bucket_requests %} hidden{% endif %}">No rows are currently waiting in the review queue.</div>
+  </section>
+
+  <p class="mt-6 text-sm text-slate-500"><a class="hover:underline" href="{{ privacy_policy_url }}">Privacy policy</a> &middot; <a class="hover:underline" href="{{ support_url }}">Support contact</a> &middot; <a class="hover:underline" href="{{ terms_url }}">Terms of service</a></p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(function () {
+    const table = $("#query-family-review-table");
+    if (!table.length) return;
+    const storeHash = {{ store_hash|tojson }};
+    const runId = {{ latest_gate_run_id|tojson }};
+    const submitSessionUrl = {{ url_for('fulcrum.submit_gate_review_session')|tojson }};
+    const clearedStorageKey = `fulcrum-cleared-results:${storeHash}:${runId || "none"}`;
+    const reviewBucketedStorageKey = `fulcrum-review-bucketed-results:${storeHash}:${runId || "none"}`;
+    const reviewBucketedSourceStorageKey = `fulcrum-review-bucketed-sources:${storeHash}:${runId || "none"}`;
+    const sessionUniverseStorageKey = `fulcrum-review-session-results:${storeHash}:${runId || "none"}`;
+    const feedback = $("#fulcrum-action-feedback");
+    const selectionCount = $("#fulcrum-selection-count");
+    const stagedClearCount = $("#fulcrum-staged-clear-count");
+    const stagedReviewCount = $("#fulcrum-staged-review-count");
+    const reviewSelectedButton = $("#fulcrum-review-selected");
+    const clearSelectedButton = $("#fulcrum-clear-selected");
+    const submitSessionButton = $("#fulcrum-submit-session");
+    const reviewBucketCount = $("#fulcrum-review-bucket-count");
+    const reviewQueueWaitingValue = $("#fulcrum-review-queue-waiting-value");
+    const reviewQueueTableWrap = $("#fulcrum-review-queue-table-wrap");
+    const reviewQueueBody = $("#fulcrum-review-queue-body");
+    const reviewQueueEmpty = $("#fulcrum-review-queue-empty");
+    const resultsCount = $("#fulcrum-results-count");
+    const gateFilter = $("#fulcrum-gate-filter");
+    const publishFilter = $("#fulcrum-publish-filter");
+    const familySearch = $("#fulcrum-family-search");
+    const passCount = $("#fulcrum-pass-count");
+    const holdCount = $("#fulcrum-hold-count");
+    const rejectCount = $("#fulcrum-reject-count");
+    const publishedCount = $("#fulcrum-published-count");
+    const notPublishedCount = $("#fulcrum-not-published-count");
+    const selectAll = $("#fulcrum-select-all");
+
+    const loadIdSet = (storageKey) => {
+      try {
+        const rawValue = window.localStorage.getItem(storageKey);
+        const parsed = rawValue ? JSON.parse(rawValue) : [];
+        return new Set(Array.isArray(parsed) ? parsed.map((value) => Number(value)).filter((value) => value > 0) : []);
+      } catch (error) {
+        return new Set();
+      }
+    };
+
+    const loadStringSet = (storageKey) => {
+      try {
+        const rawValue = window.localStorage.getItem(storageKey);
+        const parsed = rawValue ? JSON.parse(rawValue) : [];
+        return new Set(Array.isArray(parsed) ? parsed.map((value) => String(value || '').trim()).filter((value) => value) : []);
+      } catch (error) {
+        return new Set();
+      }
+    };
+
+    const saveIdSet = (storageKey, ids) => {
+      window.localStorage.setItem(storageKey, JSON.stringify(Array.from(ids)));
+    };
+
+    const saveStringSet = (storageKey, values) => {
+      window.localStorage.setItem(storageKey, JSON.stringify(Array.from(values)));
+    };
+
+    const clearStoredSet = (storageKey) => {
+      window.localStorage.removeItem(storageKey);
+    };
+
+    const clearedIds = loadIdSet(clearedStorageKey);
+    const reviewBucketedIds = loadIdSet(reviewBucketedStorageKey);
+    const reviewBucketedSourceKeys = loadStringSet(reviewBucketedSourceStorageKey);
+    const sessionUniverseIds = loadIdSet(sessionUniverseStorageKey);
+
+    table.find("tbody tr").each(function () {
+      const gateRecordId = Number($(this).data("gate-record-id") || 0);
+      if (gateRecordId > 0) {
+        sessionUniverseIds.add(gateRecordId);
+      }
+    });
+    saveIdSet(sessionUniverseStorageKey, sessionUniverseIds);
+
+    table.find("tbody tr").each(function () {
+      const gateRecordId = Number($(this).data("gate-record-id") || 0);
+      const sourceKey = String($(this).data("source-key") || "");
+      if (clearedIds.has(gateRecordId) || reviewBucketedIds.has(gateRecordId) || (sourceKey && reviewBucketedSourceKeys.has(sourceKey))) {
+        $(this).remove();
+      }
+    });
+
+    const persistSessionState = () => {
+      saveIdSet(clearedStorageKey, clearedIds);
+      saveIdSet(reviewBucketedStorageKey, reviewBucketedIds);
+      saveStringSet(reviewBucketedSourceStorageKey, reviewBucketedSourceKeys);
+      saveIdSet(sessionUniverseStorageKey, sessionUniverseIds);
+    };
+
+    const escapeHtml = (value) => String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    const updateReviewQueueVisibility = () => {
+      const hasRows = reviewQueueBody.length && reviewQueueBody.children("tr").length > 0;
+      if (reviewQueueTableWrap.length) reviewQueueTableWrap.toggleClass("hidden", !hasRows);
+      if (reviewQueueEmpty.length) reviewQueueEmpty.toggleClass("hidden", hasRows);
+    };
+
+    const renderFeedback = (message, tone = "neutral") => {
+      const tones = {
+        success: "border-emerald-200 bg-emerald-50 text-emerald-800",
+        error: "border-rose-200 bg-rose-50 text-rose-800",
+        neutral: "border-slate-200 bg-white text-slate-700",
+      };
+      feedback.removeClass("fulcrum-review-feedback-hidden border-emerald-200 bg-emerald-50 text-emerald-800 border-rose-200 bg-rose-50 text-rose-800 border-slate-200 bg-white text-slate-700");
+      feedback.addClass(tones[tone] || tones.neutral).text(message);
+    };
+
+    $.fn.dataTable.ext.search.push(function (settings, searchData, dataIndex) {
+      if (settings.nTable !== table.get(0)) return true;
+      const rowNode = settings.aoData[dataIndex] && settings.aoData[dataIndex].nTr;
+      if (!rowNode) return true;
+
+      const gateValue = String(gateFilter.val() || "all");
+      const publishValue = String(publishFilter.val() || "all");
+      const rowElement = $(rowNode);
+      const rowGateStatus = String(rowElement.data("gate-status") || "");
+      const rowPublishStatus = String(rowElement.data("publish-status") || "");
+      const rowPublishReason = String(rowElement.data("publish-reason") || rowPublishStatus || "");
+
+      if (gateValue !== "all" && rowGateStatus !== gateValue) return false;
+      if (publishValue === "published" && rowPublishStatus !== "published") return false;
+      if (publishValue === "not_published" && rowPublishStatus === "published") return false;
+      if (!["all", "published", "not_published"].includes(publishValue) && rowPublishReason !== publishValue) return false;
+      return true;
+    });
+
+    const dataTable = table.DataTable({
+      dom: "lrtip",
+      pageLength: 20,
+      lengthChange: true,
+      lengthMenu: [[20, 50, 100, 250], [20, 50, 100, 250]],
+      autoWidth: false,
+      order: [],
+      columnDefs: [
+        { targets: [0, 5], orderable: false, searchable: false },
+      ],
+    });
+
+    const selectedRows = () => table.find("tbody .fulcrum-row-select:checked").closest("tr");
+    const updateResultsCount = () => {
+      if (resultsCount.length) {
+        resultsCount.text(String(dataTable.rows({ search: "applied" }).count()));
+      }
+    };
+
+    const updateSummaryCounts = () => {
+      const counts = {
+        pass: 0,
+        hold: 0,
+        reject: 0,
+        published: 0,
+        not_published: 0,
+      };
+
+      dataTable.rows().nodes().to$().each(function () {
+        const row = $(this);
+        const gateStatus = String(row.data("gate-status") || "");
+        const publishStatus = String(row.data("publish-status") || "");
+        if (Object.prototype.hasOwnProperty.call(counts, gateStatus)) counts[gateStatus] += 1;
+        if (Object.prototype.hasOwnProperty.call(counts, publishStatus)) counts[publishStatus] += 1;
+      });
+
+      if (passCount.length) passCount.text(String(counts.pass));
+      if (holdCount.length) holdCount.text(String(counts.hold));
+      if (rejectCount.length) rejectCount.text(String(counts.reject));
+      if (publishedCount.length) publishedCount.text(String(counts.published));
+      if (notPublishedCount.length) notPublishedCount.text(String(counts.not_published));
+    };
+
+    const resetSessionUniverseToVisibleRows = () => {
+      sessionUniverseIds.clear();
+      dataTable.rows().nodes().to$().each(function () {
+        const gateRecordId = Number($(this).data("gate-record-id") || 0);
+        if (gateRecordId > 0) {
+          sessionUniverseIds.add(gateRecordId);
+        }
+      });
+      saveIdSet(sessionUniverseStorageKey, sessionUniverseIds);
+    };
+
+    const updateBatchState = () => {
+      if (stagedClearCount.length) {
+        stagedClearCount.text(`${clearedIds.size} cleared staged`);
+      }
+      if (stagedReviewCount.length) {
+        stagedReviewCount.text(`${reviewBucketedIds.size} moved to review`);
+      }
+      if (submitSessionButton.length) {
+        submitSessionButton.prop("disabled", sessionUniverseIds.size === 0);
+      }
+    };
+
+    const setRowPublishStatus = (rowElement, publishStatus, publishStatusLabel, publishReason = null) => {
+      const row = $(rowElement);
+      const resolvedPublishReason = publishReason || (publishStatus === "published" ? "published" : "not_published");
+      row.attr("data-publish-status", publishStatus);
+      row.data("publish-status", publishStatus);
+      row.attr("data-publish-reason", resolvedPublishReason);
+      row.data("publish-reason", resolvedPublishReason);
+      const publishPill = row.find(".fulcrum-publish-pill");
+      const nextLabel = publishStatus === "published" ? "Published live" : publishStatusLabel;
+      publishPill
+        .removeClass("bg-blue-50 text-blue-700 ring-1 ring-blue-200 bg-slate-100 text-slate-700 ring-slate-200")
+        .addClass(publishStatus === "published" ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200" : "bg-slate-100 text-slate-700 ring-1 ring-slate-200")
+        .text(nextLabel);
+    };
+
+    const markSourceAsNotPublished = (rowElement, publishStatusLabel = "Not Published", publishReason = "not_published") => {
+      const row = $(rowElement);
+      if (String(row.data("publish-status") || "") !== "published") return;
+      const sourceKey = String(row.data("source-key") || "");
+      if (!sourceKey) return;
+
+      table.find("tbody tr").each(function () {
+        if (String($(this).data("source-key") || "") === sourceKey) {
+          setRowPublishStatus(this, "not_published", publishStatusLabel, publishReason);
+        }
+      });
+    };
+
+    const updateSelectionState = () => {
+      const count = selectedRows().length;
+      selectionCount.text(`${count} selected`);
+      reviewSelectedButton.prop("disabled", count === 0);
+      clearSelectedButton.prop("disabled", count === 0);
+
+      const visibleCheckboxes = dataTable.rows({ search: "applied" }).nodes().to$().find(".fulcrum-row-select");
+      const visibleCount = visibleCheckboxes.length;
+      const checkedVisibleCount = visibleCheckboxes.filter(":checked").length;
+      selectAll.prop("checked", visibleCount > 0 && visibleCount === checkedVisibleCount);
+      selectAll.prop("indeterminate", checkedVisibleCount > 0 && checkedVisibleCount < visibleCount);
+    };
+
+    const removeRow = (rowElement) => {
+      dataTable.row(rowElement).remove();
+      dataTable.draw(false);
+      updateResultsCount();
+      updateSelectionState();
+      updateBatchState();
+    };
+
+    const rowsForSource = (rowElement) => {
+      const row = $(rowElement);
+      const sourceKey = String(row.data("source-key") || "");
+      if (!sourceKey) {
+        return row;
+      }
+      return table.find("tbody tr").filter(function () {
+        return String($(this).data("source-key") || "") === sourceKey;
+      });
+    };
+
+    const moveSourceRowsToReviewBucket = (rowElement) => {
+      const sourceRows = rowsForSource(rowElement);
+      const sourceKey = String($(rowElement).data("source-key") || "");
+      if (sourceKey) {
+        reviewBucketedSourceKeys.add(sourceKey);
+      }
+      sourceRows.each(function () {
+        const gateRecordId = Number($(this).data("gate-record-id") || 0);
+        markSourceAsNotPublished(this, "Blocked by review", "blocked_by_review");
+        if (gateRecordId > 0) {
+          reviewBucketedIds.add(gateRecordId);
+          clearedIds.delete(gateRecordId);
+        }
+      });
+      persistSessionState();
+      sourceRows.each(function () {
+        removeRow(this);
+      });
+      return sourceRows.length;
+    };
+
+    const clearRows = (rows) => {
+      rows.each(function () {
+        const gateRecordId = Number($(this).data("gate-record-id") || 0);
+        if (gateRecordId > 0) {
+          clearedIds.add(gateRecordId);
+          reviewBucketedIds.delete(gateRecordId);
+        }
+      });
+      persistSessionState();
+      rows.each(function () {
+        removeRow(this);
+      });
+    };
+
+    const setReviewBucketCount = (count) => {
+      if (reviewBucketCount.length && Number.isFinite(count)) {
+        reviewBucketCount.text(String(count));
+      }
+      if (reviewQueueWaitingValue.length && Number.isFinite(count)) {
+        reviewQueueWaitingValue.text(String(count));
+      }
+    };
+
+    const buildReviewBucketEntryFromRow = (rowElement) => {
+      const row = $(rowElement);
+      const queryCell = row.children("td").eq(1);
+      const sourceCell = row.children("td").eq(2);
+      const targetCell = row.children("td").eq(3);
+      const wasPublished = String(row.data("publish-status") || "") === "published";
+
+      return {
+        representative_query: queryCell.find(".font-medium").first().text().trim() || sourceCell.find(".font-medium").first().text().trim() || sourceCell.find(".text-xs.text-slate-500").first().text().trim() || "Pending review",
+        source_name: sourceCell.find(".font-medium").first().text().trim() || "Unknown page",
+        source_url: sourceCell.find(".text-xs.text-slate-500").first().text().trim() || "unknown",
+        target_name: targetCell.find(".font-medium").first().text().trim() || "Pending support investigation",
+        target_url: targetCell.find(".text-xs.text-slate-500").first().text().trim() || "No target stored yet",
+        review_status_label: "Agent diagnosis pending",
+        applied_status_label: wasPublished ? "Live block paused for review" : "Not live yet",
+        requested_at_relative: "just now",
+      };
+    };
+
+    const prependReviewBucketEntry = (entry) => {
+      if (!reviewQueueBody.length || !entry) return;
+
+      const requestId = Number(entry.request_id || 0);
+      if (requestId > 0) {
+        reviewQueueBody.find(`tr[data-request-id="${requestId}"]`).remove();
+      }
+
+      const reviewStatusLabel = entry.review_status_label || "Agent diagnosis pending";
+      const appliedStatusLabel = entry.applied_status_label || "Not live yet";
+      const requestedAtRelative = entry.requested_at_relative || "just now";
+      const statusClass = reviewStatusLabel === "Agent diagnosis ready for support"
+        ? "review-queue-status-audited"
+        : "review-queue-status-pending";
+
+      reviewQueueBody.prepend(`
+        <tr data-request-id="${requestId > 0 ? requestId : ""}">
+          <td>
+            <div class="review-queue-query">${escapeHtml(entry.representative_query || entry.source_name || entry.source_url || "Pending review")}</div>
+            <div class="review-queue-subtle">Request #${escapeHtml(requestId > 0 ? requestId : "n/a")}${requestedAtRelative ? ` &middot; ${escapeHtml(requestedAtRelative)}` : ""}</div>
+          </td>
+          <td>
+            <div>${escapeHtml(entry.source_name || "Unknown page")}</div>
+            <div class="review-queue-subtle">${escapeHtml(entry.source_url || "unknown")}</div>
+          </td>
+          <td>
+            <div>${escapeHtml(entry.target_name || "Pending support investigation")}</div>
+            <div class="review-queue-subtle">${escapeHtml(entry.target_url || "No target stored yet")}</div>
+          </td>
+          <td>
+            <div>
+              <span class="review-queue-status ${statusClass}">
+                ${escapeHtml(reviewStatusLabel)}
+              </span>
+            </div>
+            <div class="review-queue-subtle">${escapeHtml(appliedStatusLabel)}</div>
+          </td>
+        </tr>
+      `);
+
+      const reviewRows = reviewQueueBody.children("tr");
+      if (reviewRows.length > 8) {
+        reviewRows.slice(8).remove();
+      }
+      updateReviewQueueVisibility();
+    };
+
+    const postReviewForm = async (formElement) => {
+      const form = $(formElement);
+      const button = form.find("button[type='submit']");
+      const originalLabel = button.text();
+      button.prop("disabled", true).text("Queueing...");
+      try {
+        const response = await fetch(form.attr("action"), {
+          method: "POST",
+          body: new FormData(formElement),
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json",
+          },
+        });
+        const payload = await response.json().catch(() => ({ status: "error", message: "Unexpected response from Route Authority." }));
+        if (!response.ok || payload.status !== "ok") {
+          throw new Error(payload.message || "Could not send this result to the review bucket.");
+        }
+        setReviewBucketCount(Number(payload.review_bucket_count));
+        return payload;
+      } finally {
+        button.prop("disabled", false).text(originalLabel);
+      }
+    };
+
+    gateFilter.add(publishFilter).on("change", function () {
+      dataTable.draw();
+    });
+    familySearch.on("keyup change", function () {
+      if (dataTable.search() !== this.value) {
+        dataTable.search(this.value).draw();
+      }
+    });
+
+    table.on("change", ".fulcrum-row-select", updateSelectionState);
+    dataTable.on("draw", function () {
+      updateResultsCount();
+      updateSummaryCounts();
+      updateSelectionState();
+    });
+
+    selectAll.on("change", function () {
+      const shouldCheck = $(this).is(":checked");
+      dataTable.rows({ search: "applied" }).nodes().to$().find(".fulcrum-row-select").prop("checked", shouldCheck);
+      updateSelectionState();
+    });
+
+    table.on("click", ".fulcrum-clear-button", function () {
+      const row = $(this).closest("tr");
+      clearRows(row);
+      renderFeedback("Cleared this route from view for the current run.", "success");
+    });
+
+    table.on("submit", ".fulcrum-review-form", async function (event) {
+      event.preventDefault();
+      const row = $(this).closest("tr");
+      try {
+        const payload = await postReviewForm(this);
+        const reviewBucketEntry = payload.review_bucket_entry || buildReviewBucketEntryFromRow(row.get(0));
+        moveSourceRowsToReviewBucket(row.get(0));
+        prependReviewBucketEntry(reviewBucketEntry);
+        renderFeedback(payload.message || "Queued this result for review.", "success");
+        return;
+      } catch (error) {
+        renderFeedback(error.message || "Could not queue this result.", "error");
+      }
+    });
+
+    clearSelectedButton.on("click", function () {
+      const rows = selectedRows();
+      if (!rows.length) return;
+      clearRows(rows);
+      renderFeedback(`Cleared ${rows.length} result${rows.length === 1 ? "" : "s"} from view for the current run.`, "success");
+    });
+
+    reviewSelectedButton.on("click", async function () {
+      const rows = selectedRows();
+      if (!rows.length) return;
+
+      reviewSelectedButton.prop("disabled", true).text("Queueing...");
+      clearSelectedButton.prop("disabled", true);
+      try {
+        const outcomes = await Promise.allSettled(
+          rows
+            .toArray()
+            .map(async (rowElement) => {
+              const payload = await postReviewForm($(rowElement).find("form.fulcrum-review-form").get(0));
+              const reviewBucketEntry = payload.review_bucket_entry || buildReviewBucketEntryFromRow(rowElement);
+              moveSourceRowsToReviewBucket(rowElement);
+              prependReviewBucketEntry(reviewBucketEntry);
+              return payload;
+            })
+        );
+        persistSessionState();
+        const successCount = outcomes.filter((result) => result.status === "fulfilled").length;
+        const failureCount = outcomes.length - successCount;
+        if (successCount) {
+          renderFeedback(
+            failureCount
+              ? `Queued ${successCount} result${successCount === 1 ? "" : "s"} for review. ${failureCount} still need attention.`
+              : `Queued ${successCount} result${successCount === 1 ? "" : "s"} for review.`,
+            failureCount ? "neutral" : "success"
+          );
+        } else {
+          const firstError = outcomes.find((result) => result.status === "rejected");
+          renderFeedback(firstError?.reason?.message || "Could not queue the selected results.", "error");
+        }
+      } finally {
+        reviewSelectedButton.text("Review Selected");
+        updateSelectionState();
+      }
+    });
+
+    submitSessionButton.on("click", async function () {
+      if (!sessionUniverseIds.size) {
+        renderFeedback("There are no results staged for submission in this run.", "neutral");
+        return;
+      }
+
+      const originalLabel = submitSessionButton.text();
+      submitSessionButton.prop("disabled", true).text("Submitting...");
+      try {
+        const response = await fetch(submitSessionUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            store_hash: storeHash,
+            run_id: runId,
+            all_gate_record_ids: Array.from(sessionUniverseIds),
+            cleared_gate_record_ids: Array.from(clearedIds),
+            review_bucket_gate_record_ids: Array.from(reviewBucketedIds),
+            client_submitted_at: new Date().toISOString(),
+            page_length: dataTable.page.len(),
+            results_left_in_view: dataTable.rows().count(),
+          }),
+        });
+        const payload = await response.json().catch(() => ({ status: "error", message: "Unexpected response from Route Authority." }));
+        if (!response.ok || payload.status !== "ok") {
+          throw new Error(payload.message || "Could not save this review batch.");
+        }
+
+        clearedIds.clear();
+        reviewBucketedIds.clear();
+        reviewBucketedSourceKeys.clear();
+        clearStoredSet(clearedStorageKey);
+        clearStoredSet(reviewBucketedStorageKey);
+        clearStoredSet(reviewBucketedSourceStorageKey);
+        resetSessionUniverseToVisibleRows();
+        renderFeedback(payload.message || "Saved this review batch.", "success");
+        updateBatchState();
+        updateSelectionState();
+      } catch (error) {
+        renderFeedback(error.message || "Could not save this review batch.", "error");
+      } finally {
+        submitSessionButton.text(originalLabel);
+        updateBatchState();
+      }
+    });
+
+    $("#fulcrum-reset-cleared").on("click", function () {
+      clearedIds.clear();
+      clearStoredSet(clearedStorageKey);
+      window.location.reload();
+    });
+
+    updateResultsCount();
+    updateSummaryCounts();
+    updateReviewQueueVisibility();
+    updateBatchState();
+    updateSelectionState();
+  });
+</script>
+{% endblock %}
+
+
+

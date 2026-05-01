@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Route Authority Results</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --line: #dbe4ee;
+        --text: #0f172a;
+        --muted: #475569;
+        --soft: #f8fafc;
+        --link: #1d4ed8;
+        --accent: #7f1d1d;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .topbar { height: 12px; background: #0f172a; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 18px 40px; }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+        overflow: hidden;
+      }
+      .section { padding: 24px; }
+      .border-top { border-top: 1px solid var(--line); }
+      .eyebrow {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      h1, h2 { margin: 0; }
+      h1 { margin-top: 10px; font-size: 34px; line-height: 1.1; }
+      h2 { font-size: 28px; line-height: 1.15; }
+      p { margin: 0; color: var(--muted); line-height: 1.6; }
+      .head {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .subhead {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .chips, .actions, .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .chip strong { color: var(--text); }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        color: var(--text);
+        font-weight: 700;
+      }
+      .btn-primary {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .cards { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--soft);
+        padding: 20px;
+      }
+      .card-kicker { font-size: 14px; color: #64748b; }
+      .card-value { margin-top: 14px; font-size: 42px; font-weight: 800; line-height: 1; }
+      .queue-table-wrap {
+        margin-top: 20px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: var(--soft);
+      }
+      table { width: 100%; border-collapse: collapse; min-width: 720px; }
+      th, td { padding: 14px 16px; text-align: left; vertical-align: top; }
+      th {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+      }
+      td { border-bottom: 1px solid var(--line); font-size: 14px; }
+      tbody tr:last-child td { border-bottom: 0; }
+      .query { font-weight: 700; color: var(--text); }
+      .subtle { margin-top: 6px; font-size: 12px; color: #64748b; }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: var(--text);
+      }
+      .status-ready { border-color: #bae6fd; background: #eff6ff; color: #1d4ed8; }
+      .status-pending { border-color: #fed7aa; background: #fff7ed; color: #c2410c; }
+      .empty {
+        margin-top: 20px;
+        border: 1px solid #bbf7d0;
+        background: #ecfdf5;
+        color: #047857;
+        border-radius: 18px;
+        padding: 14px 16px;
+      }
+      .footer-links {
+        margin-top: 18px;
+        font-size: 14px;
+      }
+      @media (min-width: 900px) {
+        .head {
+          flex-direction: row;
+          align-items: end;
+          justify-content: space-between;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar"></div>
+    <div class="wrap">
+      <section class="panel">
+        <div class="section head">
+          <div class="subhead">
+            <div>
+              <p class="eyebrow">Route Authority for BigCommerce</p>
+              <h1>Results</h1>
+            </div>
+            <p>This lightweight results page keeps the merchant app responsive. Open the full report only when you need the routed family table and heavier comparisons.</p>
+            <div class="chips">
+              <span class="chip">Pages with published queries <strong>{{ publication_count or 0 }}</strong></span>
+              <span class="chip">Families in current view <strong id="fulcrum-results-count">{{ query_family_review|length if query_family_review else 0 }}</strong></span>
+              <span class="chip">Review queue <strong id="fulcrum-review-bucket-count">{{ review_bucket_count or 0 }}</strong></span>
+              <span class="chip">{% if latest_gate_run_id %}Latest completed run <strong>{{ latest_gate_run_id }}</strong>{% else %}<strong>No gate run yet</strong>{% endif %}</span>
+            </div>
+          </div>
+          <div class="actions">
+            <a class="btn" href="{{ url_for('fulcrum.guide_page', store_hash=store_hash) }}">Open guide</a>
+            <a class="btn" href="{{ url_for('fulcrum.setup_page', store_hash=store_hash) }}">Back to setup</a>
+            <a class="btn btn-primary" href="{{ full_results_url }}">Open full results</a>
+          </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="section border-top">
+            <div class="grid">
+              {% for category, message in messages %}
+              <div class="card">{{ message }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="section border-top">
+          <div class="grid cards">
+            <div class="card">
+              <div class="card-kicker">Published GSC queries</div>
+              <div class="card-value">{{ results_report.published_query_count or 0 }}</div>
+              <p>Queries that passed the gate and have a target page.</p>
+            </div>
+            <div class="card">
+              <div class="card-kicker">Not published GSC queries</div>
+              <div class="card-value">{{ results_report.not_published_query_count or 0 }}</div>
+              <p>Queries currently on hold or rejected.</p>
+            </div>
+            <div class="card">
+              <div class="card-kicker">Queries in Review</div>
+              <div class="card-value">{{ results_report.review_bucket_query_count or 0 }}</div>
+              <p>Raw GSC query count represented by support review requests.</p>
+            </div>
+            <div class="card">
+              <div class="card-kicker">Latest run</div>
+              <div class="card-value">{{ latest_gate_run_id or '?' }}</div>
+              <p>Most recent completed Route Authority run for this store.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section border-top">
+          <div class="head">
+            <div class="subhead">
+              <div>
+                <p class="eyebrow" style="color:#64748b;">Review queue</p>
+                <h2>Rows moved out of Results</h2>
+              </div>
+              <p>Review requests stay out of the active Results workflow so merchants can keep moving. Open the full review queue when support needs to investigate a row.</p>
+            </div>
+            <div class="actions">
+              <a class="btn" href="{{ url_for('fulcrum.review_page', store_hash=store_hash) }}">Open review queue</a>
+              <a class="btn" href="{{ full_results_url }}">Open full routed table</a>
+            </div>
+          </div>
+
+          {% if review_bucket_requests %}
+          <div class="queue-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Query</th>
+                  <th>Current page</th>
+                  <th>Requested target</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in review_bucket_requests[:8] %}
+                <tr>
+                  <td>
+                    <div class="query">{{ row.representative_query or row.source_name or row.source_url }}</div>
+                    <div class="subtle">Request #{{ row.request_id or 'n/a' }}{% if row.requested_at_relative %} ? {{ row.requested_at_relative }}{% endif %}</div>
+                  </td>
+                  <td>
+                    <div>{{ row.source_name or 'Unknown page' }}</div>
+                    <div class="subtle">{{ row.source_url or 'unknown' }}</div>
+                  </td>
+                  <td>
+                    <div>{{ row.target_name or 'Pending support investigation' }}</div>
+                    <div class="subtle">{{ row.target_url or 'No target stored yet' }}</div>
+                  </td>
+                  <td>
+                    <div class="status {{ 'status-ready' if row.review_status_label == 'Agent diagnosis ready for support' else 'status-pending' }}">{{ row.review_status_label or 'Agent diagnosis pending' }}</div>
+                    <div class="subtle">{{ row.applied_status_label or 'Not live yet' }}</div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty">No rows are currently waiting in the review queue.</div>
+          {% endif %}
+
+          <div class="footer-links">
+            <a href="{{ privacy_policy_url }}">Privacy policy</a>
+            <span>?</span>
+            <a href="{{ support_url }}">Support contact</a>
+            <span>?</span>
+            <a href="{{ terms_url }}">Terms of service</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
