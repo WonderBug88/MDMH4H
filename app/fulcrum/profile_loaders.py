@@ -6,6 +6,7 @@ import hashlib
 import re
 from typing import Any, Callable
 
+from psycopg2.errors import UndefinedTable
 from psycopg2.extras import RealDictCursor
 
 
@@ -331,8 +332,12 @@ def load_store_brand_profiles(
     """
     with get_pg_conn_fn() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(sql)
-            rows = [dict(row) for row in cur.fetchall()]
+            try:
+                cur.execute(sql)
+                rows = [dict(row) for row in cur.fetchall()]
+            except UndefinedTable:
+                conn.rollback()
+                rows = []
     profiles: list[dict[str, Any]] = []
     for row in rows:
         brand_url = normalize_storefront_path_fn(row.get("custom_url"))
@@ -390,8 +395,12 @@ def load_store_content_profiles(
     """
     with get_pg_conn_fn() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(sql)
-            rows = [dict(row) for row in cur.fetchall()]
+            try:
+                cur.execute(sql)
+                rows = [dict(row) for row in cur.fetchall()]
+            except UndefinedTable:
+                conn.rollback()
+                rows = []
     profiles: list[dict[str, Any]] = []
     reserved_urls = load_reserved_storefront_urls_fn(store_hash)
     for row in rows:
@@ -412,8 +421,12 @@ def load_store_content_profiles(
         """
         with get_pg_conn_fn() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(backlog_sql)
-                backlog_rows = [dict(row) for row in cur.fetchall()]
+                try:
+                    cur.execute(backlog_sql)
+                    backlog_rows = [dict(row) for row in cur.fetchall()]
+                except UndefinedTable:
+                    conn.rollback()
+                    backlog_rows = []
         known_urls = {normalized for normalized in {normalize_storefront_path_fn(profile.get("url")) for profile in profiles} if normalized} | reserved_urls
         for row in backlog_rows:
             content_url = normalize_storefront_path_fn(row.get("url_path"))

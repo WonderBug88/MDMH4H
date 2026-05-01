@@ -12,6 +12,7 @@ if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
 from app.fulcrum import profile_loaders
+from psycopg2.errors import UndefinedTable
 
 
 def _normalize_path(value):
@@ -61,6 +62,74 @@ class FulcrumProfileLoaderTests(unittest.TestCase):
 
         self.assertEqual(len(deduped), 1)
         self.assertEqual(deduped[0]["url"], "/towels/")
+
+    def test_missing_optional_brand_table_returns_empty_profiles(self):
+        conn = _MissingTableConnection()
+
+        result = profile_loaders.load_store_brand_profiles(
+            "99oa2tso",
+            get_pg_conn_fn=lambda: conn,
+            normalize_storefront_path_fn=_normalize_path,
+            extract_attribute_terms_fn=lambda value: {},
+            tokenize_intent_text_fn=lambda value: set(),
+            build_cluster_profile_fn=lambda **kwargs: {},
+            dedupe_entity_profiles_fn=lambda profiles: profiles,
+        )
+
+        self.assertEqual(result, {})
+        self.assertTrue(conn.rolled_back)
+
+    def test_missing_optional_content_tables_return_empty_profiles(self):
+        conn = _MissingTableConnection()
+
+        result = profile_loaders.load_store_content_profiles(
+            "99oa2tso",
+            include_backlog=True,
+            get_pg_conn_fn=lambda: conn,
+            normalize_storefront_path_fn=_normalize_path,
+            looks_like_content_path_fn=lambda value: True,
+            load_reserved_storefront_urls_fn=lambda store_hash: set(),
+            extract_attribute_terms_fn=lambda value: {},
+            tokenize_intent_text_fn=lambda value: set(),
+            build_cluster_profile_fn=lambda **kwargs: {},
+            synthetic_content_entity_id_fn=lambda value: 1,
+            humanize_url_path_title_fn=lambda value: "Content",
+            dedupe_entity_profiles_fn=lambda profiles: profiles,
+        )
+
+        self.assertEqual(result, {})
+        self.assertTrue(conn.rolled_back)
+
+
+class _MissingTableCursor:
+    def execute(self, sql, params=None):
+        raise UndefinedTable()
+
+    def fetchall(self):
+        return []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
+class _MissingTableConnection:
+    def __init__(self):
+        self.rolled_back = False
+
+    def cursor(self, *args, **kwargs):
+        return _MissingTableCursor()
+
+    def rollback(self):
+        self.rolled_back = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
 
 
 if __name__ == "__main__":
