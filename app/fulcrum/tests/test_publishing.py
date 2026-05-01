@@ -73,6 +73,7 @@ class _FakeResponse:
 class _FakeRequests:
     def __init__(self):
         self.delete_calls = []
+        self.put_calls = []
 
     def delete(self, url, headers=None, timeout=None):
         self.delete_calls.append(
@@ -83,6 +84,29 @@ class _FakeRequests:
             }
         )
         return _FakeResponse(status_code=204)
+
+    def put(self, url, headers=None, json=None, timeout=None):
+        self.put_calls.append(
+            {
+                "url": url,
+                "headers": headers,
+                "json": json,
+                "timeout": timeout,
+            }
+        )
+        return _FakeResponse(status_code=200)
+
+
+class _ForbiddenDeleteRequests(_FakeRequests):
+    def delete(self, url, headers=None, timeout=None):
+        self.delete_calls.append(
+            {
+                "url": url,
+                "headers": headers,
+                "timeout": timeout,
+            }
+        )
+        return _FakeResponse(status_code=403)
 
 
 class FulcrumPublishingTests(unittest.TestCase):
@@ -199,6 +223,40 @@ class FulcrumPublishingTests(unittest.TestCase):
         self.assertIn("/catalog/categories/888/metafields/333", requests_module.delete_calls[0]["url"])
         self.assertEqual(results[0]["status"], "unpublished")
         self.assertEqual(invalidations, [("AbC123", ["live_gsc_performance", "live_gsc_performance_store_scoped_v2"])])
+
+    def test_unpublish_entities_blanks_metafield_when_delete_is_forbidden(self):
+        conn = _FakeConn(
+            fetchall_queue=[
+                [
+                    {
+                        "publication_id": 7,
+                        "source_entity_type": "category",
+                        "source_product_id": 101,
+                        "source_url": "/rollaway-beds/",
+                        "metafield_id": 333,
+                        "metafield_key": "internal_category_links_html",
+                    }
+                ]
+            ]
+        )
+        requests_module = _ForbiddenDeleteRequests()
+
+        results = unpublish_entities(
+            store_hash="AbC123",
+            source_entity_ids=[101],
+            get_pg_conn=lambda: conn,
+            get_bc_headers=lambda store_hash: {"X-Auth-Token": "secret"},
+            normalize_store_hash=lambda store_hash: str(store_hash).lower(),
+            resolve_store_category_id_by_url=lambda store_hash, url: (888, "Live Category"),
+            resolve_store_product_id_by_url=lambda store_hash, url: (None, None),
+            invalidate_admin_metric_cache=lambda store_hash, metric_keys=None: None,
+            requests_module=requests_module,
+        )
+
+        self.assertEqual(len(requests_module.delete_calls), 1)
+        self.assertEqual(len(requests_module.put_calls), 1)
+        self.assertEqual(requests_module.put_calls[0]["json"]["value"], "<!-- Fulcrum unpublished -->")
+        self.assertEqual(results[0]["status"], "unpublished")
 
     def test_summarize_live_publications_returns_ints(self):
         conn = _FakeConn(

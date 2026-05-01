@@ -5,13 +5,10 @@ from typing import Any
 
 import requests
 
+from app.fulcrum.platform import get_bc_headers, list_store_categories, list_store_products, normalize_store_hash
 from app.fulcrum.services import (
-    get_bc_headers,
     get_pg_conn,
     list_publications,
-    list_store_categories,
-    list_store_products,
-    normalize_store_hash,
     publish_approved_entities,
     unpublish_entities,
 )

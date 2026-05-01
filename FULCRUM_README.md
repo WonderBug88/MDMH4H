@@ -561,7 +561,7 @@ Tracked flags:
 
 Current alpha expectation:
 
-- a store is auto-publish ready only when the catalog is synced, no mapping reviews are pending, the product theme hook is present, and auto-publish is enabled
+- a store is auto-publish ready when the catalog is synced, the product theme hook is present, and auto-publish is enabled; mapping-review backlog remains visible but does not block already gated and routed links
 - category beta remains off until category metafields are storefront-readable, visually rendered in sandbox, and rollback is proven
 
 ## Operational Watchdog

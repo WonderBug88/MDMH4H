@@ -329,11 +329,22 @@ def unpublish_entities(
                 bc_entity_id, _ = resolve_store_product_id_by_url(store_hash, row["source_url"])
                 entity_path = "products"
             if bc_entity_id and row["metafield_id"]:
+                metafield_url = f"{api_base}/catalog/{entity_path}/{bc_entity_id}/metafields/{row['metafield_id']}"
                 response = requests_module.delete(
-                    f"{api_base}/catalog/{entity_path}/{bc_entity_id}/metafields/{row['metafield_id']}",
+                    metafield_url,
                     headers=headers,
                     timeout=30,
                 )
+                if response.status_code == 403:
+                    response = requests_module.put(
+                        metafield_url,
+                        headers=headers,
+                        json={
+                            "permission_set": "write_and_sf_access",
+                            "value": "<!-- Fulcrum unpublished -->",
+                        },
+                        timeout=30,
+                    )
                 if response.status_code not in (200, 204, 404):
                     response.raise_for_status()
 
