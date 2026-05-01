@@ -1402,13 +1402,21 @@ def evaluate_theme_verification(
     persist: bool = False,
 ) -> dict[str, Any]:
     publish_settings = get_store_publish_settings(store_hash)
+    readiness = get_store_readiness(store_hash)
+    readiness_metadata = readiness.get("metadata") if isinstance(readiness.get("metadata"), dict) else {}
     product_template = Path(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
     category_template = Path(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
     product_exists = product_template.exists()
     category_exists = category_template.exists()
-    product_ready = product_exists and theme_hook_present(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
+    product_ready = bool(
+        (product_exists and theme_hook_present(Config.FULCRUM_THEME_PRODUCT_TEMPLATE))
+        or readiness.get("theme_hook_ready")
+    )
     category_required = bool(publish_settings.get("category_publishing_enabled"))
-    category_ready = category_exists and category_theme_hook_present(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
+    category_ready = bool(
+        (category_exists and category_theme_hook_present(Config.FULCRUM_THEME_CATEGORY_TEMPLATE))
+        or readiness_metadata.get("category_theme_hook_present")
+    )
     details = {
         "product_template_path": str(product_template),
         "category_template_path": str(category_template),
@@ -1420,7 +1428,7 @@ def evaluate_theme_verification(
         "next_action": "",
     }
 
-    if not product_exists:
+    if not product_ready and not product_exists:
         result = {
             "verification_status": "failed",
             "failure_classification": "support_required",
@@ -1436,7 +1444,7 @@ def evaluate_theme_verification(
         }
         details["missing"] = "internal_links_html render hook is missing from the product template."
         details["next_action"] = "Add the h4h product metafield render block to the product template, then run the check again."
-    elif category_required and not category_exists:
+    elif category_required and not category_ready and not category_exists:
         result = {
             "verification_status": "failed",
             "failure_classification": "support_required",

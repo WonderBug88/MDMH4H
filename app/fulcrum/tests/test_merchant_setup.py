@@ -491,6 +491,28 @@ class MerchantSetupTests(unittest.TestCase):
         self.assertEqual(result["sync_result"]["sync_run_id"], 123)
         enqueue_sync.assert_called_once()
 
+    def test_theme_verification_uses_persisted_readiness_when_templates_are_not_local(self):
+        with (
+            patch("app.fulcrum.merchant_setup.get_store_publish_settings", return_value={"category_publishing_enabled": True}),
+            patch(
+                "app.fulcrum.merchant_setup.get_store_readiness",
+                return_value={
+                    "theme_hook_ready": True,
+                    "metadata": {"category_theme_hook_present": True},
+                },
+            ),
+            patch("app.fulcrum.merchant_setup._record_theme_verification", return_value={"verification_status": "ready"}) as record,
+            patch.object(merchant_setup.Config, "FULCRUM_THEME_PRODUCT_TEMPLATE", "Z:/missing/product.html"),
+            patch.object(merchant_setup.Config, "FULCRUM_THEME_CATEGORY_TEMPLATE", "Z:/missing/category.html"),
+        ):
+            result = merchant_setup.evaluate_theme_verification("99oa2tso", persist=True)
+
+        self.assertEqual(result["verification_status"], "ready")
+        self.assertEqual(result["summary"], "Theme verification passed.")
+        self.assertTrue(result["details"]["product_hook_ready"])
+        self.assertTrue(result["details"]["category_hook_ready"])
+        record.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
