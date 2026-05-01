@@ -246,6 +246,78 @@ class FulcrumReadinessTests(unittest.TestCase):
         self.assertTrue(metadata["feature_flags"]["category_publishing_enabled"])
         self.assertTrue(metadata["feature_flags"]["auto_publish_enabled"])
 
+    def test_refresh_store_readiness_preserves_hosted_theme_state_without_local_templates(self):
+        unresolved_cursor = _FakeCursor(
+            fetchone_results=[
+                {
+                    "unresolved_option_name_count": 0,
+                    "unresolved_option_value_count": 0,
+                }
+            ]
+        )
+        upsert_cursor = _FakeCursor(
+            fetchone_results=[
+                {
+                    "store_hash": "99oa2tso",
+                    "catalog_synced": True,
+                    "attribute_mappings_ready": True,
+                    "theme_hook_ready": True,
+                    "auto_publish_ready": True,
+                    "category_beta_ready": True,
+                    "unresolved_option_name_count": 0,
+                    "unresolved_option_value_count": 0,
+                    "metadata": {"category_theme_hook_present": True},
+                    "updated_at": "2026-05-01T10:00:00",
+                }
+            ]
+        )
+
+        with (
+            patch("app.fulcrum.readiness._normalize_mapping_review_statuses", return_value={}),
+            patch(
+                "app.fulcrum.readiness.get_store_readiness",
+                return_value={
+                    "theme_hook_ready": True,
+                    "metadata": {
+                        "category_theme_hook_present": True,
+                        "category_publishing_enabled_override": True,
+                        "category_metafields_readable": True,
+                        "category_render_verified": True,
+                        "category_rollback_verified": True,
+                    },
+                },
+            ),
+            patch("app.fulcrum.readiness.get_pg_conn", side_effect=[_FakeConnection([unresolved_cursor]), _FakeConnection([upsert_cursor])]),
+            patch(
+                "app.fulcrum.readiness.render_theme_hook_present",
+                side_effect=AssertionError("local product template check should not run"),
+            ),
+            patch(
+                "app.fulcrum.readiness.render_category_theme_hook_present",
+                side_effect=AssertionError("local category template check should not run"),
+            ),
+            patch.object(readiness.Config, "FULCRUM_THEME_PRODUCT_TEMPLATE", "Z:/missing/product.html"),
+            patch.object(readiness.Config, "FULCRUM_THEME_CATEGORY_TEMPLATE", "Z:/missing/category.html"),
+            patch.object(readiness.Config, "FULCRUM_ENABLE_CATEGORY_PUBLISHING", False),
+            patch.object(readiness.Config, "FULCRUM_AUTO_PUBLISH_ENABLED", True),
+        ):
+            readiness.refresh_store_readiness(
+                "99oa2tso",
+                get_store_profile_summary=lambda store_hash: {
+                    "profile_count": 12,
+                    "category_profile_count": 4,
+                    "option_name_mapping_count": 3,
+                    "option_value_mapping_count": 8,
+                },
+            )
+
+        params = upsert_cursor.executions[0][1]
+        self.assertTrue(params[3])
+        self.assertTrue(params[4])
+        self.assertTrue(params[5])
+        metadata = json.loads(params[8])
+        self.assertTrue(metadata["category_theme_hook_present"])
+
 
 if __name__ == "__main__":
     unittest.main()

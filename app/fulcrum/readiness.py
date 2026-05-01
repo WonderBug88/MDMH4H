@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import re
 from typing import Any, Callable
 
@@ -412,8 +413,22 @@ def refresh_store_readiness(
         and unresolved_name_count == 0
         and unresolved_value_count == 0
     )
-    product_hook_ready = render_theme_hook_present(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
-    category_hook_ready = render_category_theme_hook_present(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
+    product_template_path = Path(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
+    category_template_path = Path(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
+    product_hook_ready = bool(
+        (
+            product_template_path.exists()
+            and render_theme_hook_present(Config.FULCRUM_THEME_PRODUCT_TEMPLATE)
+        )
+        or current.get("theme_hook_ready")
+    )
+    category_hook_ready = bool(
+        (
+            category_template_path.exists()
+            and render_category_theme_hook_present(Config.FULCRUM_THEME_CATEGORY_TEMPLATE)
+        )
+        or current_metadata.get("category_theme_hook_present")
+    )
     category_flags = {
         "category_metafields_readable": bool(current_metadata.get("category_metafields_readable")),
         "category_render_verified": bool(current_metadata.get("category_render_verified")),
