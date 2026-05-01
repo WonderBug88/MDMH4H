@@ -1,0 +1,28 @@
+{
+	email support@fulcrumagentics.com
+
+	servers :443 {
+		protocols h1
+	}
+}
+
+fulcrum.fulcrumagentics.com {
+	log {
+		output file C:\Users\juddu\Downloads\PAM\MDMH4H\deploy\logs\caddy-fulcrum-access.log
+		format json
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy "frame-ancestors 'self' https://*.mybigcommerce.com https://*.bigcommerce.com;"
+	}
+
+	handle /static/* {
+		root * C:\Users\juddu\Downloads\PAM\MDMH4H\app\fulcrum
+		file_server
+	}
+
+	reverse_proxy 127.0.0.1:5093
+}

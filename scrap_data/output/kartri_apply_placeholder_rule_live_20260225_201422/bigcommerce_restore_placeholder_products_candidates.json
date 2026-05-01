@@ -1,0 +1,114 @@
+[
+  {
+    "sku_norm": "CR570",
+    "sku_raw": "CR570",
+    "bc_type": "product",
+    "bc_product_id": "110188",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "DYNASTYSHOWERCURTAIN",
+    "sku_raw": "Dynasty Shower Curtain",
+    "bc_type": "product",
+    "bc_product_id": "111407",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "EMPIREWAFFLESHOWERCURTAIN",
+    "sku_raw": "Empire Waffle shower curtain",
+    "bc_type": "product",
+    "bc_product_id": "110180",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "EZ-RL1-SERIES",
+    "sku_raw": "EZ-RL1- series",
+    "bc_type": "product",
+    "bc_product_id": "112521",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "HOTELCOVERLET",
+    "sku_raw": "hotel coverlet",
+    "bc_type": "product",
+    "bc_product_id": "112466",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "MARRIOTLIKE",
+    "sku_raw": "Marriot like",
+    "bc_type": "product",
+    "bc_product_id": "112419",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "SP3020-1",
+    "sku_raw": "SP3020-1",
+    "bc_type": "product",
+    "bc_product_id": "110128",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  },
+  {
+    "sku_norm": "V8WHITESHOWERCURTAIN",
+    "sku_raw": "V8 White Shower Curtain",
+    "bc_type": "product",
+    "bc_product_id": "112436",
+    "bc_variant_id": "",
+    "reason": "restore_placeholder_product_with_priced_variants",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "available",
+      "is_price_hidden": false,
+      "price_hidden_label": ""
+    }
+  }
+]

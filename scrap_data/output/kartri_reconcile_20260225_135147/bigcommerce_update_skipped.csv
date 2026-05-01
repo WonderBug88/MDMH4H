@@ -1,0 +1,5 @@
+sku_norm,sku_raw,reason,sku_case_pack,sku_cost,case_qty,sku_unit_cost,ahs_unit_sales,ahs_case_sales,margin_case_price,candidate_price,bc_price_old,target_vs_bc_pct,price_source
+BMT06,BMT06,missing_case_qty,,,,,,,,,,,
+CTY-WAFFA,CTY-WAFFA,missing_sku_unit_cost,,,,,,,,,,,
+SC,SC,price_change_exceeds_15.0pct_guard,12,7.55,12,7.55,10.95,131.4,134.09,134.09,68,97.19,margin_case_price_to_bc_price
+SPCNA,SPCNA,price_change_exceeds_15.0pct_guard,12,10.5,12,10.5,15.23,182.76,186.48,186.48,226.8,-17.78,margin_case_price_to_bc_price

@@ -1,0 +1,179 @@
+[
+  {
+    "change_id": "logic-007",
+    "timestamp": "2026-04-13T22:15:00-07:00",
+    "title": "Query Semantics Control Layer",
+    "reason": "Added a deterministic semantics judge and resolver in front of changed-route publication so Fulcrum preserves head products, meaningful phrases, subtype aliases, and key modifiers before allowing a new route to compete.",
+    "monitoring_note": "Watch changed-route families where Fulcrum wants to swap the current page. The new route should keep the head product and key modifiers, and broad or ambiguous wording should suppress unsafe brand or PDP jumps.",
+    "affected_queries": [
+      "5 star hotel pillows",
+      "bellhop cart",
+      "courtyard shower curtain",
+      "cuisinart 6 qt stock pot",
+      "downlite blankets",
+      "hotel suite pillows",
+      "hotels with king size beds"
+    ],
+    "validation": {
+      "status": "verified_fail",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-17T10:21:04.395643-07:00",
+      "case_count": 7,
+      "passed_count": 6,
+      "failed_count": 1,
+      "failed_queries": [
+        "hotel suite pillows"
+      ],
+      "failed_case_ids": [
+        "hotel-suite-pillows-do-not-route-to-brand"
+      ]
+    }
+  },
+  {
+    "change_id": "logic-006",
+    "timestamp": "2026-04-13T20:05:00-07:00",
+    "title": "Broad Query Signal Cleanup And Modifier Preservation",
+    "reason": "Stopped generic brand and SKU false positives from forcing broad queries into brands or products, and strengthened modifier preservation so Fulcrum does not swap to a new route that drops key terms like damask, alternative down, or hospital.",
+    "monitoring_note": "Watch broad family queries that changed routes too aggressively. If the new route drops a meaningful modifier or relies on a generic brand word, it should stay on the current category or product instead.",
+    "affected_queries": [
+      "bedbug cover",
+      "bedbug mattress",
+      "buy hotel-style luxury mattress",
+      "cuisinart 6 qt stock pot",
+      "damask sheets",
+      "down alternative hotel pillow",
+      "hospital bed bedding"
+    ],
+    "validation": {
+      "status": "verified_pass",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-16T22:10:08.443797-07:00",
+      "case_count": 7,
+      "passed_count": 7,
+      "failed_count": 0,
+      "failed_queries": [],
+      "failed_case_ids": []
+    }
+  },
+  {
+    "change_id": "logic-005",
+    "timestamp": "2026-04-10T12:30:00-07:00",
+    "title": "Deterministic Logic Regression Suite",
+    "reason": "Added a repeatable regression runner so known query-family fixes are checked after every scoring change instead of relying only on AI review.",
+    "monitoring_note": "Run the logic regression script after changing gate, intent, or ranking code and compare the results before publishing.",
+    "affected_queries": [
+      "hotel curtains",
+      "hotel sheets",
+      "courtyard shower curtain",
+      "twin rollaway bed"
+    ],
+    "validation": {
+      "status": "verified_pass",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-16T22:10:08.443797-07:00",
+      "case_count": 4,
+      "passed_count": 4,
+      "failed_count": 0,
+      "failed_queries": [],
+      "failed_case_ids": []
+    }
+  },
+  {
+    "change_id": "logic-004",
+    "timestamp": "2026-04-10T12:05:00-07:00",
+    "title": "Current Category Preservation Narrowed",
+    "reason": "Allowed the current category to hold its place only when it preserves the full source-aligned topic and the query is not brand-, collection-, or SKU-led.",
+    "monitoring_note": "Watch for product-led queries falling back to categories when brand or collection signals are present.",
+    "affected_queries": [
+      "twin rollaway bed",
+      "ganesh shower curtain",
+      "kartri shower curtain"
+    ],
+    "validation": {
+      "status": "verified_fail",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-16T22:10:08.443797-07:00",
+      "case_count": 3,
+      "passed_count": 2,
+      "failed_count": 1,
+      "failed_queries": [
+        "kartri shower curtain"
+      ],
+      "failed_case_ids": [
+        "kartri-curtain-product"
+      ]
+    }
+  },
+  {
+    "change_id": "logic-003",
+    "timestamp": "2026-04-10T11:35:00-07:00",
+    "title": "Source Topic Preservation and Accessory Demotion",
+    "reason": "Penalized targets that drop key source-aligned topic tokens and demoted accessory targets when the query is not explicitly asking for an accessory or replacement.",
+    "monitoring_note": "Check that broad family queries keep their main category while genuine accessory queries still surface the correct narrow target.",
+    "affected_queries": [
+      "hotel curtains",
+      "box spring cover",
+      "twin rollaway bed"
+    ],
+    "validation": {
+      "status": "verified_pass",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-16T22:10:08.443797-07:00",
+      "case_count": 3,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_queries": [],
+      "failed_case_ids": []
+    }
+  },
+  {
+    "change_id": "logic-002",
+    "timestamp": "2026-04-10T10:10:00-07:00",
+    "title": "Attribute Specificity Guard",
+    "reason": "Stopped generic words like box, cover, and spring from masquerading as hard or soft attributes when the query does not carry explicit attribute intent.",
+    "monitoring_note": "Verify that size- and pack-led queries still classify as specific products while generic family queries stay broad.",
+    "affected_queries": [
+      "box spring cover",
+      "hotel sheets"
+    ],
+    "validation": {
+      "status": "verified_pass",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-16T22:10:08.443797-07:00",
+      "case_count": 2,
+      "passed_count": 2,
+      "failed_count": 0,
+      "failed_queries": [],
+      "failed_case_ids": []
+    }
+  },
+  {
+    "change_id": "logic-001",
+    "timestamp": "2026-04-10T09:25:00-07:00",
+    "title": "AI Audit False-Positive Downgrade",
+    "reason": "Added deterministic post-processing so the AI reviewer does not mark valid category winners as wrong-page-type mistakes just because a tighter product title exists.",
+    "monitoring_note": "Keep using the AI audit as a failure detector only; repeated clusters should become code or regression cases.",
+    "affected_queries": [
+      "luxury hotel robes",
+      "hotel curtains",
+      "hotel sheets"
+    ],
+    "validation": {
+      "status": "verified_pass",
+      "store_hash": "99oa2tso",
+      "run_id": 81,
+      "verified_at": "2026-04-16T22:10:08.443797-07:00",
+      "case_count": 3,
+      "passed_count": 3,
+      "failed_count": 0,
+      "failed_queries": [],
+      "failed_case_ids": []
+    }
+  }
+]

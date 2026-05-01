@@ -1,0 +1,2776 @@
+[
+  {
+    "sku_norm": "10GAGESHOWERCURTAIN",
+    "sku_raw": "10 gage shower curtain",
+    "bc_type": "product",
+    "bc_product_id": 111909,
+    "bc_variant_id": "",
+    "bc_price_old": "5.99",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "5.99",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "BMT06-1",
+    "sku_raw": "BMT06-1",
+    "bc_type": "variant",
+    "bc_product_id": 110187,
+    "bc_variant_id": 96253,
+    "bc_price_old": "130.2",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "93",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "BMT06-2",
+    "sku_raw": "BMT06-2",
+    "bc_type": "variant",
+    "bc_product_id": 110187,
+    "bc_variant_id": 96254,
+    "bc_price_old": "130.2",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "93",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "CR570",
+    "sku_raw": "CR570",
+    "bc_type": "product",
+    "bc_product_id": 110188,
+    "bc_variant_id": "",
+    "bc_price_old": "347.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "DYNASTYSHOWERCURTAIN",
+    "sku_raw": "Dynasty Shower Curtain",
+    "bc_type": "product",
+    "bc_product_id": 111407,
+    "bc_variant_id": "",
+    "bc_price_old": "263.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "EMPIREWAFFLESHOWERCURTAIN",
+    "sku_raw": "Empire Waffle shower curtain",
+    "bc_type": "product",
+    "bc_product_id": 110180,
+    "bc_variant_id": "",
+    "bc_price_old": "113.4",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "EZ-150P",
+    "sku_raw": "EZ-150P",
+    "bc_type": "variant",
+    "bc_product_id": 110181,
+    "bc_variant_id": 59210,
+    "bc_price_old": "191.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "EZ-300P",
+    "sku_raw": "EZ-300P",
+    "bc_type": "variant",
+    "bc_product_id": 110182,
+    "bc_variant_id": 59211,
+    "bc_price_old": "215.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "EZ-CHVRWSLN",
+    "sku_raw": "EZ-CHVRWSLN",
+    "bc_type": "variant",
+    "bc_product_id": 110177,
+    "bc_variant_id": 59206,
+    "bc_price_old": "407.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "EZ-MORE",
+    "sku_raw": "EZ-MORE",
+    "bc_type": "variant",
+    "bc_product_id": 110179,
+    "bc_variant_id": 59208,
+    "bc_price_old": "227.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "EZ-RASE",
+    "sku_raw": "EZ-RASE",
+    "bc_type": "variant",
+    "bc_product_id": 110178,
+    "bc_variant_id": 59207,
+    "bc_price_old": "455.28",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "EZ-RL1-SERIES",
+    "sku_raw": "EZ-RL1- series",
+    "bc_type": "product",
+    "bc_product_id": 112521,
+    "bc_variant_id": "",
+    "bc_price_old": "113.4",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "EZ-SSB-1",
+    "sku_raw": "EZ-SSB-1",
+    "bc_type": "variant",
+    "bc_product_id": 112438,
+    "bc_variant_id": 95569,
+    "bc_price_old": "285.6",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "5.99",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "EZ-STDU",
+    "sku_raw": "EZ-STDU",
+    "bc_type": "variant",
+    "bc_product_id": 110176,
+    "bc_variant_id": 59205,
+    "bc_price_old": "191.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "FT8700",
+    "sku_raw": "FT8700",
+    "bc_type": "variant",
+    "bc_product_id": 110154,
+    "bc_variant_id": 96228,
+    "bc_price_old": "95.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "FT8700-1",
+    "sku_raw": "FT8700-1",
+    "bc_type": "product",
+    "bc_product_id": 110154,
+    "bc_variant_id": "",
+    "bc_price_old": "59.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "FT8700-34",
+    "sku_raw": "FT8700-34",
+    "bc_type": "variant",
+    "bc_product_id": 110154,
+    "bc_variant_id": 96227,
+    "bc_price_old": "59.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "G-KNA-1",
+    "sku_raw": "G-KNA-1",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96209,
+    "bc_price_old": "159.6",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "114",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "HOTELCOVERLET",
+    "sku_raw": "hotel coverlet",
+    "bc_type": "product",
+    "bc_product_id": 112466,
+    "bc_variant_id": "",
+    "bc_price_old": "275.52",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KA2000",
+    "sku_raw": "KA2000",
+    "bc_type": "variant",
+    "bc_product_id": 110197,
+    "bc_variant_id": 59233,
+    "bc_price_old": "2.37",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "1.6",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA255",
+    "sku_raw": "KA255",
+    "bc_type": "variant",
+    "bc_product_id": 110198,
+    "bc_variant_id": 59234,
+    "bc_price_old": "3.26",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "2.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA3000",
+    "sku_raw": "KA3000",
+    "bc_type": "product",
+    "bc_product_id": 110196,
+    "bc_variant_id": "",
+    "bc_price_old": "2.66",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "1.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KA3000-1",
+    "sku_raw": "KA3000-1",
+    "bc_type": "variant",
+    "bc_product_id": 110196,
+    "bc_variant_id": 105853,
+    "bc_price_old": "47.72",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA3000-13",
+    "sku_raw": "KA3000-13",
+    "bc_type": "variant",
+    "bc_product_id": 110196,
+    "bc_variant_id": 105854,
+    "bc_price_old": "47.72",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA3000-2",
+    "sku_raw": "KA3000-2",
+    "bc_type": "variant",
+    "bc_product_id": 110196,
+    "bc_variant_id": 105855,
+    "bc_price_old": "47.72",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA412R",
+    "sku_raw": "KA412R",
+    "bc_type": "variant",
+    "bc_product_id": 110201,
+    "bc_variant_id": 59237,
+    "bc_price_old": "15.98",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "10.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA5000",
+    "sku_raw": "KA5000",
+    "bc_type": "product",
+    "bc_product_id": 110195,
+    "bc_variant_id": "",
+    "bc_price_old": "2.66",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "1.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KA5000-1",
+    "sku_raw": "KA5000-1",
+    "bc_type": "variant",
+    "bc_product_id": 110195,
+    "bc_variant_id": 105124,
+    "bc_price_old": "",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA5000-13",
+    "sku_raw": "KA5000-13",
+    "bc_type": "variant",
+    "bc_product_id": 110195,
+    "bc_variant_id": 105126,
+    "bc_price_old": "",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA5000-2",
+    "sku_raw": "KA5000-2",
+    "bc_type": "variant",
+    "bc_product_id": 110195,
+    "bc_variant_id": 105125,
+    "bc_price_old": "",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA711",
+    "sku_raw": "KA711",
+    "bc_type": "variant",
+    "bc_product_id": 110193,
+    "bc_variant_id": 59228,
+    "bc_price_old": "2.29",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "1.55",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA748/1",
+    "sku_raw": "KA748/1",
+    "bc_type": "variant",
+    "bc_product_id": 110183,
+    "bc_variant_id": 59212,
+    "bc_price_old": "311.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KA9100",
+    "sku_raw": "KA9100",
+    "bc_type": "variant",
+    "bc_product_id": 110194,
+    "bc_variant_id": 59229,
+    "bc_price_old": "2.66",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "1.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KASS151",
+    "sku_raw": "KASS151",
+    "bc_type": "variant",
+    "bc_product_id": 110199,
+    "bc_variant_id": 59235,
+    "bc_price_old": "11.84",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KASS256",
+    "sku_raw": "KASS256",
+    "bc_type": "variant",
+    "bc_product_id": 110200,
+    "bc_variant_id": 59236,
+    "bc_price_old": "13.02",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "8.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KL4050",
+    "sku_raw": "KL4050",
+    "bc_type": "variant",
+    "bc_product_id": 110142,
+    "bc_variant_id": 96197,
+    "bc_price_old": "327.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KL4050-1",
+    "sku_raw": "KL4050-1",
+    "bc_type": "product",
+    "bc_product_id": 110142,
+    "bc_variant_id": "",
+    "bc_price_old": "199.92",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KL4050-1-34",
+    "sku_raw": "KL4050-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110142,
+    "bc_variant_id": 96196,
+    "bc_price_old": "199.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KL4070",
+    "sku_raw": "KL4070",
+    "bc_type": "variant",
+    "bc_product_id": 110137,
+    "bc_variant_id": 96185,
+    "bc_price_old": "311.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KL4070-1",
+    "sku_raw": "KL4070-1",
+    "bc_type": "product",
+    "bc_product_id": 110137,
+    "bc_variant_id": "",
+    "bc_price_old": "191.92",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KL4070-1-34",
+    "sku_raw": "KL4070-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110137,
+    "bc_variant_id": 96184,
+    "bc_price_old": "191.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KL4090",
+    "sku_raw": "KL4090",
+    "bc_type": "variant",
+    "bc_product_id": 110143,
+    "bc_variant_id": 96202,
+    "bc_price_old": "279.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KL4090-1",
+    "sku_raw": "KL4090-1",
+    "bc_type": "product",
+    "bc_product_id": 110143,
+    "bc_variant_id": "",
+    "bc_price_old": "167.92",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KL4090-1-34",
+    "sku_raw": "KL4090-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110143,
+    "bc_variant_id": 96201,
+    "bc_price_old": "167.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN-1",
+    "sku_raw": "KN-1",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96210,
+    "bc_price_old": "139.44",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "99.6",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN-2",
+    "sku_raw": "KN-2",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96211,
+    "bc_price_old": "159.6",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "114",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN-2STALL",
+    "sku_raw": "KN-2 Stall",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96212,
+    "bc_price_old": "139.44",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "99.6",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN-7",
+    "sku_raw": "KN-7",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96213,
+    "bc_price_old": "240.24",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "171.6",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN-7STALL",
+    "sku_raw": "KN-7 Stall",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96214,
+    "bc_price_old": "139.44",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "99.6",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN3000",
+    "sku_raw": "KN3000",
+    "bc_type": "product",
+    "bc_product_id": 110147,
+    "bc_variant_id": "",
+    "bc_price_old": "187.32",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KN3000-DU-36",
+    "sku_raw": "KN3000-DU-36",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96218,
+    "bc_price_old": "",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN3000-DU-72",
+    "sku_raw": "KN3000-DU-72",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96217,
+    "bc_price_old": "",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN3000-GR-36",
+    "sku_raw": "KN3000-GR-36",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96216,
+    "bc_price_old": "",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KN3000-GR-72",
+    "sku_raw": "KN3000-GR-72",
+    "bc_type": "variant",
+    "bc_product_id": 110147,
+    "bc_variant_id": 96215,
+    "bc_price_old": "187.32",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KR3010",
+    "sku_raw": "KAR KR3010",
+    "bc_type": "variant",
+    "bc_product_id": 110135,
+    "bc_variant_id": 96183,
+    "bc_price_old": "179.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "KR3010-1",
+    "sku_raw": "KAR KR3010-1",
+    "bc_type": "product",
+    "bc_product_id": 110135,
+    "bc_variant_id": "",
+    "bc_price_old": "119.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "KR3010-1-34",
+    "sku_raw": "KAR KR3010-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110135,
+    "bc_variant_id": 96182,
+    "bc_price_old": "119.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "LWAFF",
+    "sku_raw": "LWAFF",
+    "bc_type": "product",
+    "bc_product_id": 110140,
+    "bc_variant_id": "",
+    "bc_price_old": "95.94",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "LWAFF-1",
+    "sku_raw": "LWAFF-1",
+    "bc_type": "variant",
+    "bc_product_id": 110140,
+    "bc_variant_id": 96193,
+    "bc_price_old": "155.94",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "LWAFF-34",
+    "sku_raw": "LWAFF-34",
+    "bc_type": "variant",
+    "bc_product_id": 110140,
+    "bc_variant_id": 96192,
+    "bc_price_old": "95.94",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "MARRIOTLIKE",
+    "sku_raw": "Marriot like",
+    "bc_type": "product",
+    "bc_product_id": 112419,
+    "bc_variant_id": "",
+    "bc_price_old": "369.6",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "ML2007",
+    "sku_raw": "ML2007",
+    "bc_type": "variant",
+    "bc_product_id": 110126,
+    "bc_variant_id": 59071,
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "MQ2013",
+    "sku_raw": "MQ2013",
+    "bc_type": "product",
+    "bc_product_id": 110141,
+    "bc_variant_id": "",
+    "bc_price_old": "107.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "MQ2013-1",
+    "sku_raw": "MQ2013-1",
+    "bc_type": "variant",
+    "bc_product_id": 110141,
+    "bc_variant_id": 96195,
+    "bc_price_old": "179.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "MQ2013-34",
+    "sku_raw": "MQ2013-34",
+    "bc_type": "variant",
+    "bc_product_id": 110141,
+    "bc_variant_id": 96194,
+    "bc_price_old": "107.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "NFPA701SHOWERCURTAINS",
+    "sku_raw": "NFPA 701 Shower curtains",
+    "bc_type": "product",
+    "bc_product_id": 110166,
+    "bc_variant_id": "",
+    "bc_price_old": "150.3",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "NY2000",
+    "sku_raw": "NY2000",
+    "bc_type": "variant",
+    "bc_product_id": 110148,
+    "bc_variant_id": 96220,
+    "bc_price_old": "179.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "NY2000-1",
+    "sku_raw": "NY2000-1",
+    "bc_type": "product",
+    "bc_product_id": 110148,
+    "bc_variant_id": "",
+    "bc_price_old": "107.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "NY2000-1-34",
+    "sku_raw": "NY2000-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110148,
+    "bc_variant_id": 96219,
+    "bc_price_old": "107.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "NYCNAEX",
+    "sku_raw": "NYCNAEX",
+    "bc_type": "variant",
+    "bc_product_id": 110149,
+    "bc_variant_id": 96222,
+    "bc_price_old": "239.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "NYCNAEX-1",
+    "sku_raw": "NYCNAEX-1",
+    "bc_type": "product",
+    "bc_product_id": 110149,
+    "bc_variant_id": "",
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "NYCNAEX-1-34",
+    "sku_raw": "NYCNAEX-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110149,
+    "bc_variant_id": 96221,
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "PA2008",
+    "sku_raw": "PA2008",
+    "bc_type": "variant",
+    "bc_product_id": 110155,
+    "bc_variant_id": 59173,
+    "bc_price_old": "131.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "RCVK-1",
+    "sku_raw": "RCVK-1",
+    "bc_type": "variant",
+    "bc_product_id": 110184,
+    "bc_variant_id": 59213,
+    "bc_price_old": "418.14",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "303",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "RCVS-1",
+    "sku_raw": "RCVS-1",
+    "bc_type": "variant",
+    "bc_product_id": 112114,
+    "bc_variant_id": 82965,
+    "bc_price_old": "429.73",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "303",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "RG3700-36X72-BEIGE",
+    "sku_raw": "RG3700-36X72-BEIGE",
+    "bc_type": "variant",
+    "bc_product_id": 110166,
+    "bc_variant_id": 96230,
+    "bc_price_old": "150.3",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "120",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "RG3700-36X72-WHITE",
+    "sku_raw": "RG3700-36X72-WHITE",
+    "bc_type": "variant",
+    "bc_product_id": 110166,
+    "bc_variant_id": 96229,
+    "bc_price_old": "150.3",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "120",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "RG3700-72X72-BEIGE",
+    "sku_raw": "RG3700-72X72-BEIGE",
+    "bc_type": "variant",
+    "bc_product_id": 110166,
+    "bc_variant_id": 96232,
+    "bc_price_old": "252",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "100.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "RG3700-72X72-WHITE",
+    "sku_raw": "RG3700-72X72-WHITE",
+    "bc_type": "variant",
+    "bc_product_id": 110166,
+    "bc_variant_id": 96231,
+    "bc_price_old": "252",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "100.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SC1700",
+    "sku_raw": "SC1700",
+    "bc_type": "variant",
+    "bc_product_id": 110169,
+    "bc_variant_id": 96234,
+    "bc_price_old": "112.56",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "80.4",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SC1700-1-36",
+    "sku_raw": "SC1700-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 110169,
+    "bc_variant_id": 96233,
+    "bc_price_old": "67.2",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "48",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SC4040",
+    "sku_raw": "SC4040",
+    "bc_type": "variant",
+    "bc_product_id": 110175,
+    "bc_variant_id": 96244,
+    "bc_price_old": "275.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SC4040-1",
+    "sku_raw": "SC4040-1",
+    "bc_type": "product",
+    "bc_product_id": 110175,
+    "bc_variant_id": "",
+    "bc_price_old": "167.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SC4040-1-36",
+    "sku_raw": "SC4040-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 110175,
+    "bc_variant_id": 96243,
+    "bc_price_old": "167.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SF-72\"X72\"12/CASE",
+    "sku_raw": "SF - 72\" X 72\" 12/CASE",
+    "bc_type": "variant",
+    "bc_product_id": 111909,
+    "bc_variant_id": 96186,
+    "bc_price_old": "81",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "59.4",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SF36\"X72\"24/CASE",
+    "sku_raw": "SF 36\" X 72\" 24/CASE",
+    "bc_type": "variant",
+    "bc_product_id": 111909,
+    "bc_variant_id": 96187,
+    "bc_price_old": "110",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "72",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SF42X72|18PERPACK",
+    "sku_raw": "SF 42x72 | 18 Per Pack",
+    "bc_type": "variant",
+    "bc_product_id": 111909,
+    "bc_variant_id": 96189,
+    "bc_price_old": "114",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "78.3",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SF48X72|18PERPACK",
+    "sku_raw": "SF 48X72 | 18 Per Pack",
+    "bc_type": "variant",
+    "bc_product_id": 111909,
+    "bc_variant_id": 96188,
+    "bc_price_old": "121",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "86.4",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SL2941-OP",
+    "sku_raw": "SL2941-OP",
+    "bc_type": "variant",
+    "bc_product_id": 110191,
+    "bc_variant_id": 96259,
+    "bc_price_old": "65",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "32.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SN2003",
+    "sku_raw": "SN2003",
+    "bc_type": "variant",
+    "bc_product_id": 110131,
+    "bc_variant_id": 96161,
+    "bc_price_old": "251.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SN2003-1",
+    "sku_raw": "SN2003-1",
+    "bc_type": "product",
+    "bc_product_id": 110131,
+    "bc_variant_id": "",
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SN2003-1-34",
+    "sku_raw": "SN2003-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110131,
+    "bc_variant_id": 96160,
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SNWOVEN",
+    "sku_raw": "SNWOVEN",
+    "bc_type": "variant",
+    "bc_product_id": 110134,
+    "bc_variant_id": 96179,
+    "bc_price_old": "239.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SNWOVEN-1",
+    "sku_raw": "SNWOVEN-1",
+    "bc_type": "product",
+    "bc_product_id": 110134,
+    "bc_variant_id": "",
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SNWOVEN-1-34",
+    "sku_raw": "SNWOVEN-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110134,
+    "bc_variant_id": 96178,
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-1",
+    "sku_raw": "SP-1",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96151,
+    "bc_price_old": "136.08",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "97.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-2",
+    "sku_raw": "SP-2",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96152,
+    "bc_price_old": "226.8",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "162",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-23",
+    "sku_raw": "SP-23",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96156,
+    "bc_price_old": "226.8",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "162",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-23STALL",
+    "sku_raw": "SP-23 Stall",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96157,
+    "bc_price_old": "136.08",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "97.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-2STALL",
+    "sku_raw": "SP-2 Stall",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96153,
+    "bc_price_old": "136.08",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "97.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-35",
+    "sku_raw": "SP-35",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96158,
+    "bc_price_old": "226.8",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "162",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-35STALL",
+    "sku_raw": "SP-35 Stall",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96159,
+    "bc_price_old": "136.08",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "97.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-7",
+    "sku_raw": "SP-7",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96154,
+    "bc_price_old": "226.8",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "162",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP-7STALL",
+    "sku_raw": "SP-7 Stall",
+    "bc_type": "variant",
+    "bc_product_id": 110128,
+    "bc_variant_id": 96155,
+    "bc_price_old": "136.08",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "97.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP3020-1",
+    "sku_raw": "SP3020-1",
+    "bc_type": "product",
+    "bc_product_id": 110128,
+    "bc_variant_id": "",
+    "bc_price_old": "226.8",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SP3070",
+    "sku_raw": "SP3070",
+    "bc_type": "variant",
+    "bc_product_id": 110150,
+    "bc_variant_id": 96224,
+    "bc_price_old": "203.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SP3070-1",
+    "sku_raw": "SP3070-1",
+    "bc_type": "product",
+    "bc_product_id": 110150,
+    "bc_variant_id": "",
+    "bc_price_old": "119.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SP3070-1-34",
+    "sku_raw": "SP3070-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110150,
+    "bc_variant_id": 96223,
+    "bc_price_old": "119.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SPECIFY-D",
+    "sku_raw": "SPECIFY-D",
+    "bc_type": "variant",
+    "bc_product_id": 110185,
+    "bc_variant_id": 96246,
+    "bc_price_old": "347.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SPECIFY-K",
+    "sku_raw": "SPECIFY-K",
+    "bc_type": "variant",
+    "bc_product_id": 110185,
+    "bc_variant_id": 96248,
+    "bc_price_old": "419.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SPECIFY-Q",
+    "sku_raw": "SPECIFY-Q",
+    "bc_type": "variant",
+    "bc_product_id": 110185,
+    "bc_variant_id": 96247,
+    "bc_price_old": "359.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SPECIFY-T",
+    "sku_raw": "SPECIFY-T",
+    "bc_type": "product",
+    "bc_product_id": 110185,
+    "bc_variant_id": "",
+    "bc_price_old": "275.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SPECIFY-T-6",
+    "sku_raw": "SPECIFY-T-6",
+    "bc_type": "variant",
+    "bc_product_id": 110185,
+    "bc_variant_id": 96245,
+    "bc_price_old": "275.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-1-36",
+    "sku_raw": "SS-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105864,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-1-42",
+    "sku_raw": "SS-1-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106845,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-1-48",
+    "sku_raw": "SS-1-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105867,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-1-72",
+    "sku_raw": "SS-1-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105861,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-12-36",
+    "sku_raw": "SS-12-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106854,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-12-42",
+    "sku_raw": "SS-12-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106850,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-12-48",
+    "sku_raw": "SS-12-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106843,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-12-72",
+    "sku_raw": "SS-12-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106839,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-17-36",
+    "sku_raw": "SS-17-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106855,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-17-42",
+    "sku_raw": "SS-17-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106851,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-17-48",
+    "sku_raw": "SS-17-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106844,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-17-72",
+    "sku_raw": "SS-17-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106840,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-19-42",
+    "sku_raw": "SS-19-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106849,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-2-36",
+    "sku_raw": "SS-2-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105865,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-2-42",
+    "sku_raw": "SS-2-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106846,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-2-48",
+    "sku_raw": "SS-2-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105868,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-3-72",
+    "sku_raw": "SS-3-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105862,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-7-36",
+    "sku_raw": "SS-7-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106852,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-7-42",
+    "sku_raw": "SS-7-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106847,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-7-48",
+    "sku_raw": "SS-7-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106841,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-7-72",
+    "sku_raw": "SS-7-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106837,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-8-36",
+    "sku_raw": "SS-8-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105866,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-8-42",
+    "sku_raw": "SS-8-42",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106848,
+    "bc_price_old": "187.81",
+    "bc_sale_price_old": "177.66",
+    "bc_cost_price_old": "126.9",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-8-48",
+    "sku_raw": "SS-8-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105869,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-8-72",
+    "sku_raw": "SS-8-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 105863,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-9-36",
+    "sku_raw": "SS-9-36",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106853,
+    "bc_price_old": "170.5",
+    "bc_sale_price_old": "161.28",
+    "bc_cost_price_old": "115.2",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-9-48",
+    "sku_raw": "SS-9-48",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106842,
+    "bc_price_old": "206.46",
+    "bc_sale_price_old": "195.3",
+    "bc_cost_price_old": "139.5",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SS-9-72",
+    "sku_raw": "SS-9-72",
+    "bc_type": "variant",
+    "bc_product_id": 109815,
+    "bc_variant_id": 106838,
+    "bc_price_old": "142.08",
+    "bc_sale_price_old": "134.4",
+    "bc_cost_price_old": "96",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SSCNA",
+    "sku_raw": "SSCNA",
+    "bc_type": "variant",
+    "bc_product_id": 110151,
+    "bc_variant_id": 59140,
+    "bc_price_old": "107.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SSCNAEX",
+    "sku_raw": "SSCNAEX",
+    "bc_type": "variant",
+    "bc_product_id": 110153,
+    "bc_variant_id": 96226,
+    "bc_price_old": "131.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SSCNAEX-1",
+    "sku_raw": "SSCNAEX-1",
+    "bc_type": "product",
+    "bc_product_id": 110153,
+    "bc_variant_id": "",
+    "bc_price_old": "114.24",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SSCNAEX-1-34",
+    "sku_raw": "SSCNAEX-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110153,
+    "bc_variant_id": 96225,
+    "bc_price_old": "83.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "ST2700",
+    "sku_raw": "ST2700",
+    "bc_type": "variant",
+    "bc_product_id": 110172,
+    "bc_variant_id": 96238,
+    "bc_price_old": "167.76",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "ST2700-1",
+    "sku_raw": "ST2700-1",
+    "bc_type": "product",
+    "bc_product_id": 110172,
+    "bc_variant_id": "",
+    "bc_price_old": "119.76",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "ST2700-1-36",
+    "sku_raw": "ST2700-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 110172,
+    "bc_variant_id": 96237,
+    "bc_price_old": "119.76",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SU3090",
+    "sku_raw": "SU3090",
+    "bc_type": "variant",
+    "bc_product_id": 110132,
+    "bc_variant_id": 96163,
+    "bc_price_old": "191.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SU3090-1",
+    "sku_raw": "SU3090-1",
+    "bc_type": "product",
+    "bc_product_id": 110132,
+    "bc_variant_id": "",
+    "bc_price_old": "119.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SU3090-1-34",
+    "sku_raw": "SU3090-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110132,
+    "bc_variant_id": 96162,
+    "bc_price_old": "119.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SW2000",
+    "sku_raw": "SW2000",
+    "bc_type": "variant",
+    "bc_product_id": 110170,
+    "bc_variant_id": 96236,
+    "bc_price_old": "83.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "SW2000-1",
+    "sku_raw": "SW2000-1",
+    "bc_type": "product",
+    "bc_product_id": 110170,
+    "bc_variant_id": "",
+    "bc_price_old": "59.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "SW2000-1-36",
+    "sku_raw": "SW2000-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 110170,
+    "bc_variant_id": 96235,
+    "bc_price_old": "59.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "TD2002",
+    "sku_raw": "TD2002",
+    "bc_type": "variant",
+    "bc_product_id": 110144,
+    "bc_variant_id": 96204,
+    "bc_price_old": "215.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "TD2002-1",
+    "sku_raw": "TD2002-1",
+    "bc_type": "product",
+    "bc_product_id": 110144,
+    "bc_variant_id": "",
+    "bc_price_old": "127.92",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "TD2002-1-34",
+    "sku_raw": "TD2002-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110144,
+    "bc_variant_id": 96203,
+    "bc_price_old": "127.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "TW4060",
+    "sku_raw": "TW4060",
+    "bc_type": "variant",
+    "bc_product_id": 110139,
+    "bc_variant_id": 96191,
+    "bc_price_old": "125.94",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "83.7",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "TW4060-1",
+    "sku_raw": "TW4060-1",
+    "bc_type": "product",
+    "bc_product_id": 110139,
+    "bc_variant_id": "",
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "100.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "TW4060-1-34",
+    "sku_raw": "TW4060-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110139,
+    "bc_variant_id": 96190,
+    "bc_price_old": "155.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "100.8",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "ULBAR",
+    "sku_raw": "ULBAR",
+    "bc_type": "variant",
+    "bc_product_id": 110189,
+    "bc_variant_id": 59224,
+    "bc_price_old": "371.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "ULBAR-LED",
+    "sku_raw": "ULBAR-LED",
+    "bc_type": "variant",
+    "bc_product_id": 110190,
+    "bc_variant_id": 59225,
+    "bc_price_old": "2015.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "V8WHITESHOWERCURTAIN",
+    "sku_raw": "V8 White Shower Curtain",
+    "bc_type": "product",
+    "bc_product_id": 112436,
+    "bc_variant_id": "",
+    "bc_price_old": "142.8",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "5.99",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "VC2006",
+    "sku_raw": "VC2006",
+    "bc_type": "variant",
+    "bc_product_id": 110138,
+    "bc_variant_id": 59117,
+    "bc_price_old": "323.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "VS5700",
+    "sku_raw": "VS5700",
+    "bc_type": "variant",
+    "bc_product_id": 110173,
+    "bc_variant_id": 96240,
+    "bc_price_old": "143.76",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "VS5700-1",
+    "sku_raw": "VS5700-1",
+    "bc_type": "product",
+    "bc_product_id": 110173,
+    "bc_variant_id": "",
+    "bc_price_old": "95.76",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "VS5700-1-36",
+    "sku_raw": "VS5700-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 110173,
+    "bc_variant_id": 96239,
+    "bc_price_old": "95.76",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "VT6700",
+    "sku_raw": "VT6700",
+    "bc_type": "variant",
+    "bc_product_id": 110174,
+    "bc_variant_id": 96242,
+    "bc_price_old": "83.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "VT6700-1",
+    "sku_raw": "VT6700-1",
+    "bc_type": "product",
+    "bc_product_id": 110174,
+    "bc_variant_id": "",
+    "bc_price_old": "47.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "VT6700-1-36",
+    "sku_raw": "VT6700-1-36",
+    "bc_type": "variant",
+    "bc_product_id": 110174,
+    "bc_variant_id": 96241,
+    "bc_price_old": "47.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WA4030SU-1",
+    "sku_raw": "WA4030SU-1",
+    "bc_type": "variant",
+    "bc_product_id": 110136,
+    "bc_variant_id": 59113,
+    "bc_price_old": "191.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WA4070-1",
+    "sku_raw": "WA4070-1",
+    "bc_type": "variant",
+    "bc_product_id": 110130,
+    "bc_variant_id": 59101,
+    "bc_price_old": "455.28",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WAFFLE-D",
+    "sku_raw": "WAFFLE-D",
+    "bc_type": "variant",
+    "bc_product_id": 110186,
+    "bc_variant_id": 96250,
+    "bc_price_old": "455.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WAFFLE-K",
+    "sku_raw": "WAFFLE-K",
+    "bc_type": "variant",
+    "bc_product_id": 110186,
+    "bc_variant_id": 96252,
+    "bc_price_old": "551.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WAFFLE-Q",
+    "sku_raw": "WAFFLE-Q",
+    "bc_type": "variant",
+    "bc_product_id": 110186,
+    "bc_variant_id": 96251,
+    "bc_price_old": "479.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WAFFLE-T",
+    "sku_raw": "WAFFLE-T",
+    "bc_type": "product",
+    "bc_product_id": 110186,
+    "bc_variant_id": "",
+    "bc_price_old": "407.88",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "WAFFLE-T-69",
+    "sku_raw": "WAFFLE-T-69",
+    "bc_type": "variant",
+    "bc_product_id": 110186,
+    "bc_variant_id": 96249,
+    "bc_price_old": "407.88",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WL2002",
+    "sku_raw": "WL2002",
+    "bc_type": "variant",
+    "bc_product_id": 110145,
+    "bc_variant_id": 96206,
+    "bc_price_old": "207.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  },
+  {
+    "sku_norm": "WL2002-1",
+    "sku_raw": "WL2002-1",
+    "bc_type": "product",
+    "bc_product_id": 110145,
+    "bc_variant_id": "",
+    "bc_price_old": "127.92",
+    "bc_sale_price_old": "0",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "availability": "disabled",
+      "is_price_hidden": true,
+      "price_hidden_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE"
+    }
+  },
+  {
+    "sku_norm": "WL2002-1-34",
+    "sku_raw": "WL2002-1-34",
+    "bc_type": "variant",
+    "bc_product_id": 110145,
+    "bc_variant_id": 96205,
+    "bc_price_old": "127.92",
+    "bc_sale_price_old": "",
+    "bc_cost_price_old": "0",
+    "reason": "bc_sku_missing_from_price_sheet",
+    "call_for_pricing_label": "CALL 605-858-0545 OR EMAIL SUPPORT@HOTELS4HUMANITY.COM FOR QUOTE",
+    "payload": {
+      "purchasing_disabled": true
+    }
+  }
+]

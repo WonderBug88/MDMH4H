@@ -1,3 +1,5 @@
+    {% set fulcrum_base_url = (config.FULCRUM_APP_BASE_URL or "").rstrip("/") %}
+    {% set fulcrum_link = fulcrum_base_url ~ "/fulcrum/" if fulcrum_base_url else "#" %}
     <!-- Navigation Bar -->
     <div class="bg-gray-800 p-4">
         <!-- PAM Branding and Menu Selection -->
@@ -22,22 +24,37 @@
             href="{{ url_for('main.index') }}"
               class="text-sm text-white hover:underline"
             >
+            Dashboard
+          </a>
+            <a
+            href="{{ fulcrum_link }}"
+              class="text-sm text-white hover:underline"
+            >
+            Fulcrum
+          </a>
+            <button
+              class="text-sm text-white hover:underline"
+            >
               Data Import
           </a>
             <button
               class="text-sm text-white hover:underline"
             >
-              Discrepancy Review
+              Options Mapping
             </button>
             <button
               class="text-sm text-white hover:underline"
             >
-              Sync Options
+              Product Review
             </button>
             <button
               class="text-sm text-white hover:underline"
             >
-              Notification Settings
+            Table of Contents
+          </a>
+            <button
+              class="text-sm text-white hover:underline"
+            >
             </button>
           </nav>
   
@@ -80,22 +97,37 @@
           <button
             class="block w-full text-left text-white hover:underline"
           >
+            Dashboard
+          </button>
+          <a
+            href="{{ fulcrum_link }}"
+            class="block w-full text-left text-white hover:underline"
+          >
+            Fulcrum
+          </a>
+          <button
+            class="block w-full text-left text-white hover:underline"
+          >
             Data Import
           </button>
           <button
             class="block w-full text-left text-white hover:underline"
           >
-            Discrepancy Review
+            Option Mapping
           </button>
           <button
             class="block w-full text-left text-white hover:underline"
           >
-            Sync Options
+            Product review
           </button>
           <button
             class="block w-full text-left text-white hover:underline"
           >
-            Notification Settings
+            Table of Contents
+        </button>
+        <button
+          class="block w-full text-left text-white hover:underline"
+        >
           </button>
         </div>
       </div>

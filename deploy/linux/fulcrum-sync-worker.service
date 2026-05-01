@@ -1,0 +1,25 @@
+[Unit]
+Description=Fulcrum Route Authority integration sync worker
+Wants=network-online.target
+After=network-online.target fulcrum-web.service
+
+[Service]
+Type=simple
+User=fulcrum
+Group=fulcrum
+WorkingDirectory=/opt/fulcrum/MDMH4H
+EnvironmentFile=/etc/fulcrum/fulcrum.env
+Environment=FLASK_ENV=production
+Environment=ENABLE_SCHEDULER=0
+Environment=FULCRUM_RUN_EMBEDDED_SCHEDULER=0
+ExecStart=/opt/fulcrum/venv/bin/python run_fulcrum_integration_sync_worker.py --limit 5 --sleep 10 --expire-running-after-minutes 30
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+KillSignal=SIGTERM
+StandardOutput=append:/var/log/fulcrum/sync-worker.log
+StandardError=append:/var/log/fulcrum/sync-worker.err.log
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,213 @@
+{
+  "timestamp": "2026-04-22T15:17:00.631444",
+  "temp_store": "ratmp0422a",
+  "pre_install": {
+    "installation": {
+      "store_hash": null,
+      "status": null,
+      "install_source": null,
+      "owner_email": null,
+      "installed_at": null,
+      "updated_at": null,
+      "uninstalled_at": null
+    },
+    "publish_settings": {
+      "publishing_enabled": false,
+      "category_publishing_enabled": false,
+      "updated_at": "2026-04-22 15:17:00.726352-07:00"
+    },
+    "bigcommerce": {
+      "integration_key": "bigcommerce",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    },
+    "gsc": {
+      "integration_key": "gsc",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    },
+    "ga4": {
+      "integration_key": "ga4",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    }
+  },
+  "auth_callback_existing_store": {
+    "status_code": 302,
+    "location": "/fulcrum/results?store_hash=99oa2tso"
+  },
+  "load_install": {
+    "status_code": 302,
+    "location": "/fulcrum/setup?store_hash=ratmp0422a"
+  },
+  "load_landing": {
+    "status_code": 200,
+    "url": "http://127.0.0.1:5093/fulcrum/setup?store_hash=ratmp0422a",
+    "title_hint": "Ready Set Published"
+  },
+  "post_install": {
+    "installation": {
+      "store_hash": "ratmp0422a",
+      "status": "active",
+      "install_source": "load_callback",
+      "owner_email": "sandbox-reviewer@example.com",
+      "installed_at": "2026-04-22 15:17:02.732172-07:00",
+      "updated_at": "2026-04-22 15:17:02.732172-07:00",
+      "uninstalled_at": null
+    },
+    "publish_settings": {
+      "publishing_enabled": false,
+      "category_publishing_enabled": false,
+      "updated_at": "2026-04-22 15:17:00.726352-07:00"
+    },
+    "bigcommerce": {
+      "integration_key": "bigcommerce",
+      "connection_status": "connected",
+      "configuration_status": "ready",
+      "selected_resource_label": "ratmp0422a",
+      "updated_at": "2026-04-22 15:17:03.410141-07:00"
+    },
+    "gsc": {
+      "integration_key": "gsc",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    },
+    "ga4": {
+      "integration_key": "ga4",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    }
+  },
+  "remove_user": {
+    "status_code": 200,
+    "json": {
+      "status": "ok",
+      "store_hash": "ratmp0422a"
+    }
+  },
+  "uninstall": {
+    "status_code": 200,
+    "json": {
+      "cleanup": {
+        "admin_metric_cache_deleted": 1,
+        "store_ga4_pages_daily_deleted": 0,
+        "store_gsc_daily_deleted": 0,
+        "store_integrations_updated": 0,
+        "store_publish_settings_updated": 1,
+        "store_theme_verifications_deleted": 0
+      },
+      "status": "ok",
+      "store_hash": "ratmp0422a"
+    }
+  },
+  "post_uninstall": {
+    "installation": {
+      "store_hash": "ratmp0422a",
+      "status": "uninstalled",
+      "install_source": "load_callback",
+      "owner_email": "sandbox-reviewer@example.com",
+      "installed_at": "2026-04-22 15:17:02.732172-07:00",
+      "updated_at": "2026-04-22 15:17:04.377971-07:00",
+      "uninstalled_at": "2026-04-22 15:17:04.377971-07:00"
+    },
+    "publish_settings": {
+      "publishing_enabled": false,
+      "category_publishing_enabled": false,
+      "updated_at": "2026-04-22 15:17:04.411025-07:00"
+    },
+    "bigcommerce": {
+      "integration_key": "bigcommerce",
+      "connection_status": "not_connected",
+      "configuration_status": "not_configured",
+      "selected_resource_label": "ratmp0422a",
+      "updated_at": "2026-04-22 15:17:04.491435-07:00"
+    },
+    "gsc": {
+      "integration_key": "gsc",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    },
+    "ga4": {
+      "integration_key": "ga4",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    }
+  },
+  "reinstall": {
+    "status_code": 302,
+    "location": "/fulcrum/setup?store_hash=ratmp0422a"
+  },
+  "reinstall_landing": {
+    "status_code": 200,
+    "url": "http://127.0.0.1:5093/fulcrum/setup?store_hash=ratmp0422a",
+    "title_hint": "Ready Set Published"
+  },
+  "post_reinstall": {
+    "installation": {
+      "store_hash": "ratmp0422a",
+      "status": "active",
+      "install_source": "load_callback",
+      "owner_email": "sandbox-reviewer@example.com",
+      "installed_at": "2026-04-22 15:17:02.732172-07:00",
+      "updated_at": "2026-04-22 15:17:04.696174-07:00",
+      "uninstalled_at": null
+    },
+    "publish_settings": {
+      "publishing_enabled": false,
+      "category_publishing_enabled": false,
+      "updated_at": "2026-04-22 15:17:04.411025-07:00"
+    },
+    "bigcommerce": {
+      "integration_key": "bigcommerce",
+      "connection_status": "connected",
+      "configuration_status": "ready",
+      "selected_resource_label": "ratmp0422a",
+      "updated_at": "2026-04-22 15:17:05.301877-07:00"
+    },
+    "gsc": {
+      "integration_key": "gsc",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    },
+    "ga4": {
+      "integration_key": "ga4",
+      "connection_status": null,
+      "configuration_status": null,
+      "selected_resource_label": null,
+      "updated_at": null
+    }
+  },
+  "final_cleanup": {
+    "status_code": 200,
+    "json": {
+      "cleanup": {
+        "admin_metric_cache_deleted": 1,
+        "store_ga4_pages_daily_deleted": 0,
+        "store_gsc_daily_deleted": 0,
+        "store_integrations_updated": 0,
+        "store_publish_settings_updated": 1,
+        "store_theme_verifications_deleted": 0
+      },
+      "status": "ok",
+      "store_hash": "ratmp0422a"
+    },
+    "installation_status": "uninstalled",
+    "uninstalled_at": "2026-04-22 15:22:07.685784-07:00"
+  }
+}

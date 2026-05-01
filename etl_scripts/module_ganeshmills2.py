@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Specify the file path
-file_path = r"C:\Users\juddu\OneDrive\Mission Critical Projects\Flask GUI\uploads\GaneshETL.xlsx"
+file_path = r"C:\Users\juddu\Downloads\PAM\Staging Area\Ganesh\GaneshETL1.xlsx"
 df = pd.read_excel(file_path, sheet_name='Step 1')
 
 # List of columns to clean
@@ -81,7 +81,7 @@ column_order = ['SKU', 'Parent Product', 'Product Size', 'Product Weight', 'Prod
 df = df[column_order]
 
 # Specify the file path for the output Excel file
-output_file_path = r"C:\Users\juddu\OneDrive\Mission Critical Projects\Flask GUI\uploads\GaneshETL.xlsx"
+output_file_path = r"C:\Users\juddu\Downloads\PAM\Staging Area\Ganesh\GaneshETL2.xlsx"
 
 # Check if the output file already exists
 if os.path.exists(output_file_path):

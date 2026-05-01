@@ -1,3 +1,4 @@
+import bcrypt
 from flask import (
     Blueprint, render_template, request, flash, redirect, url_for, session
 )
@@ -19,18 +20,17 @@ def login():
 
         db = DataRetriever(schema=schema_name)
 
-        # check if user exist in database first
-        check_user_query = f"SELECT * FROM users WHERE email = %s;"
-        is_user = db.check_if_exists(check_user_query, (email,))
-        if not is_user:
-            flash('Invalid credentials. Please try again.', 'danger')
-            return redirect(url_for('user.login'))
-
+        # Check if user exists
         query = f"SELECT * FROM users WHERE email = %s;"
         user = db.get_one(query, (email,))
 
-        # Validate credentials
-        if user and check_password_hash(user['password_hash'], password):
+        if not user:
+            flash('Invalid credentials. Please try again.', 'danger')
+            return redirect(url_for('user.login'))
+
+        # Validate credentials using bcrypt
+        stored_hash = user['password_hash'].encode('utf-8')
+        if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
             session['logged_in'] = True
             session['email'] = email
             session['name'] = f"{user['first_name']} {user['last_name']}"

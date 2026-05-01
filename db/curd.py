@@ -37,7 +37,7 @@ class DataRetriever:
         self.conn.commit()
 
     def execute_commit_query(self, query, params=None):
-        """Execute the SQL query."""
+        """Execute the SQL query and commit."""
         self.connect()
         self.cursor.execute(query, params)
         self.commit()
@@ -45,12 +45,14 @@ class DataRetriever:
 
     def execute_query(self, query, limit=None, offset=None):
         """Execute the SQL query."""
-
+        self.connect()
         if limit is not None and offset is not None:
             self.cursor.execute(query, (limit, offset))
         else:
             self.cursor.execute(query)
-        return self.cursor.fetchall()
+        result = self.cursor.fetchall()
+        self.close()
+        return result
 
     def query(self, query, limit=None, offset=None):
         """Return the data as a list of dictionaries."""
@@ -73,7 +75,6 @@ class DataRetriever:
         self.close()
         return result
 
-    # function to check if enetry exists in database
     def check_if_exists(self, query, params=None):
         """Check if a record exists in the database."""
         self.connect()
@@ -81,3 +82,46 @@ class DataRetriever:
         result = self.cursor.fetchone()
         self.close()
         return result
+
+
+class DataHandler(DataRetriever):
+    """Handles insertion and updates for onboarding tables."""
+
+    def insert_into_contentonly(self, data):
+        query = """
+        INSERT INTO Onboarding.ContentOnly (
+            sku, product_name, category_name, brand_name, description,
+            meta_title, meta_description, meta_keywords, product_id,
+            category_id, brand_id, variant_id, option_id, option_parent_id
+        ) VALUES (
+            %(sku)s, %(product_name)s, %(category_name)s, %(brand_name)s,
+            %(description)s, %(meta_title)s, %(meta_description)s,
+            %(meta_keywords)s, %(product_id)s, %(category_id)s,
+            %(brand_id)s, %(variant_id)s, %(option_id)s, %(option_parent_id)s
+        )
+        ON CONFLICT (sku) DO UPDATE SET
+            description = EXCLUDED.description,
+            meta_title = EXCLUDED.meta_title,
+            meta_description = EXCLUDED.meta_description,
+            meta_keywords = EXCLUDED.meta_keywords;
+        """
+        self.execute_commit_query(query, data)
+
+    def insert_into_optionsmerging(self, data):
+        query = """
+        INSERT INTO Onboarding.OptionsMerging (
+            sku, type, size, weight, qty, color, style, material
+        ) VALUES (
+            %(sku)s, %(type)s, %(size)s, %(weight)s, %(qty)s,
+            %(color)s, %(style)s, %(material)s
+        )
+        ON CONFLICT (sku) DO UPDATE SET
+            type = EXCLUDED.type,
+            size = EXCLUDED.size,
+            weight = EXCLUDED.weight,
+            qty = EXCLUDED.qty,
+            color = EXCLUDED.color,
+            style = EXCLUDED.style,
+            material = EXCLUDED.material;
+        """
+        self.execute_commit_query(query, data)

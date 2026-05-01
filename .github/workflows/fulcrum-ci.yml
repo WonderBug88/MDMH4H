@@ -1,0 +1,40 @@
+name: Route Authority CI
+
+on:
+  push:
+    paths:
+      - "app/fulcrum/**"
+      - "deploy/run_fulcrum_release_checks.py"
+      - "requirements-fulcrum-alpha.txt"
+      - "run_fulcrum_alpha.py"
+      - "run_fulcrum_scheduler.py"
+      - "wsgi.py"
+      - ".github/workflows/fulcrum-ci.yml"
+  pull_request:
+    paths:
+      - "app/fulcrum/**"
+      - "deploy/run_fulcrum_release_checks.py"
+      - "requirements-fulcrum-alpha.txt"
+      - "run_fulcrum_alpha.py"
+      - "run_fulcrum_scheduler.py"
+      - "wsgi.py"
+      - ".github/workflows/fulcrum-ci.yml"
+
+jobs:
+  fulcrum-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Route Authority dependencies
+        run: python -m pip install -r requirements-fulcrum-alpha.txt
+
+      - name: Run Route Authority release checks
+        run: python deploy/run_fulcrum_release_checks.py

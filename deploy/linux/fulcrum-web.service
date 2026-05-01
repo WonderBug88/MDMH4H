@@ -1,0 +1,25 @@
+[Unit]
+Description=Fulcrum Route Authority web app
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=fulcrum
+Group=fulcrum
+WorkingDirectory=/opt/fulcrum/MDMH4H
+EnvironmentFile=/etc/fulcrum/fulcrum.env
+Environment=FLASK_ENV=production
+Environment=ENABLE_SCHEDULER=0
+Environment=FULCRUM_RUN_EMBEDDED_SCHEDULER=0
+ExecStart=/opt/fulcrum/venv/bin/gunicorn --bind 127.0.0.1:5093 --workers 2 --threads 4 --timeout 120 wsgi_fulcrum:application
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+KillSignal=SIGTERM
+StandardOutput=append:/var/log/fulcrum/web.log
+StandardError=append:/var/log/fulcrum/web.err.log
+
+[Install]
+WantedBy=multi-user.target
+

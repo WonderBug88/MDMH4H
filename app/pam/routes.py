@@ -38,7 +38,7 @@ def pam_main():
         category_name, 
         ARRAY_AGG(DISTINCT product_name) AS product_names, -- Ensuring unique product names
         COUNT(DISTINCT product_name) AS total_products -- Ensuring count matches unique products
-    FROM product_categories
+    FROM h4h_import2.product_data_matrix
     WHERE product_name ILIKE '%%{search}%%' OR 
     category_name ILIKE '%%{search}%%' OR 
     brand_name ILIKE '%%{search}%%'

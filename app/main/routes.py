@@ -425,7 +425,8 @@ def parent_product():
         cursor.execute("SELECT parent_products_name FROM parent_products")
         data['parent_products'] = cursor.fetchall()
 
-        cursor.execute("SELECT category_name FROM product_categories")
+        # Update this query to use the correct table
+        cursor.execute("SELECT category_name FROM h4h_import2.product_data_matrix")
         data['categories'] = cursor.fetchall()
     except mysql.connector.Error as error:
         print(f"Failed to read data from MySQL table: {error}")

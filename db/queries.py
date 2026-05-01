@@ -428,7 +428,7 @@ def get_product_categories_data(sku):
                 'brand_url', p.brand_url
             )) AS brands
         FROM 
-            product_categories p
+            h4h_import2.product_data_matrix p
         WHERE 
             p.sku = '{sku}'
         GROUP BY 

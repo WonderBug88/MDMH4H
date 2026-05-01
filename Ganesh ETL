@@ -1,71 +1,234 @@
+"""
+Ganesh Mills 2026 Catalog ETL (All Sheets -> CSV)
+
+Usage:
+  python ganesh_2026_etl.py --input "C:\path\Ganesh Mills Price Catalog Effective February 2nd, 2026 in Excel.xlsx" \
+                            --output "C:\path\GaneshETL_2026.csv"
+
+Optional:
+  --sheets "Signature Towel Collection,Tablelinen Collection"
+  --log-level DEBUG
+"""
+
+from __future__ import annotations
+
+import argparse
+import logging
+import re
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
 import pandas as pd
 
-# Correct the file paths using raw string literals
-excel_file_path = r'C:\Users\juddu\OneDrive\Mission Critical Projects\Vendor Onboarding APP\Vendor Data Files (May not be updated)\Ganesh Mills Price Catalog Effective February 15,2024 in excel.xlsx'
-output_file_path = r'C:\Users\juddu\OneDrive\Mission Critical Projects\GaneshETL.csv'
+LOG = logging.getLogger("ganesh_etl")
 
-# Load the Excel file with all sheets
-all_sheets_data = pd.read_excel(excel_file_path, sheet_name=None)  # 'None' loads all sheets
+# Parent attribute keys appear in the *Description* column as "Quality:", "Specs:", etc.
+PARENT_ATTR_KEYS = ("Quality", "Specs", "Color", "Description")
+PARENT_ATTR_PATTERN = re.compile(
+    r"^\s*(" + "|".join(PARENT_ATTR_KEYS) + r")\s*:\s*(.*)\s*$",
+    re.IGNORECASE,
+)
 
-# Initialize an empty list to store all product details across sheets
-all_product_details = []
+# Parent "item no" rows look like ALL CAPS text (no digits), e.g. "OXFORD CLASSIC/ BRONZE TOWEL COLLECTION"
+def is_parent_sku(item_no: str) -> bool:
+    s = item_no.strip()
+    if not s:
+        return False
+    if any(ch.isdigit() for ch in s):
+        return False
+    return s == s.upper()  # all caps
 
-# Iterate over each sheet in the workbook
-for sheet_name, sheet_data in all_sheets_data.items():
-    current_parent_product = ""
-    current_parent_details = {}  # Ensure this is reset for each sheet
-    
-    for index, row in sheet_data.iterrows():
-        item_no = str(row['Ganesh Mills Item No.'])
-        
-        # Identify parent products
-        if item_no.isupper() and not any(char.isdigit() for char in item_no):
-            current_parent_product = item_no
-            current_parent_details = {}  # Reset for a new parent product
-            print(f"Parent product found: {item_no}")
 
-        # Populate current_parent_details with attributes from the parent product
-        elif pd.notnull(row['Short Description']) and any(attr in row['Short Description'] for attr in ['Quality:', 'Specs:', 'Color:', 'Description:']):
-            attribute_name, _, attribute_value = row['Short Description'].partition(':')
-            current_parent_details[attribute_name.strip()] = row['Size'] if pd.notnull(row['Size']) else ''
+def normalize(x) -> str:
+    if pd.isna(x):
+        return ""
+    return str(x).strip()
 
-        # Handle child products and their details
-        elif pd.notnull(row['Size']):
-            dims_str = str(row['Dims LxWxH']).strip()  # Trim spaces
-            # Check if the string is empty or '0', indicating missing values
-            if dims_str == '' or dims_str == '0':
-                dims = ['', '', '']
-            else:
-                dims = dims_str.split('x')
-                dims = [dim.strip() for dim in dims] + [''] * (3 - len(dims))  # Ensure list has 3 elements
-         # Split 'Case Qty' into 'Quantity' and 'UOM'
-            quantity, uom = ('', '')
-            if pd.notnull(row['Case Qty']):
-                case_qty_parts = str(row['Case Qty']).split(' ', 1)
-                if len(case_qty_parts) == 2:
-                    quantity, uom = case_qty_parts
 
-            product_details = {
-                'Parent Product': current_parent_product,
-                'Ganesh Mills Item No.': row['Ganesh Mills Item No.'],
-                'Short Description': row['Short Description'],
-                'Size': row['Size'],
-                'Weight': row['Weight'],
-                'Special Price': row['Special Price'],
-                'Unit': row['Unit'],
-                'Quantity': quantity,
-                'UOM': uom,
-                'Bale / Carton': row['Bale / Carton'],
-                'Case Length': dims[0],
-                'Case Width': dims[1],
-                'Case Height': dims[2],
-                'Wt/Ctn': row['Wt/Ctn'],
-                **current_parent_details
-            }
-            all_product_details.append(product_details)
-            print(f"Processing child product: {item_no}")
+def norm_col_name(c: str) -> str:
+    # collapse massive whitespace and lowercase
+    return re.sub(r"\s+", " ", str(c)).strip().lower()
 
-# Convert and save the list of product details to a DataFrame and then to a CSV file
-all_product_details_df = pd.DataFrame(all_product_details)
-all_product_details_df['Quantity'] = pd.to_numeric(all_product_details_df['Quantity'], errors='coerce')
-all_product_details_df.to_csv(output_file_path, index=False)
+
+def find_col(cols, desired: str) -> Optional[str]:
+    """
+    Find a column by comparing normalized names.
+    Also supports prefix match (because the file has "2026 Description").
+    """
+    desired_norm = norm_col_name(desired)
+
+    # exact normalized match
+    for c in cols:
+        if norm_col_name(c) == desired_norm:
+            return c
+
+    # prefix match
+    for c in cols:
+        if norm_col_name(c).startswith(desired_norm):
+            return c
+
+    return None
+
+
+def parse_dims(dims_raw) -> Tuple[str, str, str]:
+    """
+    Parse Dims LxWxH, allowing 'x', 'X', '×', spaces, empty, or '0'
+    Returns strings (L, W, H).
+    """
+    s = normalize(dims_raw)
+    if not s or s == "0":
+        return "", "", ""
+
+    s = s.replace("×", "x").replace("X", "x")
+    parts = [p.strip() for p in s.split("x") if p.strip()]
+    parts = (parts + ["", "", ""])[:3]
+    return parts[0], parts[1], parts[2]
+
+
+def parse_case_qty(case_qty_raw) -> Tuple[str, str]:
+    """
+    Parse Case Qty into (Quantity, UOM)
+    Examples: "50 DZ" -> ("50","DZ"), "Each" -> ("","Each"), 36 -> ("36","")
+    """
+    s = normalize(case_qty_raw)
+    if not s:
+        return "", ""
+
+    if re.fullmatch(r"[-+]?\d+(\.\d+)?", s):
+        return s, ""
+
+    parts = s.split(None, 1)
+    if len(parts) == 1:
+        return "", parts[0]
+    return parts[0], parts[1]
+
+
+def process_sheet(sheet_name: str, df: pd.DataFrame) -> List[Dict]:
+    cols = df.columns
+
+    item_col = find_col(cols, "Ganesh Mills Item No.")
+    desc_col = find_col(cols, "2026 Description") or find_col(cols, "Description")
+    size_col = find_col(cols, "Size")
+    weight_col = find_col(cols, "Weight")
+    price_col = find_col(cols, "Special Price")
+    unit_col = find_col(cols, "Unit")
+    case_qty_col = find_col(cols, "Case Qty")
+    bale_col = find_col(cols, "Bale / Carton")
+    dims_col = find_col(cols, "Dims LxWxH")
+    wtctn_col = find_col(cols, "Wt/Ctn")
+    upc_col = find_col(cols, "UPC")
+
+    if not item_col or not desc_col or not size_col:
+        LOG.warning("Sheet '%s': missing key columns; skipping. Found item=%s desc=%s size=%s",
+                    sheet_name, bool(item_col), bool(desc_col), bool(size_col))
+        return []
+
+    current_parent = ""
+    parent_attrs: Dict[str, str] = {}
+    out: List[Dict] = []
+
+    for _, row in df.iterrows():
+        item_no = normalize(row.get(item_col))
+        desc_val = normalize(row.get(desc_col))
+        size_val = normalize(row.get(size_col))
+
+        # Parent row
+        if is_parent_sku(item_no):
+            current_parent = item_no
+            parent_attrs = {}
+            continue
+
+        # Parent attribute row (Quality/Specs/Color/Description)
+        m = PARENT_ATTR_PATTERN.match(desc_val) if desc_val else None
+        if m:
+            key = m.group(1).strip().title()  # Quality/Specs/Color/Description
+            after_colon = normalize(m.group(2))
+            # In this 2026 file, the actual value is typically in the Size column on that row
+            from_size = size_val
+
+            value = after_colon or from_size
+            if after_colon and from_size and from_size != after_colon:
+                value = f"{after_colon} | {from_size}"
+
+            # IMPORTANT: prefix to avoid clobbering the child "Description" column
+            parent_attrs[f"Parent {key}"] = value
+            continue
+
+        # Child SKU row: has a Size
+        if size_val:
+            L, W, H = parse_dims(row.get(dims_col)) if dims_col else ("", "", "")
+            qty, uom = parse_case_qty(row.get(case_qty_col)) if case_qty_col else ("", "")
+
+            out.append({
+                "Sheet": sheet_name,
+                "Parent Product": current_parent,
+                "Ganesh Mills Item No.": item_no,
+                "Description": desc_val,     # <-- keeps "Washcloth", etc.
+                "Size": size_val,
+                "Weight": row.get(weight_col) if weight_col else "",
+                "Special Price": row.get(price_col) if price_col else "",
+                "Unit": row.get(unit_col) if unit_col else "",
+                "Quantity": qty,
+                "UOM": uom,
+                "Bale / Carton": row.get(bale_col) if bale_col else "",
+                "Case Length": L,
+                "Case Width": W,
+                "Case Height": H,
+                "Wt/Ctn": row.get(wtctn_col) if wtctn_col else "",
+                "UPC": row.get(upc_col) if upc_col else "",
+                **parent_attrs
+            })
+
+    return out
+
+
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Ganesh Mills 2026 Excel -> CSV ETL")
+    p.add_argument("--input", required=True, help="Path to the Ganesh Mills 2026 .xlsx file")
+    p.add_argument("--output", required=True, help="Path to output CSV")
+    p.add_argument("--sheets", default="", help="Optional comma-separated list of sheet names to process")
+    p.add_argument("--log-level", default="INFO", help="DEBUG, INFO, WARNING, ERROR")
+    return p.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(levelname)s: %(message)s"
+    )
+
+    in_path = Path(args.input).expanduser()
+    out_path = Path(args.output).expanduser()
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not in_path.exists():
+        raise FileNotFoundError(f"Input Excel file not found: {in_path}")
+
+    sheet_filter = [s.strip() for s in args.sheets.split(",") if s.strip()]
+
+    xl = pd.ExcelFile(in_path, engine="openpyxl")
+    all_rows: List[Dict] = []
+
+    for sheet_name in xl.sheet_names:
+        if sheet_filter and sheet_name not in sheet_filter:
+            continue
+        df = pd.read_excel(in_path, sheet_name=sheet_name, engine="openpyxl")
+        LOG.info("Processing sheet: %s (%d rows)", sheet_name, len(df))
+        all_rows.extend(process_sheet(sheet_name, df))
+
+    out_df = pd.DataFrame(all_rows)
+
+    if out_df.empty:
+        LOG.warning("No output rows produced. Check the workbook structure.")
+        return
+
+    # Quantity numeric when possible
+    out_df["Quantity"] = pd.to_numeric(out_df.get("Quantity"), errors="coerce")
+
+    out_df.to_csv(out_path, index=False)
+    LOG.info("Wrote %d rows -> %s", len(out_df), out_path)
+
+
+if __name__ == "__main__":
+    main()

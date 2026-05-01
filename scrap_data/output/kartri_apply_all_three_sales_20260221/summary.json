@@ -1,0 +1,26 @@
+{
+  "crawl_json": "output\\Ahs Company Products 20022026133335.json",
+  "price_list": "C:\\Users\\juddu\\Downloads\\PAM\\MDMH4H\\scrap_data\\2026 Kartri Price List.xlsx",
+  "reports_dir": "C:\\Users\\juddu\\Downloads\\PAM\\MDMH4H\\scrap_data\\output\\kartri_apply_all_three_sales_20260221",
+  "counts": {
+    "ahs_unique_skus": 223,
+    "price_list_unique_skus": 165,
+    "bc_unique_skus": 5844,
+    "matched_ahs_price": 90,
+    "matched_ahs_bigcommerce": 37,
+    "matched_price_bigcommerce": 40,
+    "matched_all_three": 32,
+    "update_candidates_case_based": 20,
+    "update_skipped_case_based": 12,
+    "ahs_not_in_price_list": 133,
+    "price_list_not_in_ahs": 75,
+    "ahs_not_in_bigcommerce": 186,
+    "price_list_not_in_bigcommerce": 125,
+    "ahs_missing_from_price_and_bigcommerce": 128,
+    "bigcommerce_not_in_ahs": 5807,
+    "bigcommerce_not_in_price_list": 5804
+  },
+  "bc_enabled": true,
+  "bc_duplicates": 330,
+  "update_scope": "all_three"
+}
