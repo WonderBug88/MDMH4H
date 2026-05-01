@@ -441,7 +441,6 @@ def refresh_store_readiness(
     auto_publish_ready = bool(
         Config.FULCRUM_AUTO_PUBLISH_ENABLED
         and catalog_synced
-        and attribute_mappings_ready
         and product_hook_ready
     )
     category_beta_ready = bool(

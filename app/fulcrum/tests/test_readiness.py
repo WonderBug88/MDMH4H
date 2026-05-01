@@ -318,6 +318,55 @@ class FulcrumReadinessTests(unittest.TestCase):
         metadata = json.loads(params[8])
         self.assertTrue(metadata["category_theme_hook_present"])
 
+    def test_refresh_store_readiness_does_not_block_auto_publish_on_pending_mapping_reviews(self):
+        unresolved_cursor = _FakeCursor(
+            fetchone_results=[
+                {
+                    "unresolved_option_name_count": 29,
+                    "unresolved_option_value_count": 185,
+                }
+            ]
+        )
+        upsert_cursor = _FakeCursor(
+            fetchone_results=[
+                {
+                    "store_hash": "99oa2tso",
+                    "catalog_synced": True,
+                    "attribute_mappings_ready": False,
+                    "theme_hook_ready": True,
+                    "auto_publish_ready": True,
+                    "category_beta_ready": False,
+                    "unresolved_option_name_count": 29,
+                    "unresolved_option_value_count": 185,
+                    "metadata": {},
+                    "updated_at": "2026-05-01T10:00:00",
+                }
+            ]
+        )
+
+        with (
+            patch("app.fulcrum.readiness._normalize_mapping_review_statuses", return_value={}),
+            patch("app.fulcrum.readiness.get_store_readiness", return_value={"metadata": {}}),
+            patch("app.fulcrum.readiness.get_pg_conn", side_effect=[_FakeConnection([unresolved_cursor]), _FakeConnection([upsert_cursor])]),
+            patch("app.fulcrum.readiness.render_theme_hook_present", return_value=True),
+            patch("app.fulcrum.readiness.render_category_theme_hook_present", return_value=False),
+            patch.object(readiness.Config, "FULCRUM_AUTO_PUBLISH_ENABLED", True),
+        ):
+            readiness.refresh_store_readiness(
+                "99oa2tso",
+                get_store_profile_summary=lambda store_hash: {
+                    "profile_count": 12,
+                    "category_profile_count": 4,
+                    "option_name_mapping_count": 3,
+                    "option_value_mapping_count": 8,
+                },
+            )
+
+        params = upsert_cursor.executions[0][1]
+        self.assertFalse(params[2])
+        self.assertTrue(params[3])
+        self.assertTrue(params[4])
+
 
 if __name__ == "__main__":
     unittest.main()
