@@ -109,11 +109,18 @@ venv.bak/
 .vscode/
 
 #ignore json larger output files as it git will not allow to push
-/scrap_data/output/*.json
-/scrap_data/output/*.csv
-/scrap_data/output/*.xlsx
-/scrap_data/output/*.xls
+/scrap_data/output/
+/tmp/
+/tmp_*
+/tmp_chrome_profile/
+/edge_*.html
+*.pem
+*.runtime
 /scrap_data/ahscompany_products/*.json
+/scrap_data/ahscompany_products/logs.txt
+/etl_scripts/Ganesh_Mills_Price_Catalog.xlsx
+/scrap_data/2026 Kartri Price List.xlsx
 
 # Ignore google key file
 /etl_scripts/gsc/*.json
+/etl_scripts/gsc/.env.runtime

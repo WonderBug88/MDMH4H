@@ -1,9 +1,0 @@
-sku_norm,sku_raw,bc_type,bc_product_id,reason,priced_variant_count,missing_variant_count,priced_variants,missing_variants
-CR570,CR570,product,110188,product_placeholder_sku_ignored_due_to_priced_variants,8,0,CR570-36|CR570-36SS|CR570-60|CR570-60SS|CR570-72|CR570-72SS|CR570-84|CR570-84SS,
-DYNASTYSHOWERCURTAIN,Dynasty Shower Curtain,product,111407,product_placeholder_sku_ignored_due_to_priced_variants,5,0,EZ-DY74-1WSL|EZ-DYCHR77-1-WSLN|EZ-DYWB74-1|EZ-DYWB74-1-W|EZ-DYWB77-1-WSLN,
-EMPIREWAFFLESHOWERCURTAIN,Empire Waffle shower curtain,product,110180,product_placeholder_sku_ignored_due_to_priced_variants,7,0,EZ-EP74-1-C-WSLN|EZ-EP74-1-SLN|EZ-EP74-1-W-WSLN|EZ-EP74-2-SLN|EZ-EP77-1-C-WSLN|EZ-EP77-1-SLN|EZ-EP77-1-W-WSLN,
-EZ-RL1-SERIES,EZ-RL1- series,product,112521,product_placeholder_sku_ignored_due_to_priced_variants,11,0,EZ-REPPD74-1|EZ-REPPD77-1|EZ-RL1-74|EZ-RL1-77|EZ-RL1-DW74|EZ-RL1-DW80|EZ-RL1-H74|EZ-RL1-H77|EZ-RL2-74|EZ-RL2-77|EZ-RL2-H74,
-HOTELCOVERLET,hotel coverlet,product,112466,product_placeholder_sku_ignored_due_to_priced_variants,3,0,QIMPDDK|QIMPDDQ|QIMPDDT,
-MARRIOTLIKE,Marriot like,product,112419,product_placeholder_sku_ignored_due_to_priced_variants,2,0,CTY-WAFF78|CTY-WAFFA,
-SP3020-1,SP3020-1,product,110128,product_placeholder_sku_ignored_due_to_priced_variants,1,9,SPCNA,SP-1|SP-2|SP-23|SP-23STALL|SP-2STALL|SP-35|SP-35STALL|SP-7|SP-7STALL
-V8WHITESHOWERCURTAIN,V8 White Shower Curtain,product,112436,product_placeholder_sku_ignored_due_to_priced_variants,3,0,EZ-V8-1|EZ-V8-2|EZ-V87177-1,

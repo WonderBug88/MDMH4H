@@ -1,5 +1,0 @@
-[35252:26388:0424/144657.729:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
-[35252:26388:0424/144657.751:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
-[35252:26388:0424/144657.825:ERROR:google_apis\gcm\engine\mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
-[35252:26388:0424/144657.826:ERROR:google_apis\gcm\engine\mcs_client.cc:702] Failed to log in to GCM, resetting connection.
-Created TensorFlow Lite XNNPACK delegate for CPU.
