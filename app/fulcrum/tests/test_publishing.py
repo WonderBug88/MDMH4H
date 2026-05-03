@@ -144,9 +144,25 @@ class FulcrumPublishingTests(unittest.TestCase):
             self.assertEqual(source_product_id, 101)
             self.assertEqual(source_entity_type, "category")
             return [
-                {"target_entity_type": "category", "target_url": "/folding-beds/"},
-                {"target_entity_type": "brand", "target_url": "/downlite/"},
-                {"target_entity_type": "product", "target_url": "/portable-bed-frame/"},
+                {
+                    "target_entity_type": "category",
+                    "target_url": "/folding-beds/",
+                    "metadata": {"query_intent_scope": "commercial_topic", "preferred_entity_type": "category"},
+                },
+                {
+                    "target_entity_type": "brand",
+                    "target_url": "/downlite/",
+                    "metadata": {
+                        "query_intent_scope": "brand_navigation",
+                        "preferred_entity_type": "brand",
+                        "query_target_tokens": ["downlite"],
+                    },
+                },
+                {
+                    "target_entity_type": "product",
+                    "target_url": "/portable-bed-frame/",
+                    "metadata": {"query_intent_scope": "specific_product", "preferred_entity_type": "product"},
+                },
             ]
 
         def _build_links_html(rows, section_title="Related options"):
@@ -186,6 +202,47 @@ class FulcrumPublishingTests(unittest.TestCase):
             ["internal_category_links_html", "internal_product_links_html"],
         )
         self.assertEqual(invalidations, [("abc123", ["live_gsc_performance", "live_gsc_performance_store_scoped_v2"])])
+
+    def test_publish_approved_entities_skips_brand_query_category_target(self):
+        conn = _FakeConn(
+            fetchall_queue=[
+                [
+                    {
+                        "source_entity_type": "product",
+                        "source_product_id": 112556,
+                        "source_name": "Cloud Top",
+                        "source_url": "/cloud-top/",
+                    }
+                ]
+            ]
+        )
+        upsert_calls = []
+
+        publications = publish_approved_entities(
+            store_hash="abc123",
+            source_entity_ids=None,
+            run_id=None,
+            get_pg_conn=lambda: conn,
+            get_approved_rows_for_source=lambda store_hash, source_product_id, source_entity_type: [
+                {
+                    "target_entity_type": "category",
+                    "target_url": "/hotel-bedding-supply/",
+                    "metadata": {
+                        "query_intent_scope": "brand_navigation",
+                        "preferred_entity_type": "brand",
+                        "query_target_tokens": ["downlite"],
+                    },
+                }
+            ],
+            resolve_store_category_id_by_url=lambda store_hash, url: (None, None),
+            resolve_store_product_id_by_url=lambda store_hash, url: (112556, "Cloud Top"),
+            build_links_html=lambda rows, section_title="Related options": "html" if rows else None,
+            upsert_entity_metafield=lambda *args: upsert_calls.append(args) or {"action": "updated", "metafield_id": 1},
+            invalidate_admin_metric_cache=lambda store_hash, metric_keys=None: None,
+        )
+
+        self.assertEqual(publications, [])
+        self.assertEqual(upsert_calls, [])
 
     def test_unpublish_entities_deletes_category_metafield_and_marks_row_unpublished(self):
         conn = _FakeConn(

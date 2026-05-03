@@ -438,6 +438,30 @@ def candidate_source_key(row: dict[str, Any]) -> tuple[str, int]:
     )
 
 
+def candidate_publish_block_reason(row: dict[str, Any], category_enabled: bool) -> str:
+    source_entity_type = (row.get("source_entity_type") or "product").strip().lower() or "product"
+    target_entity_type = (row.get("target_entity_type") or "product").strip().lower() or "product"
+    metadata = row.get("metadata") or {}
+    query_intent_scope = (metadata.get("query_intent_scope") or "").strip().lower()
+    preferred_entity_type = (metadata.get("preferred_entity_type") or "").strip().lower()
+
+    if source_entity_type == "category" and not category_enabled:
+        return "category source publishing is disabled"
+    if target_entity_type not in {"product", "category", "brand"}:
+        return f"unsupported target entity type `{target_entity_type}`"
+    if target_entity_type == "brand":
+        if query_intent_scope != "brand_navigation" or preferred_entity_type != "brand":
+            return "brand targets require brand-navigation intent"
+        if not list(metadata.get("query_target_tokens") or []):
+            return "brand target did not preserve query target tokens"
+    if target_entity_type == "category":
+        if preferred_entity_type != "category":
+            return "category target does not match preferred entity type"
+        if query_intent_scope == "brand_navigation":
+            return "brand-navigation query cannot publish to category"
+    return ""
+
+
 def publish_all_current_results(
     store_hash: str,
     initiated_by: str | None = None,
@@ -462,7 +486,18 @@ def publish_all_current_results(
         for row in latest_candidate_rows_for_store_fn(normalized_store_hash, review_status="pending", limit=None)
         if include_dashboard_candidate_fn(row, "pending", category_enabled)
     ]
-    publishable_pending_rows = [row for row in pending_rows if candidate_source_key(row) not in blocked_sources]
+    pending_policy_blocked_rows = [
+        row
+        for row in pending_rows
+        if candidate_source_key(row) not in blocked_sources
+        and candidate_publish_block_reason(row, category_enabled)
+    ]
+    publishable_pending_rows = [
+        row
+        for row in pending_rows
+        if candidate_source_key(row) not in blocked_sources
+        and not candidate_publish_block_reason(row, category_enabled)
+    ]
     pending_candidate_ids = [
         int(row.get("candidate_id") or 0)
         for row in publishable_pending_rows
@@ -482,6 +517,13 @@ def publish_all_current_results(
         row
         for row in latest_candidate_rows_for_store_fn(normalized_store_hash, review_status="approved", limit=None)
         if candidate_source_key(row) not in blocked_sources
+        and not candidate_publish_block_reason(row, category_enabled)
+    ]
+    approved_policy_blocked_rows = [
+        row
+        for row in latest_candidate_rows_for_store_fn(normalized_store_hash, review_status="approved", limit=None)
+        if candidate_source_key(row) not in blocked_sources
+        and candidate_publish_block_reason(row, category_enabled)
     ]
     approved_source_keys = {
         candidate_source_key(row)
@@ -515,6 +557,7 @@ def publish_all_current_results(
     return {
         "status": "ok",
         "blocked_source_count": len(blocked_sources),
+        "policy_blocked_candidate_count": len(pending_policy_blocked_rows) + len(approved_policy_blocked_rows),
         "pending_row_count": len(pending_rows),
         "approved_count": approved_count,
         "publishable_pending_count": len(publishable_pending_rows),
@@ -528,6 +571,7 @@ def publish_all_current_results(
 
 __all__ = [
     "auto_approve_and_publish_run",
+    "candidate_publish_block_reason",
     "candidate_source_key",
     "eligible_auto_publish_candidates",
     "execute_candidate_run",

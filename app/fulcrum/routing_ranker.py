@@ -216,6 +216,13 @@ def rank_target_options_for_gate_row(
         raw_final_score = round(float(profile.get("raw_score") or profile.get("score") or 0.0) + type_fit_delta + review_feedback_delta, 2)
         final_score = max(0.0, min(100.0, raw_final_score))
         name_url_tokens = tokenize_intent_text_fn(f"{target_profile.get('name') or ''} {target_profile.get('url') or ''}")
+        target_name_tokens = tokenize_intent_text_fn(target_profile.get("name"))
+        exact_brand_name_match = int(
+            query_intent_scope == "brand_navigation"
+            and target_entity_type == "brand"
+            and bool(query_tokens)
+            and target_name_tokens == query_tokens
+        )
         hotel_name_match = 1 if broad_hotel_query and "hotel" in name_url_tokens else 0
         narrowing_penalty = 1 if broad_hotel_query and (name_url_tokens & narrowing_tokens) and not (query_tokens & narrowing_tokens) else 0
         score_for_sort = raw_final_score if query_intent_scope in {"specific_product", "brand_navigation"} else final_score
@@ -233,6 +240,7 @@ def rank_target_options_for_gate_row(
             "review_feedback_signal": review_feedback_signal,
             "is_current_page": source_entity_type == target_entity_type and source_bc_id == target_bc_id,
             "manual_override": is_manual_override_target,
+            "exact_brand_name_match": bool(exact_brand_name_match),
             "name_url_overlap": len(query_tokens & name_url_tokens),
             "hotel_name_match": hotel_name_match,
             "narrowing_penalty": narrowing_penalty,
@@ -242,6 +250,7 @@ def rank_target_options_for_gate_row(
             "source_query_modifier_missing_count": int(profile.get("source_query_modifier_missing_count") or 0),
             "_sort_key": (
                 1 if is_manual_override_target else 0,
+                exact_brand_name_match,
                 float(max(score_for_sort, 100.0) if is_manual_override_target else score_for_sort),
                 int(profile.get("source_query_modifier_match_count") or 0),
                 -int(profile.get("source_query_modifier_missing_count") or 0),

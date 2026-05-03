@@ -5,9 +5,11 @@ from typing import Any
 
 import requests
 
+from app.fulcrum.candidate_runs import candidate_publish_block_reason
 from app.fulcrum.config import Config
 from app.fulcrum.platform import get_bc_headers, list_store_categories, list_store_products, normalize_store_hash
 from app.fulcrum.services import (
+    category_publishing_enabled_for_store,
     get_pg_conn,
     list_publications,
     publish_approved_entities,
@@ -39,6 +41,13 @@ def _entity_path(entity_type: str) -> str:
     return "products" if (entity_type or "").strip().lower() == "product" else "categories"
 
 
+def _custom_url_value(entity: dict[str, Any]) -> str:
+    custom_url = entity.get("custom_url") or ""
+    if isinstance(custom_url, dict):
+        return custom_url.get("url") or ""
+    return str(custom_url or "")
+
+
 def _require_allowed_store(store_hash: str) -> None:
     normalized_hash = normalize_store_hash(store_hash)
     allowed = {normalize_store_hash(item) for item in (Config.FULCRUM_ALLOWED_STORES or []) if item}
@@ -68,62 +77,107 @@ def _gate_disposition_counts(store_hash: str) -> dict[str, int]:
     return counts
 
 
-def list_remote_link_metafields(store_hash: str) -> list[dict[str, Any]]:
+def _fetch_entity_summary(
+    store_hash: str,
+    entity_type: str,
+    entity_id: int,
+    *,
+    headers: dict[str, str],
+    api_base: str,
+) -> dict[str, Any]:
+    response = requests.get(
+        f"{api_base}/catalog/{_entity_path(entity_type)}/{int(entity_id)}",
+        headers=headers,
+        params={"include_fields": "id,name,custom_url"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return dict(response.json().get("data") or {})
+
+
+def _scan_entity_metafields(
+    store_hash: str,
+    entity_type: str,
+    entity: dict[str, Any],
+    *,
+    headers: dict[str, str],
+    api_base: str,
+) -> list[dict[str, Any]]:
+    entity_id = int(entity.get("id") or 0)
+    if not entity_id:
+        return []
+    response = requests.get(
+        f"{api_base}/catalog/{_entity_path(entity_type)}/{entity_id}/metafields",
+        headers=headers,
+        params={"namespace": "h4h", "limit": 250},
+        timeout=30,
+    )
+    response.raise_for_status()
+    rows: list[dict[str, Any]] = []
+    for metafield in response.json().get("data", []):
+        key = (metafield.get("key") or "").strip()
+        if key not in LINK_METAFIELD_KEYS:
+            continue
+        rows.append(
+            {
+                "entity_type": entity_type,
+                "entity_id": entity_id,
+                "entity_name": entity.get("name") or "",
+                "entity_url": _custom_url_value(entity),
+                "metafield_id": int(metafield.get("id") or 0),
+                "key": key,
+            }
+        )
+    return rows
+
+
+def list_remote_link_metafields(
+    store_hash: str,
+    *,
+    product_ids: list[int] | None = None,
+    category_ids: list[int] | None = None,
+    max_entities: int | None = None,
+) -> list[dict[str, Any]]:
     _require_allowed_store(store_hash)
     headers = get_bc_headers(store_hash)
     api_base = _api_base(store_hash)
     results: list[dict[str, Any]] = []
 
-    for product in list_store_products(store_hash):
-        entity_id = int(product.get("id") or 0)
-        if not entity_id:
-            continue
-        response = requests.get(
-            f"{api_base}/catalog/products/{entity_id}/metafields",
-            headers=headers,
-            params={"namespace": "h4h", "limit": 250},
-            timeout=30,
-        )
-        response.raise_for_status()
-        for metafield in response.json().get("data", []):
-            key = (metafield.get("key") or "").strip()
-            if key not in LINK_METAFIELD_KEYS:
-                continue
-            results.append(
-                {
-                    "entity_type": "product",
-                    "entity_id": entity_id,
-                    "entity_name": product.get("name") or "",
-                    "entity_url": (product.get("custom_url") or {}).get("url") or "",
-                    "metafield_id": int(metafield.get("id") or 0),
-                    "key": key,
-                }
-            )
+    scanned_count = 0
+    normalized_product_ids = [int(entity_id) for entity_id in product_ids or [] if int(entity_id or 0)]
+    normalized_category_ids = [int(entity_id) for entity_id in category_ids or [] if int(entity_id or 0)]
+    has_product_filter = bool(normalized_product_ids)
+    has_category_filter = bool(normalized_category_ids)
+    product_entities = (
+        [
+            _fetch_entity_summary(store_hash, "product", entity_id, headers=headers, api_base=api_base)
+            for entity_id in normalized_product_ids
+        ]
+        if has_product_filter
+        else ([] if has_category_filter else list_store_products(store_hash))
+    )
+    category_entities = (
+        [
+            _fetch_entity_summary(store_hash, "category", entity_id, headers=headers, api_base=api_base)
+            for entity_id in normalized_category_ids
+        ]
+        if has_category_filter
+        else ([] if has_product_filter else list_store_categories(store_hash))
+    )
 
-    for category in list_store_categories(store_hash):
-        entity_id = int(category.get("id") or 0)
-        if not entity_id:
-            continue
-        response = requests.get(
-            f"{api_base}/catalog/categories/{entity_id}/metafields",
-            headers=headers,
-            params={"namespace": "h4h", "limit": 250},
-            timeout=30,
-        )
-        response.raise_for_status()
-        for metafield in response.json().get("data", []):
-            key = (metafield.get("key") or "").strip()
-            if key not in LINK_METAFIELD_KEYS:
-                continue
-            results.append(
-                {
-                    "entity_type": "category",
-                    "entity_id": entity_id,
-                    "entity_name": category.get("name") or "",
-                    "entity_url": (category.get("custom_url") or {}).get("url") or "",
-                    "metafield_id": int(metafield.get("id") or 0),
-                    "key": key,
-                }
+    for entity_type, entities in (("product", product_entities), ("category", category_entities)):
+        for entity in entities:
+            if max_entities is not None and scanned_count >= max(0, int(max_entities)):
+                return results
+            scanned_count += 1
+            results.extend(
+                _scan_entity_metafields(
+                    store_hash,
+                    entity_type,
+                    entity,
+                    headers=headers,
+                    api_base=api_base,
+                )
             )
 
     return results
@@ -160,6 +214,51 @@ def _active_publication_keyset(store_hash: str) -> set[tuple[str, str, str]]:
     return keyset
 
 
+def _latest_approved_candidate_rows(store_hash: str) -> list[dict[str, Any]]:
+    sql = """
+        WITH latest_pairs AS (
+            SELECT DISTINCT ON (source_entity_type, source_product_id, target_entity_type, target_product_id)
+                candidate_id,
+                source_entity_type,
+                target_entity_type,
+                source_entity_id,
+                target_entity_id,
+                source_product_id,
+                source_name,
+                source_url,
+                target_product_id,
+                target_name,
+                target_url,
+                review_status,
+                metadata,
+                created_at
+            FROM app_runtime.link_candidates
+            WHERE store_hash = %s
+            ORDER BY
+                source_entity_type,
+                source_product_id,
+                target_entity_type,
+                target_product_id,
+                candidate_id DESC
+        )
+        SELECT *
+        FROM latest_pairs
+        WHERE review_status = 'approved';
+    """
+    with get_pg_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (normalize_store_hash(store_hash),))
+            columns = [desc[0] for desc in cur.description]
+            return [dict(zip(columns, row)) for row in cur.fetchall()]
+
+
+def _source_key_for_row(row: dict[str, Any]) -> tuple[str, str]:
+    return (
+        (row.get("source_entity_type") or row.get("entity_type") or "product").strip().lower(),
+        _normalize_url_path(row.get("source_url") or row.get("entity_url")),
+    )
+
+
 def _approved_source_counts(store_hash: str) -> dict[str, int]:
     sql = """
         SELECT source_entity_type, COUNT(DISTINCT source_product_id) AS source_count
@@ -177,12 +276,39 @@ def _approved_source_counts(store_hash: str) -> dict[str, int]:
     return counts
 
 
-def reset_and_republish_bigcommerce_links(store_hash: str, execute: bool = False) -> dict[str, Any]:
+def reset_and_republish_bigcommerce_links(
+    store_hash: str,
+    execute: bool = False,
+    *,
+    product_ids: list[int] | None = None,
+    category_ids: list[int] | None = None,
+    max_entities: int | None = None,
+) -> dict[str, Any]:
     normalized_hash = normalize_store_hash(store_hash)
     _require_allowed_store(normalized_hash)
-    remote_before = list_remote_link_metafields(normalized_hash)
+    filtered_scan = bool(product_ids or category_ids or max_entities is not None)
+    if execute and filtered_scan:
+        raise ValueError("Filtered BigCommerce reset scans are dry-run only.")
+    remote_before = list_remote_link_metafields(
+        normalized_hash,
+        product_ids=product_ids,
+        category_ids=category_ids,
+        max_entities=max_entities,
+    )
     active_publications = list_publications(normalized_hash, active_only=True, limit=5000)
     active_keyset = _active_publication_keyset(normalized_hash)
+    category_enabled = category_publishing_enabled_for_store(normalized_hash)
+    approved_candidate_rows = _latest_approved_candidate_rows(normalized_hash)
+    publishable_source_keys = {
+        _source_key_for_row(row)
+        for row in approved_candidate_rows
+        if not candidate_publish_block_reason(row, category_enabled)
+    }
+    policy_blocked_source_keys = {
+        _source_key_for_row(row)
+        for row in approved_candidate_rows
+        if candidate_publish_block_reason(row, category_enabled)
+    } - publishable_source_keys
     orphan_remote = [
         row
         for row in remote_before
@@ -193,10 +319,21 @@ def reset_and_republish_bigcommerce_links(store_hash: str, execute: bool = False
         )
         not in active_keyset
     ]
+    policy_blocked_remote = [
+        row
+        for row in remote_before
+        if _source_key_for_row(row) in policy_blocked_source_keys
+    ]
 
     summary: dict[str, Any] = {
         "store_hash": normalized_hash,
         "execute": bool(execute),
+        "scan_filters": {
+            "product_ids": [int(entity_id) for entity_id in product_ids or []],
+            "category_ids": [int(entity_id) for entity_id in category_ids or []],
+            "max_entities": max_entities,
+            "filtered_scan": filtered_scan,
+        },
         "remote_before_count": len(remote_before),
         "remote_before_by_key": dict(Counter(row.get("key") or "" for row in remote_before)),
         "active_publications_before_count": len(active_publications),
@@ -207,6 +344,11 @@ def reset_and_republish_bigcommerce_links(store_hash: str, execute: bool = False
         "latest_gate_disposition_counts": _gate_disposition_counts(normalized_hash),
         "orphan_remote_count": len(orphan_remote),
         "orphan_remote_sample": orphan_remote[:25],
+        "policy_blocked_approved_candidate_count": len(
+            [row for row in approved_candidate_rows if candidate_publish_block_reason(row, category_enabled)]
+        ),
+        "policy_blocked_active_remote_count": len(policy_blocked_remote),
+        "policy_blocked_active_remote_sample": policy_blocked_remote[:25],
         "unpublished_count": 0,
         "deleted_orphan_count": 0,
         "republished_count": 0,

@@ -92,6 +92,43 @@ class FulcrumCandidateRunTests(unittest.TestCase):
         review_candidates.assert_called_once()
         publish_entities.assert_called_once()
 
+    def test_publish_all_current_results_blocks_brand_query_to_category_target(self):
+        review_candidates = Mock(return_value=0)
+        publish_entities = Mock(return_value=[])
+
+        stale_brand_category = {
+            "candidate_id": 7,
+            "source_entity_type": "product",
+            "source_entity_id": 112556,
+            "source_product_id": 112556,
+            "target_entity_type": "category",
+            "target_entity_id": -1000005394,
+            "target_product_id": -1000005394,
+            "metadata": {
+                "query_intent_scope": "brand_navigation",
+                "preferred_entity_type": "brand",
+                "query_target_tokens": ["downlite"],
+            },
+        }
+
+        result = candidate_runs.publish_all_current_results(
+            "stores/abc123",
+            initiated_by="tester",
+            normalize_store_hash_fn=lambda value: "abc123",
+            category_publishing_enabled_for_store_fn=lambda store_hash: True,
+            list_query_gate_review_requests_fn=lambda store_hash, request_status=None, limit=1000: [],
+            latest_candidate_rows_for_store_fn=lambda store_hash, review_status=None, limit=None: [stale_brand_category]
+            if review_status == "approved"
+            else [],
+            include_dashboard_candidate_fn=lambda row, tab, category_enabled: True,
+            review_candidates_fn=review_candidates,
+            publish_approved_entities_fn=publish_entities,
+        )
+
+        self.assertEqual(result["policy_blocked_candidate_count"], 1)
+        self.assertEqual(result["approved_source_count"], 0)
+        publish_entities.assert_not_called()
+
     def test_auto_approve_and_publish_run_reuses_publish_all_rules(self):
         publish_all_current_results = Mock(
             return_value={

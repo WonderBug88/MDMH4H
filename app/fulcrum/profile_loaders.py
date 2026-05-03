@@ -323,8 +323,8 @@ def load_store_brand_profiles(
     tokenize_intent_text_fn: Callable[[str | None], set[str]],
     build_cluster_profile_fn: Callable[..., dict[str, Any]],
     dedupe_entity_profiles_fn: Callable[[list[dict[str, Any]]], list[dict[str, Any]]],
+    list_store_brands_fn: Callable[[str], list[dict[str, Any]]] | None = None,
 ) -> dict[str, dict[str, Any]]:
-    del store_hash
     sql = """
         SELECT id, name, page_title, meta_keywords, meta_description, search_keywords, custom_url
         FROM h4h_import2.brands
@@ -338,14 +338,28 @@ def load_store_brand_profiles(
             except UndefinedTable:
                 conn.rollback()
                 rows = []
+    if not rows and list_store_brands_fn is not None:
+        try:
+            rows = [dict(row) for row in list_store_brands_fn(store_hash)]
+        except Exception:
+            rows = []
     profiles: list[dict[str, Any]] = []
     for row in rows:
-        brand_url = normalize_storefront_path_fn(row.get("custom_url"))
+        raw_custom_url = row.get("custom_url")
+        if isinstance(raw_custom_url, dict):
+            raw_custom_url = raw_custom_url.get("url")
+        brand_url = normalize_storefront_path_fn(raw_custom_url)
         if not brand_url:
             continue
-        combined_text = " ".join(filter(None, [row.get("name") or "", row.get("page_title") or "", row.get("search_keywords") or "", row.get("meta_keywords") or "", row.get("meta_description") or "", brand_url]))
+        meta_keywords = row.get("meta_keywords") or ""
+        if isinstance(meta_keywords, (list, tuple, set)):
+            meta_keywords = " ".join(str(item or "") for item in meta_keywords)
+        search_keywords_value = row.get("search_keywords") or ""
+        if isinstance(search_keywords_value, (list, tuple, set)):
+            search_keywords_value = " ".join(str(item or "") for item in search_keywords_value)
+        combined_text = " ".join(filter(None, [row.get("name") or "", row.get("page_title") or "", search_keywords_value, meta_keywords, row.get("meta_description") or "", brand_url]))
         attrs = extract_attribute_terms_fn(combined_text)
-        search_keywords = " ".join(filter(None, [row.get("search_keywords") or "", row.get("meta_keywords") or ""]))
+        search_keywords = " ".join(filter(None, [search_keywords_value, meta_keywords]))
         profiles.append({"entity_type": "brand", "bc_entity_id": int(row.get("id") or 0), "url": brand_url, "name": row.get("name") or "", "brand_name": row.get("name") or "", "search_keywords": search_keywords, "option_labels": [], "option_display_names": [], "tokens": tokenize_intent_text_fn(combined_text), "attributes": attrs, "cluster_profile": build_cluster_profile_fn(product_name=row.get("name") or "", product_url=brand_url, brand_name=row.get("name") or "", search_keywords=search_keywords, attribute_profile=attrs), "is_canonical_target": True, "eligible_for_routing": True})
     return {profile["url"]: profile for profile in dedupe_entity_profiles_fn(profiles)}
 

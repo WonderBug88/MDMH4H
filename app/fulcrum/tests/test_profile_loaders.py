@@ -79,6 +79,36 @@ class FulcrumProfileLoaderTests(unittest.TestCase):
         self.assertEqual(result, {})
         self.assertTrue(conn.rolled_back)
 
+    def test_brand_profiles_fall_back_to_bigcommerce_api_rows(self):
+        conn = _RowsConnection([])
+
+        result = profile_loaders.load_store_brand_profiles(
+            "99oa2tso",
+            get_pg_conn_fn=lambda: conn,
+            normalize_storefront_path_fn=_normalize_path,
+            extract_attribute_terms_fn=lambda value: {"brand": {"downlite"}},
+            tokenize_intent_text_fn=lambda value: {
+                token
+                for token in str(value or "").lower().replace("/", " ").replace("-", " ").split()
+                if token
+            },
+            build_cluster_profile_fn=lambda **kwargs: {"primary": "bedding"},
+            dedupe_entity_profiles_fn=lambda profiles: profiles,
+            list_store_brands_fn=lambda store_hash: [
+                {
+                    "id": 3028,
+                    "name": "DownLite Bedding",
+                    "page_title": "DownLite Bedding",
+                    "custom_url": {"url": "/downlite/", "is_customized": True},
+                }
+            ],
+        )
+
+        self.assertIn("/downlite/", result)
+        self.assertEqual(result["/downlite/"]["entity_type"], "brand")
+        self.assertEqual(result["/downlite/"]["bc_entity_id"], 3028)
+        self.assertEqual(result["/downlite/"]["name"], "DownLite Bedding")
+
     def test_missing_optional_content_tables_return_empty_profiles(self):
         conn = _MissingTableConnection()
 
@@ -124,6 +154,37 @@ class _MissingTableConnection:
 
     def rollback(self):
         self.rolled_back = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
+class _RowsCursor:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def execute(self, sql, params=None):
+        return None
+
+    def fetchall(self):
+        return list(self.rows)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
+class _RowsConnection:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def cursor(self, *args, **kwargs):
+        return _RowsCursor(self.rows)
 
     def __enter__(self):
         return self

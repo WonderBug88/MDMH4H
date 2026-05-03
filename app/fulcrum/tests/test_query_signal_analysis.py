@@ -313,6 +313,57 @@ class FulcrumQuerySignalAnalysisTests(unittest.TestCase):
         self.assertEqual(analysis["query_shape"], "exact_product_like")
         self.assertEqual(analysis["eligible_page_types"], ["product"])
 
+    def test_product_like_brand_collection_query_does_not_add_brand_page_guard(self):
+        analysis = query_signal_analysis.build_query_semantics_analysis(
+            "99oa2tso",
+            "kartri courtyard curtain",
+            {
+                "query_tokens": ["kartri", "courtyard", "curtain"],
+                "brand_signals": [{"matched_tokens": ["kartri"], "normalized_label": "kartri"}],
+                "hard_attribute_signals": [],
+                "soft_attribute_signals": [],
+                "collection_signals": [{"matched_tokens": ["courtyard"], "normalized_label": "courtyard"}],
+                "topic_signals": [{"matched_tokens": ["curtain"], "normalized_label": "curtain"}],
+                "sku_signals": [],
+            },
+            signal_library={"protected_phrase": [], "taxonomy_alias": [], "ambiguous_modifier": []},
+            build_store_signal_library_fn=lambda store_hash: {},
+            ordered_intent_tokens_fn=lambda value: ["kartri", "courtyard", "curtain"],
+            expand_signal_tokens_fn=lambda tokens: set(tokens),
+            tokenize_intent_text_fn=_tokenize,
+            non_generic_signal_tokens_fn=lambda tokens: set(tokens),
+            match_semantic_signal_entries_fn=lambda query, query_tokens, entries: [],
+            semantic_head_term_fn=lambda query, query_tokens, bound_phrase_matches, resolved_signals: "curtain",
+            semantic_head_family_fn=lambda head_term, query_tokens, bound_phrase_matches, taxonomy_alias_matches: "curtains",
+            query_has_exact_brand_phrase_fn=lambda query, brand_signals: 0.0,
+            query_is_broad_descriptive_fn=lambda query, query_tokens, resolved_signals: False,
+            semantic_family_candidate_tokens_fn=lambda head_term, head_family, taxonomy_alias_matches: {"curtain"},
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            brand_family_catalog_evidence_fn=lambda store_hash, brand_label, family_tokens: {
+                "matching_product_count": 4,
+                "matching_product_urls": ["/kartri-courtyard-curtain/"],
+            },
+            semantic_head_term_from_phrases_fn=lambda matches: "",
+            semantic_token_roles_fn=lambda query, head_term, resolved_signals, taxonomy_alias_matches, ambiguous_modifier_matches: [
+                {"text": "kartri", "role": "brand_candidate"},
+                {"text": "courtyard", "role": "collection"},
+                {"text": "curtain", "role": "head_product"},
+            ],
+            generic_brand_alias_tokens=set(),
+            semantic_allowed_page_types={"brand", "category", "content", "product"},
+            semantic_accessory_block_rules={},
+            semantic_subtype_constraints={},
+            context_keep_tokens=set(),
+            query_noise_words=set(),
+            generic_routing_tokens=set(),
+        )
+
+        self.assertEqual(analysis["query_shape"], "exact_product_like")
+        self.assertNotIn(
+            "prefer_brand_when_family_has_multiple_products",
+            {rule["kind"] for rule in analysis["constraint_rules"]},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

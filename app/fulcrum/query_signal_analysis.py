@@ -708,7 +708,7 @@ def build_query_semantics_analysis(
                 "message": f"The head product `{head_term}` must stay visible in any changed route",
             }
         )
-    if brand_signals and topic_signals and matching_brand_family_products >= 2:
+    if brand_signals and topic_signals and matching_brand_family_products >= 2 and query_shape == "brand_navigational":
         negative_constraints.append(
             "Brand plus family queries with multiple matching brand products should stay brand-led until a more specific product phrase is present"
         )

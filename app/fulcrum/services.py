@@ -142,6 +142,7 @@ from app.fulcrum.platform import (
     get_bc_headers,
     get_pg_conn,
     get_store_owner_email,
+    list_store_brands as platform_list_store_brands,
     mark_store_uninstalled as platform_mark_store_uninstalled,
     merge_store_installation_metadata as platform_merge_store_installation_metadata,
     normalize_store_hash as platform_normalize_store_hash,
@@ -3011,6 +3012,7 @@ def load_store_brand_profiles(store_hash: str) -> dict[str, dict[str, Any]]:
         tokenize_intent_text_fn=_tokenize_intent_text,
         build_cluster_profile_fn=_build_cluster_profile,
         dedupe_entity_profiles_fn=_dedupe_entity_profiles,
+        list_store_brands_fn=platform_list_store_brands,
     )
 
 

@@ -192,6 +192,69 @@ class FulcrumRoutingRankerTests(unittest.TestCase):
         self.assertEqual(ranked[0]["entity_type"], "product")
         self.assertEqual(ranked[0]["entity_id"], 9917)
 
+    def test_rank_target_options_for_gate_row_prefers_exact_brand_name_over_subbrand(self):
+        gate_row = {
+            "source_url": "/hotel-towels/",
+            "representative_query": "1888 mills",
+            "normalized_query_key": "1888 mills",
+            "preferred_entity_type": "brand",
+            "query_intent_scope": "brand_navigation",
+            "clicks_90d": 10,
+            "metadata": {},
+        }
+        source_profiles = {
+            "/hotel-towels/": {
+                "entity_type": "category",
+                "bc_entity_id": 10,
+                "store_hash": "99oa2tso",
+                "url": "/hotel-towels/",
+                "name": "Hotel Towels",
+            }
+        }
+        target_entities = [
+            {"entity_type": "brand", "bc_entity_id": 3030, "url": "/suite-touch-by-1888-mills/", "name": "Suite Touch by 1888 Mills"},
+            {"entity_type": "brand", "bc_entity_id": 2966, "url": "/1888-mills/", "name": "1888 Mills"},
+        ]
+
+        def _profile(**kwargs):
+            target_name = kwargs["target_name"]
+            return {
+                "passes": True,
+                "raw_score": 120 if target_name.startswith("Suite") else 80,
+                "score": 100 if target_name.startswith("Suite") else 80,
+                "reason_summary": target_name,
+                "anchor_label": target_name,
+                "preferred_entity_type": "brand",
+                "fuzzy_signal": {"score": 90},
+                "source_query_topic_match_count": 0,
+                "source_query_topic_missing_count": 0,
+                "source_query_modifier_match_count": 0,
+                "source_query_modifier_missing_count": 0,
+            }
+
+        ranked = routing_ranker.rank_target_options_for_gate_row(
+            gate_row,
+            source_profiles,
+            target_entities,
+            overrides={},
+            review_feedback_maps={"pair": {}, "family_target": {}, "target": {}},
+            normalize_storefront_path_fn=lambda value: str(value or "").strip(),
+            gate_row_query_signal_context_fn=lambda gate_row: {"brand_signals": [{"matched_tokens": ["1888", "mills"]}]},
+            tokenize_intent_text_fn=lambda value: set(str(value or "").lower().replace("/", " ").replace("-", " ").split()),
+            gate_row_semantics_analysis_fn=lambda gate_row, store_hash, signal_library=None: {"ambiguity_level": "low"},
+            query_target_override_key_fn=lambda normalized_query_key, source_url: (normalized_query_key or "", source_url or ""),
+            semantics_target_block_reason_fn=lambda semantics_analysis, target_profile=None: None,
+            target_prefilter_fn=lambda query, target_profile: True,
+            build_intent_profile_fn=_profile,
+            build_review_feedback_signal_fn=lambda **kwargs: {"delta": 0.0, "summary": "", "active": False},
+            entity_type_fit_adjustment_fn=lambda **kwargs: (0.0, "fit"),
+            append_reason_summary_fn=routing_ranker.append_reason_summary,
+            apply_semantics_control_to_ranked_targets_fn=lambda gate_row, ranked_targets, **kwargs: (ranked_targets, {"judge_verdict": "allow"}),
+        )
+
+        self.assertEqual(ranked[0]["entity_id"], 2966)
+        self.assertTrue(ranked[0]["exact_brand_name_match"])
+
     def test_refresh_query_gate_row_live_state_rebuilds_metrics(self):
         refreshed = routing_ranker.refresh_query_gate_row_live_state(
             "99oa2tso",

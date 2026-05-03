@@ -124,23 +124,44 @@ def load_store_variant_sku_rows(
     normalized_ids = sorted({int(product_id) for product_id in product_ids if int(product_id or 0)})
     if not normalized_ids:
         return []
-    sql = """
-        SELECT product_id, sku, 'product' AS scope_kind
-        FROM h4h_import2.product_sku_mapping
-        WHERE product_id = ANY(%s)
-          AND sku IS NOT NULL
-          AND sku <> ''
-        UNION ALL
-        SELECT product_id, sku, 'variant' AS scope_kind
-        FROM h4h_import2.variants
-        WHERE product_id = ANY(%s)
-          AND sku IS NOT NULL
-          AND sku <> ''
-          AND COALESCE(deleted, FALSE) = FALSE;
-    """
     with get_pg_conn_fn() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(sql, (normalized_ids, normalized_ids))
+            cur.execute(
+                """
+                SELECT
+                    to_regclass('h4h_import2.product_sku_mapping') IS NOT NULL AS has_product_sku_mapping,
+                    to_regclass('h4h_import2.variants') IS NOT NULL AS has_variants;
+                """
+            )
+            table_state = cur.fetchone() or {}
+            selects: list[str] = []
+            params: list[list[int]] = []
+            if table_state.get("has_product_sku_mapping"):
+                selects.append(
+                    """
+                    SELECT product_id, sku, 'product' AS scope_kind
+                    FROM h4h_import2.product_sku_mapping
+                    WHERE product_id = ANY(%s)
+                      AND sku IS NOT NULL
+                      AND sku <> ''
+                    """
+                )
+                params.append(normalized_ids)
+            if table_state.get("has_variants"):
+                selects.append(
+                    """
+                    SELECT product_id, sku, 'variant' AS scope_kind
+                    FROM h4h_import2.variants
+                    WHERE product_id = ANY(%s)
+                      AND sku IS NOT NULL
+                      AND sku <> ''
+                      AND COALESCE(deleted, FALSE) = FALSE
+                    """
+                )
+                params.append(normalized_ids)
+            if not selects:
+                return []
+            cur.execute(" UNION ALL ".join(selects), params)
             return [dict(row) for row in cur.fetchall()]
 
 
@@ -325,6 +346,13 @@ def refresh_store_intent_signal_enrichments(
     deterministic_rows: list[dict[str, Any]] = []
     ambiguous_items: list[dict[str, Any]] = []
     category_topic_tokens: set[str] = set()
+    semantic_builtin_rows = semantic_builtin_enrichment_rows_fn(normalized_hash)
+    ambiguous_brand_alias_tokens = {
+        normalize_signal_label_fn(row.get("normalized_label") or row.get("raw_label"))
+        for row in semantic_builtin_rows
+        if (row.get("signal_kind") or "").strip().lower() == "ambiguous_modifier"
+        and (row.get("scope_kind") or "").strip().lower() == "token"
+    }
 
     for category_profile in category_profiles:
         category_name = category_profile.get("name") or ""
@@ -371,6 +399,8 @@ def refresh_store_intent_signal_enrichments(
         for token in tokenize_intent_text_fn(brand_name):
             if not valid_brand_alias_token_fn(token):
                 continue
+            if normalize_signal_label_fn(token) in ambiguous_brand_alias_tokens:
+                continue
             deterministic_rows.append(
                 intent_signal_row_fn(
                     store_hash=normalized_hash,
@@ -388,8 +418,13 @@ def refresh_store_intent_signal_enrichments(
             )
 
     collection_candidates: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
+    product_brand_names: dict[str, str] = {}
     for product_profile in product_profiles:
         product_id = int(product_profile.get("bc_product_id") or 0)
+        brand_name = (product_profile.get("brand_name") or "").strip()
+        normalized_brand = normalize_signal_label_fn(brand_name)
+        if normalized_brand:
+            product_brand_names.setdefault(normalized_brand, brand_name)
         source_data = product_profile.get("source_data") or {}
         option_pairs = source_data.get("option_pairs") or []
         for pair in option_pairs:
@@ -551,6 +586,47 @@ def refresh_store_intent_signal_enrichments(
                 }
             )
 
+    for normalized_brand, brand_name in product_brand_names.items():
+        deterministic_rows.append(
+            intent_signal_row_fn(
+                store_hash=normalized_hash,
+                signal_kind="brand_alias",
+                raw_label=brand_name,
+                normalized_label=normalized_brand,
+                scope_kind="product_brand_name",
+                entity_type="brand",
+                entity_id=None,
+                confidence=0.94,
+                source="deterministic",
+                status="active",
+                metadata={"initiated_by": initiated_by or "fulcrum", "derived_from": "product_profiles"},
+            )
+        )
+        for token in tokenize_intent_text_fn(brand_name):
+            if not valid_brand_alias_token_fn(token):
+                continue
+            if normalize_signal_label_fn(token) in ambiguous_brand_alias_tokens:
+                continue
+            deterministic_rows.append(
+                intent_signal_row_fn(
+                    store_hash=normalized_hash,
+                    signal_kind="brand_alias",
+                    raw_label=token,
+                    normalized_label=token,
+                    scope_kind="product_brand_name",
+                    entity_type="brand",
+                    entity_id=None,
+                    confidence=0.88,
+                    source="deterministic",
+                    status="active",
+                    metadata={
+                        "alias_of": brand_name,
+                        "initiated_by": initiated_by or "fulcrum",
+                        "derived_from": "product_profiles",
+                    },
+                )
+            )
+
     sku_rows = load_store_variant_sku_rows_fn([int(profile.get("bc_product_id") or 0) for profile in product_profiles])
     for sku_row in sku_rows:
         sku = (sku_row.get("sku") or "").strip()
@@ -573,7 +649,7 @@ def refresh_store_intent_signal_enrichments(
             )
         )
 
-    deterministic_rows.extend(semantic_builtin_enrichment_rows_fn(normalized_hash))
+    deterministic_rows.extend(semantic_builtin_rows)
     agent_rows = label_ambiguous_intent_signals_with_agent_fn(normalized_hash, ambiguous_items)
     stored_count = replace_store_intent_signal_enrichments_fn(normalized_hash, deterministic_rows + agent_rows)
     return {

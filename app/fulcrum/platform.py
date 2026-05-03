@@ -387,6 +387,14 @@ def list_store_categories(store_hash: str) -> list[dict[str, Any]]:
     )
 
 
+def list_store_brands(store_hash: str) -> list[dict[str, Any]]:
+    return _list_bc_paginated(
+        store_hash,
+        "/catalog/brands",
+        {"include_fields": "id,name,custom_url,page_title,search_keywords,meta_keywords,meta_description"},
+    )
+
+
 def list_store_channels(store_hash: str) -> list[dict[str, Any]]:
     try:
         return _list_bc_paginated(store_hash, "/channels")
@@ -596,6 +604,7 @@ __all__ = [
     "get_pg_conn",
     "get_store_owner_email",
     "list_installations",
+    "list_store_brands",
     "list_store_categories",
     "list_store_channels",
     "list_store_products",

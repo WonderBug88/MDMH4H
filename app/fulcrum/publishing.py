@@ -120,6 +120,27 @@ def _publication_source_match_ids(
     return source_ids
 
 
+def _candidate_row_publish_block_reason(row: dict[str, Any]) -> str:
+    target_entity_type = (row.get("target_entity_type") or "product").strip().lower() or "product"
+    metadata = row.get("metadata") or {}
+    query_intent_scope = (metadata.get("query_intent_scope") or "").strip().lower()
+    preferred_entity_type = (metadata.get("preferred_entity_type") or "").strip().lower()
+
+    if target_entity_type not in {"product", "category", "brand"}:
+        return f"unsupported target entity type `{target_entity_type}`"
+    if target_entity_type == "brand":
+        if query_intent_scope != "brand_navigation" or preferred_entity_type != "brand":
+            return "brand targets require brand-navigation intent"
+        if not list(metadata.get("query_target_tokens") or []):
+            return "brand target did not preserve query target tokens"
+    if target_entity_type == "category":
+        if preferred_entity_type != "category":
+            return "category target does not match preferred entity type"
+        if query_intent_scope == "brand_navigation":
+            return "brand-navigation query cannot publish to category"
+    return ""
+
+
 def publish_approved_entities(
     *,
     store_hash: str,
@@ -159,6 +180,7 @@ def publish_approved_entities(
                 source["source_product_id"],
                 source_entity_type,
             )
+            rows = [row for row in rows if not _candidate_row_publish_block_reason(row)]
             html_specs, missing_status = _build_html_specs(
                 source_entity_type=source_entity_type,
                 rows=rows,
