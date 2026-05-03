@@ -170,6 +170,7 @@ class FulcrumReadinessTests(unittest.TestCase):
         )
 
     def test_refresh_store_readiness_builds_expected_flags(self):
+        existing_template = APP_ROOT / "app" / "fulcrum" / "templates" / "fulcrum" / "base.html"
         unresolved_cursor = _FakeCursor(
             fetchone_results=[
                 {
@@ -218,6 +219,8 @@ class FulcrumReadinessTests(unittest.TestCase):
             patch.object(readiness.Config, "FULCRUM_AUTO_PUBLISH_MIN_SCORE", 78),
             patch.object(readiness.Config, "FULCRUM_AUTO_PUBLISH_MAX_LINKS_PER_SOURCE", 4),
             patch.object(readiness.Config, "FULCRUM_REQUIRE_REVIEW_FOR_CATEGORIES", True),
+            patch.object(readiness.Config, "FULCRUM_THEME_PRODUCT_TEMPLATE", str(existing_template)),
+            patch.object(readiness.Config, "FULCRUM_THEME_CATEGORY_TEMPLATE", str(existing_template)),
         ):
             result = readiness.refresh_store_readiness(
                 "Stores/99OA2TSO",
@@ -319,6 +322,7 @@ class FulcrumReadinessTests(unittest.TestCase):
         self.assertTrue(metadata["category_theme_hook_present"])
 
     def test_refresh_store_readiness_does_not_block_auto_publish_on_pending_mapping_reviews(self):
+        existing_template = APP_ROOT / "app" / "fulcrum" / "templates" / "fulcrum" / "base.html"
         unresolved_cursor = _FakeCursor(
             fetchone_results=[
                 {
@@ -351,6 +355,7 @@ class FulcrumReadinessTests(unittest.TestCase):
             patch("app.fulcrum.readiness.render_theme_hook_present", return_value=True),
             patch("app.fulcrum.readiness.render_category_theme_hook_present", return_value=False),
             patch.object(readiness.Config, "FULCRUM_AUTO_PUBLISH_ENABLED", True),
+            patch.object(readiness.Config, "FULCRUM_THEME_PRODUCT_TEMPLATE", str(existing_template)),
         ):
             readiness.refresh_store_readiness(
                 "99oa2tso",
