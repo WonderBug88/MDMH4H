@@ -5,6 +5,7 @@ from typing import Any
 
 import requests
 
+from app.fulcrum.config import Config
 from app.fulcrum.platform import get_bc_headers, list_store_categories, list_store_products, normalize_store_hash
 from app.fulcrum.services import (
     get_pg_conn,
@@ -38,7 +39,37 @@ def _entity_path(entity_type: str) -> str:
     return "products" if (entity_type or "").strip().lower() == "product" else "categories"
 
 
+def _require_allowed_store(store_hash: str) -> None:
+    normalized_hash = normalize_store_hash(store_hash)
+    allowed = {normalize_store_hash(item) for item in (Config.FULCRUM_ALLOWED_STORES or []) if item}
+    if allowed and normalized_hash not in allowed:
+        raise ValueError(f"Store `{normalized_hash}` is not in FULCRUM_ALLOWED_STORES.")
+
+
+def _gate_disposition_counts(store_hash: str) -> dict[str, int]:
+    sql = """
+        WITH latest_run AS (
+            SELECT MAX(run_id) AS run_id
+            FROM app_runtime.query_gate_records
+            WHERE store_hash = %s
+        )
+        SELECT COALESCE(disposition, 'hold') AS disposition, COUNT(*) AS row_count
+        FROM app_runtime.query_gate_records
+        WHERE store_hash = %s
+          AND run_id = (SELECT run_id FROM latest_run)
+        GROUP BY COALESCE(disposition, 'hold');
+    """
+    counts = {"pass": 0, "hold": 0, "reject": 0}
+    with get_pg_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (normalize_store_hash(store_hash), normalize_store_hash(store_hash)))
+            for disposition, row_count in cur.fetchall():
+                counts[str(disposition or "hold")] = int(row_count or 0)
+    return counts
+
+
 def list_remote_link_metafields(store_hash: str) -> list[dict[str, Any]]:
+    _require_allowed_store(store_hash)
     headers = get_bc_headers(store_hash)
     api_base = _api_base(store_hash)
     results: list[dict[str, Any]] = []
@@ -148,6 +179,7 @@ def _approved_source_counts(store_hash: str) -> dict[str, int]:
 
 def reset_and_republish_bigcommerce_links(store_hash: str, execute: bool = False) -> dict[str, Any]:
     normalized_hash = normalize_store_hash(store_hash)
+    _require_allowed_store(normalized_hash)
     remote_before = list_remote_link_metafields(normalized_hash)
     active_publications = list_publications(normalized_hash, active_only=True, limit=5000)
     active_keyset = _active_publication_keyset(normalized_hash)
@@ -172,6 +204,7 @@ def reset_and_republish_bigcommerce_links(store_hash: str, execute: bool = False
             Counter((row.get("metafield_key") or "internal_links_html") for row in active_publications)
         ),
         "approved_source_counts": _approved_source_counts(normalized_hash),
+        "latest_gate_disposition_counts": _gate_disposition_counts(normalized_hash),
         "orphan_remote_count": len(orphan_remote),
         "orphan_remote_sample": orphan_remote[:25],
         "unpublished_count": 0,

@@ -120,12 +120,17 @@ def eligible_auto_publish_candidates(
             continue
         target_entity_type = row.get("target_entity_type") or "product"
         metadata = row.get("metadata") or {}
-        if target_entity_type not in {"product", "category"}:
+        query_intent_scope = (metadata.get("query_intent_scope") or "").strip().lower()
+        preferred_entity_type = (metadata.get("preferred_entity_type") or "").strip().lower()
+        if target_entity_type not in {"product", "category", "brand"}:
             continue
         if target_entity_type == "category":
             if metadata.get("block_type") != "pdp_category_competition":
                 continue
-            if (metadata.get("preferred_entity_type") or "").strip().lower() != "category":
+            if preferred_entity_type != "category":
+                continue
+        elif target_entity_type == "brand":
+            if query_intent_scope != "brand_navigation" or preferred_entity_type != "brand":
                 continue
         elif target_entity_type != "product":
             continue
@@ -147,6 +152,8 @@ def eligible_auto_publish_candidates(
         if not shared_tokens and not query_target_tokens and not (
             fuzzy_signal.get("active") and float(fuzzy_signal.get("score") or 0.0) >= 82.0
         ):
+            continue
+        if target_entity_type == "brand" and not query_target_tokens:
             continue
 
         label_key = (row.get("anchor_label") or "").strip().lower()

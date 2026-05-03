@@ -15,6 +15,37 @@ if str(APP_ROOT) not in sys.path:
 from app.fulcrum import candidate_runs
 
 
+class _RowsCursor:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def execute(self, sql, params=None):
+        return None
+
+    def fetchall(self):
+        return self.rows
+
+
+class _RowsConn:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def cursor(self, cursor_factory=None):
+        return _RowsCursor(self.rows)
+
+
 class FulcrumCandidateRunTests(unittest.TestCase):
     def test_queue_candidate_run_returns_duplicate_when_active_run_exists(self):
         result = candidate_runs.queue_candidate_run(
@@ -96,6 +127,77 @@ class FulcrumCandidateRunTests(unittest.TestCase):
         self.assertEqual(result["pending_row_count"], 6)
         self.assertEqual(result["published_entities"], [{"source_entity_id": 101}])
 
+    def test_eligible_auto_publish_allows_brand_target_for_brand_navigation(self):
+        rows = [
+            {
+                "candidate_id": 1,
+                "source_entity_type": "product",
+                "target_entity_type": "brand",
+                "source_entity_id": 112556,
+                "target_entity_id": -2000003028,
+                "source_product_id": 112556,
+                "target_product_id": -2000003028,
+                "source_name": "Cloud Top PrimaLoft Plush Blankets & Throws by DOWNLITE",
+                "target_name": "DownLite Bedding",
+                "anchor_label": "Downlite",
+                "score": 100,
+                "metadata": {
+                    "query_intent_scope": "brand_navigation",
+                    "preferred_entity_type": "brand",
+                    "query_target_tokens": ["downlite"],
+                    "shared_tokens": ["downlite"],
+                },
+            }
+        ]
+
+        selected = candidate_runs.eligible_auto_publish_candidates(
+            "99oa2tso",
+            88,
+            refresh_store_readiness_fn=lambda store_hash: {"auto_publish_ready": True},
+            get_pg_conn_fn=lambda: _RowsConn(rows),
+            normalize_store_hash_fn=lambda value: str(value or "").lower(),
+            category_publishing_enabled_for_store_fn=lambda store_hash: True,
+            auto_publish_min_score=85,
+            auto_publish_max_links_per_source=4,
+        )
+
+        self.assertEqual([row["candidate_id"] for row in selected], [1])
+
+    def test_eligible_auto_publish_rejects_non_brand_query_to_brand_target(self):
+        rows = [
+            {
+                "candidate_id": 1,
+                "source_entity_type": "product",
+                "target_entity_type": "brand",
+                "source_entity_id": 112556,
+                "target_entity_id": -2000003028,
+                "source_product_id": 112556,
+                "target_product_id": -2000003028,
+                "source_name": "Cloud Top PrimaLoft Plush Blankets & Throws by DOWNLITE",
+                "target_name": "DownLite Bedding",
+                "anchor_label": "Downlite",
+                "score": 100,
+                "metadata": {
+                    "query_intent_scope": "commercial_topic",
+                    "preferred_entity_type": "category",
+                    "query_target_tokens": ["downlite"],
+                    "shared_tokens": ["downlite"],
+                },
+            }
+        ]
+
+        selected = candidate_runs.eligible_auto_publish_candidates(
+            "99oa2tso",
+            88,
+            refresh_store_readiness_fn=lambda store_hash: {"auto_publish_ready": True},
+            get_pg_conn_fn=lambda: _RowsConn(rows),
+            normalize_store_hash_fn=lambda value: str(value or "").lower(),
+            category_publishing_enabled_for_store_fn=lambda store_hash: True,
+            auto_publish_min_score=85,
+            auto_publish_max_links_per_source=4,
+        )
+
+        self.assertEqual(selected, [])
 
     def test_publish_all_current_results_reports_unresolved_approved_sources(self):
         result = candidate_runs.publish_all_current_results(

@@ -77,7 +77,7 @@ def _build_html_specs(
                 (
                     "internal_category_links_html",
                     build_links_html(
-                        [row for row in rows if (row.get("target_entity_type") or "product") == "category"],
+                        [row for row in rows if (row.get("target_entity_type") or "product") in {"brand", "category"}],
                         "Related Categories",
                     ),
                 ),

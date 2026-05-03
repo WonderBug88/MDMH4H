@@ -145,6 +145,7 @@ class FulcrumPublishingTests(unittest.TestCase):
             self.assertEqual(source_entity_type, "category")
             return [
                 {"target_entity_type": "category", "target_url": "/folding-beds/"},
+                {"target_entity_type": "brand", "target_url": "/downlite/"},
                 {"target_entity_type": "product", "target_url": "/portable-bed-frame/"},
             ]
 
@@ -179,6 +180,7 @@ class FulcrumPublishingTests(unittest.TestCase):
             [call[3] for call in upsert_calls],
             ["internal_category_links_html", "internal_product_links_html"],
         )
+        self.assertIn("/downlite/", upsert_calls[0][4])
         self.assertEqual(
             [item["metafield_key"] for item in publications],
             ["internal_category_links_html", "internal_product_links_html"],

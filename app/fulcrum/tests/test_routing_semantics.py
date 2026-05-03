@@ -59,6 +59,45 @@ class FulcrumRoutingSemanticsTests(unittest.TestCase):
 
         self.assertEqual(reason, "missing head term")
 
+    def test_brand_family_query_blocks_broad_category_fallback(self):
+        analysis = {
+            "normalized_query": "downlite blankets",
+            "eligible_page_types": ["brand", "category"],
+            "constraint_rules": [
+                {
+                    "kind": "prefer_brand_when_family_has_multiple_products",
+                    "brand_label": "downlite",
+                    "message": "brand-family query cannot fall back to a broad category",
+                }
+            ],
+        }
+
+        broad_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "category", "name": "Hotel Bedding Supply", "url": "/hotel-bedding-supply/"},
+            tokenize_intent_text_fn=lambda value: set(str(value or "").lower().replace("/", " ").replace("-", " ").split()),
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+        brand_category_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "category", "name": "Downlite Blankets", "url": "/downlite-blankets/"},
+            tokenize_intent_text_fn=lambda value: set(str(value or "").lower().replace("/", " ").replace("-", " ").split()),
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+        brand_page_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "brand", "name": "DownLite Bedding", "url": "/downlite/"},
+            tokenize_intent_text_fn=lambda value: set(str(value or "").lower().replace("/", " ").replace("-", " ").split()),
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+
+        self.assertEqual(broad_reason, "brand-family query cannot fall back to a broad category")
+        self.assertIsNone(brand_category_reason)
+        self.assertIsNone(brand_page_reason)
+
     def test_apply_semantics_control_falls_back_to_current_page_when_top_target_blocked(self):
         result, semantics = routing_semantics.apply_semantics_control_to_ranked_targets(
             {"source_entity_id": 10, "source_url": "/hotel-shower-curtains/"},

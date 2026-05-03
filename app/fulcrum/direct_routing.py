@@ -194,7 +194,7 @@ def direct_route_candidates_from_gsc(
 
         for target_profile in target_iterable:
             target_entity_type = target_profile.get("entity_type") or "product"
-            if source_entity_type == "category" and target_entity_type in {"brand", "content"}:
+            if source_entity_type == "category" and target_entity_type == "content":
                 continue
             target_bc_id = int(target_profile.get("bc_entity_id") or 0)
             if not target_bc_id:

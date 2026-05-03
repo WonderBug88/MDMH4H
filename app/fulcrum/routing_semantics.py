@@ -110,6 +110,10 @@ def semantics_target_block_reason(
         elif kind == "prefer_brand_when_family_has_multiple_products":
             if target_type == "product":
                 return rule.get("message") or "multiple brand-family products make product routing too specific"
+            brand_label = normalize_signal_label_fn(rule.get("brand_label"))
+            brand_tokens = tokenize_intent_text_fn(brand_label)
+            if target_type == "category" and brand_tokens and not (brand_tokens & core_target_tokens):
+                return rule.get("message") or "brand-family query cannot fall back to a broad category"
         elif kind == "require_head_term_presence" and target_type in {"product", "category"}:
             head_term = normalize_signal_label_fn(rule.get("head_term"))
             if head_term and head_term not in core_target_tokens and semantic_pluralize_fn(head_term) not in core_target_tokens:
