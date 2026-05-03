@@ -30,12 +30,16 @@ Route Authority helps BigCommerce teams connect Search Console, GA4, and store c
 - Logo asset ready: `app/fulcrum/static/fulcrum/route-authority-logo.png`
 - Icon asset ready: `app/fulcrum/static/fulcrum/route-authority-icon.png`
 - Screenshot set ready:
-  - `docs/bigcommerce_marketplace_assets/2026-04-22/route-authority-setup-2026-04-22.png`
-  - `docs/bigcommerce_marketplace_assets/2026-04-22/route-authority-results-2026-04-22.png`
-  - `docs/bigcommerce_marketplace_assets/2026-04-22/route-authority-review-2026-04-22.png`
-  - `docs/bigcommerce_marketplace_assets/2026-04-22/route-authority-developer-2026-04-22.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-setup-2026-05-03.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-results-2026-05-03.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-review-2026-05-03.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-developer-2026-05-03.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-privacy-2026-05-03.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-terms-2026-05-03.png`
+  - `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-support-2026-05-03.png`
 - Demo/walkthrough: `https://fulcrum.fulcrumagentics.com/fulcrum/guide`
 - Callback verification evidence: `docs/FULCRUM_BIGCOMMERCE_CALLBACK_VERIFICATION_20260422.json`
+- Current go-live evidence: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-go-live-evidence-2026-05-03.json`
 
 ## Developer Portal Checklist
 

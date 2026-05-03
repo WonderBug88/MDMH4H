@@ -24,6 +24,48 @@ LINK_METAFIELD_KEYS = {
 }
 
 
+def parse_reviewed_metafield_spec(value: str) -> dict[str, int | str]:
+    parts = [part.strip() for part in (value or "").split(":")]
+    if len(parts) != 3:
+        raise ValueError("Reviewed metafield targets must use `<product|category>:<entity_id>:<metafield_id>`.")
+    entity_type = parts[0].lower()
+    if entity_type == "categories":
+        entity_type = "category"
+    if entity_type.endswith("s"):
+        entity_type = entity_type[:-1]
+    if entity_type not in {"product", "category"}:
+        raise ValueError("Reviewed metafield entity type must be `product` or `category`.")
+    try:
+        entity_id = int(parts[1])
+        metafield_id = int(parts[2])
+    except ValueError as exc:
+        raise ValueError("Reviewed metafield entity and metafield ids must be integers.") from exc
+    if entity_id <= 0 or metafield_id <= 0:
+        raise ValueError("Reviewed metafield entity and metafield ids must be positive.")
+    return {"entity_type": entity_type, "entity_id": entity_id, "metafield_id": metafield_id}
+
+
+def _normalize_reviewed_metafield_targets(values: list[dict[str, Any] | str] | None) -> list[dict[str, int | str]]:
+    targets: list[dict[str, int | str]] = []
+    seen: set[tuple[str, int, int]] = set()
+    for value in values or []:
+        if isinstance(value, str):
+            target = parse_reviewed_metafield_spec(value)
+        else:
+            target = parse_reviewed_metafield_spec(
+                f"{value.get('entity_type')}:{value.get('entity_id')}:{value.get('metafield_id')}"
+            )
+        key = (
+            str(target["entity_type"]),
+            int(target["entity_id"]),
+            int(target["metafield_id"]),
+        )
+        if key not in seen:
+            seen.add(key)
+            targets.append(target)
+    return targets
+
+
 def _normalize_url_path(url: str | None) -> str:
     value = (url or "").strip()
     if not value:
@@ -200,6 +242,14 @@ def _delete_remote_link_metafield(store_hash: str, row: dict[str, Any]) -> None:
         response.raise_for_status()
 
 
+def _remote_metafield_target_key(row: dict[str, Any]) -> tuple[str, int, int]:
+    return (
+        (row.get("entity_type") or "").strip().lower(),
+        int(row.get("entity_id") or 0),
+        int(row.get("metafield_id") or 0),
+    )
+
+
 def _active_publication_keyset(store_hash: str) -> set[tuple[str, str, str]]:
     rows = list_publications(store_hash, active_only=True, limit=5000)
     keyset: set[tuple[str, str, str]] = set()
@@ -283,16 +333,22 @@ def reset_and_republish_bigcommerce_links(
     product_ids: list[int] | None = None,
     category_ids: list[int] | None = None,
     max_entities: int | None = None,
+    reviewed_metafields: list[dict[str, Any] | str] | None = None,
 ) -> dict[str, Any]:
     normalized_hash = normalize_store_hash(store_hash)
     _require_allowed_store(normalized_hash)
-    filtered_scan = bool(product_ids or category_ids or max_entities is not None)
-    if execute and filtered_scan:
+    reviewed_targets = _normalize_reviewed_metafield_targets(reviewed_metafields)
+    reviewed_product_ids = [int(target["entity_id"]) for target in reviewed_targets if target["entity_type"] == "product"]
+    reviewed_category_ids = [int(target["entity_id"]) for target in reviewed_targets if target["entity_type"] == "category"]
+    scan_product_ids = product_ids or (reviewed_product_ids if execute and reviewed_targets else None)
+    scan_category_ids = category_ids or (reviewed_category_ids if execute and reviewed_targets else None)
+    filtered_scan = bool(scan_product_ids or scan_category_ids or max_entities is not None)
+    if execute and filtered_scan and not reviewed_targets:
         raise ValueError("Filtered BigCommerce reset scans are dry-run only.")
     remote_before = list_remote_link_metafields(
         normalized_hash,
-        product_ids=product_ids,
-        category_ids=category_ids,
+        product_ids=scan_product_ids,
+        category_ids=scan_category_ids,
         max_entities=max_entities,
     )
     active_publications = list_publications(normalized_hash, active_only=True, limit=5000)
@@ -334,6 +390,7 @@ def reset_and_republish_bigcommerce_links(
             "max_entities": max_entities,
             "filtered_scan": filtered_scan,
         },
+        "reviewed_metafield_targets": reviewed_targets,
         "remote_before_count": len(remote_before),
         "remote_before_by_key": dict(Counter(row.get("key") or "" for row in remote_before)),
         "active_publications_before_count": len(active_publications),
@@ -349,6 +406,9 @@ def reset_and_republish_bigcommerce_links(
         ),
         "policy_blocked_active_remote_count": len(policy_blocked_remote),
         "policy_blocked_active_remote_sample": policy_blocked_remote[:25],
+        "reviewed_delete_eligible_count": 0,
+        "deleted_reviewed_metafield_count": 0,
+        "skipped_reviewed_metafield_targets": [],
         "unpublished_count": 0,
         "deleted_orphan_count": 0,
         "republished_count": 0,
@@ -358,6 +418,45 @@ def reset_and_republish_bigcommerce_links(
     }
 
     if not execute:
+        return summary
+
+    if reviewed_targets:
+        eligible_remote = {
+            _remote_metafield_target_key(row): row
+            for row in orphan_remote + policy_blocked_remote
+        }
+        remote_by_key = {
+            _remote_metafield_target_key(row): row
+            for row in remote_before
+        }
+        deleted_count = 0
+        skipped_targets: list[dict[str, Any]] = []
+        for target in reviewed_targets:
+            key = (str(target["entity_type"]), int(target["entity_id"]), int(target["metafield_id"]))
+            row = eligible_remote.get(key)
+            if not row:
+                skipped = dict(target)
+                skipped["reason"] = "not_found_or_not_currently_orphan_or_policy_blocked"
+                skipped["remote_found"] = key in remote_by_key
+                skipped_targets.append(skipped)
+                continue
+            _delete_remote_link_metafield(normalized_hash, row)
+            deleted_count += 1
+
+        remote_after = list_remote_link_metafields(
+            normalized_hash,
+            product_ids=reviewed_product_ids,
+            category_ids=reviewed_category_ids,
+        )
+        summary.update(
+            {
+                "reviewed_delete_eligible_count": len(eligible_remote),
+                "deleted_reviewed_metafield_count": deleted_count,
+                "skipped_reviewed_metafield_targets": skipped_targets,
+                "remote_after_count": len(remote_after),
+                "remote_after_by_key": dict(Counter(row.get("key") or "" for row in remote_after)),
+            }
+        )
         return summary
 
     active_source_ids = sorted(

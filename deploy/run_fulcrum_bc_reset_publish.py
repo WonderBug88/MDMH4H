@@ -9,7 +9,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
-from app.fulcrum.bc_reset_publish import reset_and_republish_bigcommerce_links  # noqa: E402
+from app.fulcrum.bc_reset_publish import parse_reviewed_metafield_spec, reset_and_republish_bigcommerce_links  # noqa: E402
 
 
 def main() -> None:
@@ -19,7 +19,14 @@ def main() -> None:
     parser.add_argument("--product-id", action="append", type=int, default=[], help="Dry-run only: scan one product ID. Can be passed multiple times.")
     parser.add_argument("--category-id", action="append", type=int, default=[], help="Dry-run only: scan one category ID. Can be passed multiple times.")
     parser.add_argument("--max-entities", type=int, default=None, help="Dry-run only: stop after scanning this many products/categories.")
+    parser.add_argument(
+        "--delete-reviewed-metafield",
+        action="append",
+        default=[],
+        help="Execute only a reviewed target using `<product|category>:<entity_id>:<metafield_id>`. Can be passed multiple times.",
+    )
     args = parser.parse_args()
+    reviewed_metafields = [parse_reviewed_metafield_spec(value) for value in args.delete_reviewed_metafield]
 
     pprint(
         reset_and_republish_bigcommerce_links(
@@ -28,6 +35,7 @@ def main() -> None:
             product_ids=args.product_id,
             category_ids=args.category_id,
             max_entities=args.max_entities,
+            reviewed_metafields=reviewed_metafields,
         )
     )
 

@@ -1,0 +1,362 @@
+﻿{
+    "timestamp_utc":  "2026-05-03T07:53:28.8943944Z",
+    "store_hash":  "99oa2tso",
+    "production_posture":  "manual-ops production alpha",
+    "worker_deferred":  true,
+    "callback_urls":  {
+                          "app_base_url":  "https://fulcrum.fulcrumagentics.com",
+                          "bigcommerce_auth":  "https://fulcrum.fulcrumagentics.com/fulcrum/auth",
+                          "bigcommerce_load":  "https://fulcrum.fulcrumagentics.com/fulcrum/load",
+                          "bigcommerce_uninstall":  "https://fulcrum.fulcrumagentics.com/fulcrum/uninstall",
+                          "bigcommerce_remove_user":  "https://fulcrum.fulcrumagentics.com/fulcrum/remove-user",
+                          "gsc_oauth":  "https://fulcrum.fulcrumagentics.com/fulcrum/integrations/gsc/callback",
+                          "ga4_oauth":  "https://fulcrum.fulcrumagentics.com/fulcrum/integrations/ga4/callback",
+                          "privacy":  "https://fulcrum.fulcrumagentics.com/fulcrum/privacy",
+                          "terms":  "https://fulcrum.fulcrumagentics.com/fulcrum/terms",
+                          "support":  "https://fulcrum.fulcrumagentics.com/fulcrum/support"
+                      },
+    "cleanup":  {
+                    "cloud_top_product_id":  112556,
+                    "reviewed_metafield_id":  11377,
+                    "post_cleanup_policy_blocked_active_remote_count":  0,
+                    "post_cleanup_remote_count":  0,
+                    "route_authority_block_removed":  true
+                },
+    "publish_all":  {
+                        "status":  "ok",
+                        "approved_source_count":  24,
+                        "published_source_count":  24,
+                        "publication_write_count":  25,
+                        "unresolved_approved_source_count":  0,
+                        "blocked_source_count":  1,
+                        "policy_blocked_candidate_count":  22,
+                        "sample_product_id":  100667,
+                        "sample_metafield_key":  "internal_links_html",
+                        "sample_storefront_url":  "https://www.hotels4humanity.com/1888-mills-towels-lotus-100-egyption-cotton-wholesale-in-bulk/",
+                        "sample_rendered_label":  "Related options",
+                        "sample_rendered_link":  "Borderless Towel"
+                    },
+    "endpoints":  [
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/health?store_hash=99oa2tso",
+                          "status_code":  200,
+                          "content_type":  "application/json",
+                          "content_length":  232,
+                          "json":  {
+                                       "allowed_store_count":  1,
+                                       "app":  "fulcrum",
+                                       "category_theme_hook_ready":  true,
+                                       "embedded_scheduler_enabled":  false,
+                                       "gadgets_configured":  true,
+                                       "product_theme_hook_ready":  true,
+                                       "scheduler_enabled":  false,
+                                       "status":  "ok",
+                                       "store_hash":  "99oa2tso"
+                                   }
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/readiness?store_hash=99oa2tso",
+                          "status_code":  200,
+                          "content_type":  "application/json",
+                          "content_length":  3376,
+                          "json":  {
+                                       "checked_at":  "2026-05-03T07:53:07.300468+00:00",
+                                       "checks":  {
+                                                      "bigcommerce":  {
+                                                                          "detail":  "Active BigCommerce install record found.",
+                                                                          "ready":  true,
+                                                                          "status":  "active",
+                                                                          "updated_at":  "Fri, 01 May 2026 23:46:19 GMT"
+                                                                      },
+                                                      "catalog":  {
+                                                                      "category_count":  137,
+                                                                      "product_count":  824,
+                                                                      "ready":  true,
+                                                                      "status":  "ready"
+                                                                  },
+                                                      "ga4":  {
+                                                                  "configuration_status":  "ready",
+                                                                  "connection_status":  "connected",
+                                                                  "date_range":  [
+                                                                                     "2025-01-29",
+                                                                                     "2026-04-28"
+                                                                                 ],
+                                                                  "last_error":  "",
+                                                                  "latest_sync_run":  {
+
+                                                                                      },
+                                                                  "ready":  true,
+                                                                  "row_count":  88231,
+                                                                  "selected_resource_id":  "properties/347659849",
+                                                                  "selected_resource_label":  "hotels for humanity - GA4",
+                                                                  "status":  "Ready"
+                                                              },
+                                                      "gsc":  {
+                                                                  "configuration_status":  "ready",
+                                                                  "connection_status":  "connected",
+                                                                  "date_range":  [
+                                                                                     "2025-10-30",
+                                                                                     "2026-04-28"
+                                                                                 ],
+                                                                  "last_error":  "",
+                                                                  "latest_sync_run":  {
+                                                                                          "end_date":  "2026-04-28",
+                                                                                          "error_message":  null,
+                                                                                          "finished_at":  "Fri, 01 May 2026 00:00:33 GMT",
+                                                                                          "integration_key":  "gsc",
+                                                                                          "metadata":  {
+                                                                                                           "queued_at":  "2026-04-30T23:57:43.012203+00:00",
+                                                                                                           "queued_by":  "ops_bounded_resync",
+                                                                                                           "reason":  "after_neon_storage_reclaim",
+                                                                                                           "sync_result":  {
+                                                                                                                               "end_date":  "2026-04-28",
+                                                                                                                               "filtered_low_signal_row_count":  335480,
+                                                                                                                               "row_count":  100000,
+                                                                                                                               "source_row_count":  435480,
+                                                                                                                               "start_date":  "2025-10-30",
+                                                                                                                               "status":  "ok",
+                                                                                                                               "truncated":  true
+                                                                                                                           }
+                                                                                                       },
+                                                                                          "queued_at":  "Thu, 30 Apr 2026 23:57:43 GMT",
+                                                                                          "row_count":  100000,
+                                                                                          "selected_resource_id":  "https://www.hotels4humanity.com/",
+                                                                                          "start_date":  "2025-10-30",
+                                                                                          "started_at":  "Thu, 30 Apr 2026 23:57:45 GMT",
+                                                                                          "status":  "succeeded",
+                                                                                          "store_hash":  "99oa2tso",
+                                                                                          "sync_run_id":  2,
+                                                                                          "triggered_by":  "ops_bounded_resync",
+                                                                                          "updated_at":  "Fri, 01 May 2026 00:00:33 GMT"
+                                                                                      },
+                                                                  "ready":  true,
+                                                                  "row_count":  100000,
+                                                                  "selected_resource_id":  "https://www.hotels4humanity.com/",
+                                                                  "selected_resource_label":  "https://www.hotels4humanity.com/",
+                                                                  "status":  "Ready"
+                                                              },
+                                                      "theme":  {
+                                                                    "category_theme_hook_ready":  true,
+                                                                    "product_theme_hook_ready":  true,
+                                                                    "ready":  true,
+                                                                    "status":  "ready"
+                                                                }
+                                                  },
+                                       "profile_summary":  {
+                                                               "category_profile_count":  137,
+                                                               "cluster_counts":  [
+                                                                                      {
+                                                                                          "primary_cluster":  "bedding",
+                                                                                          "profile_count":  279
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "",
+                                                                                          "profile_count":  216
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "towels",
+                                                                                          "profile_count":  118
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "shower-curtains",
+                                                                                          "profile_count":  64
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "luggage",
+                                                                                          "profile_count":  48
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "bed",
+                                                                                          "profile_count":  33
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "rollaway",
+                                                                                          "profile_count":  21
+                                                                                      },
+                                                                                      {
+                                                                                          "primary_cluster":  "mattress",
+                                                                                          "profile_count":  18
+                                                                                      }
+                                                                                  ],
+                                                               "default_storefront_base_url":  "https://www.hotels4humanity.com",
+                                                               "last_synced_at":  "Fri, 01 May 2026 21:57:10 GMT",
+                                                               "option_name_mapping_count":  131,
+                                                               "option_value_mapping_count":  2561,
+                                                               "profile_count":  824,
+                                                               "storefront_channel_count":  3,
+                                                               "storefront_site_count":  8
+                                                           },
+                                       "readiness":  {
+                                                         "attribute_mappings_ready":  false,
+                                                         "auto_publish_ready":  true,
+                                                         "catalog_synced":  true,
+                                                         "category_beta_ready":  false,
+                                                         "metadata":  {
+                                                                          "alpha_default_buckets":  [
+                                                                                                        "size",
+                                                                                                        "color",
+                                                                                                        "material",
+                                                                                                        "form",
+                                                                                                        "finish",
+                                                                                                        "pack_size",
+                                                                                                        "brand",
+                                                                                                        "collection"
+                                                                                                    ],
+                                                                          "category_publishing_enabled_override":  true,
+                                                                          "category_render_verified":  true,
+                                                                          "category_theme_hook_present":  true,
+                                                                          "feature_flags":  {
+                                                                                                "auto_publish_enabled":  true,
+                                                                                                "auto_publish_max_links_per_source":  4,
+                                                                                                "auto_publish_min_score":  85,
+                                                                                                "category_publishing_enabled":  true,
+                                                                                                "category_publishing_global_default":  false,
+                                                                                                "require_review_for_categories":  true
+                                                                                            },
+                                                                          "theme_verified_domain":  "https://fulcrum.fulcrumagentics.com",
+                                                                          "theme_verified_via":  "manual_render_cutover_2026_05_01"
+                                                                      },
+                                                         "store_hash":  "99oa2tso",
+                                                         "theme_hook_ready":  true,
+                                                         "unresolved_option_name_count":  29,
+                                                         "unresolved_option_value_count":  185,
+                                                         "updated_at":  "Sun, 03 May 2026 07:52:38 GMT"
+                                                     },
+                                       "status":  "ok",
+                                       "store_hash":  "99oa2tso"
+                                   }
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/results?store_hash=99oa2tso",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  9542,
+                          "json":  null
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/setup?store_hash=99oa2tso",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  31778,
+                          "json":  null
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/review?store_hash=99oa2tso",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  9748,
+                          "json":  null
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/admin/developer?store_hash=99oa2tso",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  19333,
+                          "json":  null
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/privacy",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  3225,
+                          "json":  null
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/terms",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  3545,
+                          "json":  null
+                      },
+                      {
+                          "url":  "https://fulcrum.fulcrumagentics.com/fulcrum/support",
+                          "status_code":  200,
+                          "content_type":  "text/html; charset=utf-8",
+                          "content_length":  3260,
+                          "json":  null
+                      }
+                  ],
+    "watchdog":  {
+                     "overall_status":  "watch",
+                     "overall_status_label":  "Watching",
+                     "overall_tone":  "amber",
+                     "counts":  {
+                                    "urgent":  0,
+                                    "watch":  1,
+                                    "healthy":  1
+                                },
+                     "alerts":  [
+                                    {
+                                        "severity":  "watch",
+                                        "severity_label":  "Watch",
+                                        "tone":  "amber",
+                                        "title":  "Attribute mappings still need review",
+                                        "detail":  "214 option mapping item(s) are unresolved, which can weaken routing confidence."
+                                    },
+                                    {
+                                        "severity":  "healthy",
+                                        "severity_label":  "Healthy",
+                                        "tone":  "green",
+                                        "title":  "A few edge cases are queued",
+                                        "detail":  "1 result(s) are waiting for review, which is normal during tuning."
+                                    }
+                                ],
+                     "system_cards":  [
+                                          {
+                                              "label":  "Catalog Sync",
+                                              "value":  "Ready",
+                                              "detail":  "Last checked 2026-05-03 12:53 AM",
+                                              "tone":  "green"
+                                          },
+                                          {
+                                              "label":  "Auto Publish",
+                                              "value":  "Ready",
+                                              "detail":  "Products and categories can publish automatically",
+                                              "tone":  "green"
+                                          },
+                                          {
+                                              "label":  "Latest Completed Run",
+                                              "value":  "Run 1",
+                                              "detail":  "Completed 1d ago",
+                                              "tone":  "green"
+                                          },
+                                          {
+                                              "label":  "Live Storefront Blocks",
+                                              "value":  "47",
+                                              "detail":  "Active Fulcrum blocks currently rendered on the site",
+                                              "tone":  "green"
+                                          }
+                                      ],
+                     "store_hash":  "99oa2tso"
+                 },
+    "screenshots":  [
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-developer-2026-05-03.png",
+                            "bytes":  146485
+                        },
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-privacy-2026-05-03.png",
+                            "bytes":  41758
+                        },
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-results-2026-05-03.png",
+                            "bytes":  122739
+                        },
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-review-2026-05-03.png",
+                            "bytes":  93527
+                        },
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-setup-2026-05-03.png",
+                            "bytes":  154486
+                        },
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-support-2026-05-03.png",
+                            "bytes":  39320
+                        },
+                        {
+                            "file":  "docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-terms-2026-05-03.png",
+                            "bytes":  46623
+                        }
+                    ]
+}
