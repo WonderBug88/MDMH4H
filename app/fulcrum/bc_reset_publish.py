@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import csv
+import json
 from collections import Counter
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -15,6 +18,7 @@ from app.fulcrum.services import (
     publish_approved_entities,
     unpublish_entities,
 )
+from app.fulcrum.storefront import get_storefront_base_url
 
 
 LINK_METAFIELD_KEYS = {
@@ -22,6 +26,22 @@ LINK_METAFIELD_KEYS = {
     "internal_category_links_html",
     "internal_product_links_html",
 }
+
+CLEANUP_REPORT_FIELDS = [
+    "batch_number",
+    "cleanup_reason",
+    "review_target_spec",
+    "entity_type",
+    "entity_id",
+    "entity_name",
+    "entity_url",
+    "metafield_id",
+    "metafield_key",
+    "active_publication_match_status",
+    "policy_block_reason",
+    "storefront_url",
+    "storefront_check_command",
+]
 
 
 def parse_reviewed_metafield_spec(value: str) -> dict[str, int | str]:
@@ -73,6 +93,37 @@ def _normalize_url_path(url: str | None) -> str:
     if not value.startswith("/"):
         value = f"/{value}"
     return value.rstrip("/") + "/"
+
+
+def _route_block_heading_for_key(key: str | None) -> str:
+    normalized_key = (key or "").strip()
+    if normalized_key == "internal_category_links_html":
+        return "Related Categories"
+    if normalized_key == "internal_product_links_html":
+        return "Shop Matching Products"
+    return "Related options"
+
+
+def _absolute_storefront_url(store_hash: str, entity_url: str | None) -> str:
+    value = (entity_url or "").strip()
+    if not value:
+        return ""
+    if value.startswith(("http://", "https://")):
+        return value
+    if not value.startswith("/"):
+        value = f"/{value}"
+    return f"{get_storefront_base_url(store_hash).rstrip('/')}{value}"
+
+
+def _storefront_check_command(storefront_url: str, metafield_key: str | None) -> str:
+    if not storefront_url:
+        return ""
+    heading = _route_block_heading_for_key(metafield_key)
+    return (
+        f"$html=(Invoke-WebRequest -Uri '{storefront_url}' -UseBasicParsing -TimeoutSec 60).Content; "
+        f"[PSCustomObject]@{{ContainsRouteAuthorityBlock=($html -match 'h4h-internal-links'); "
+        f"ContainsExpectedHeading=($html -match '{heading}')}}"
+    )
 
 
 def _api_base(store_hash: str) -> str:
@@ -264,6 +315,24 @@ def _active_publication_keyset(store_hash: str) -> set[tuple[str, str, str]]:
     return keyset
 
 
+def _policy_block_reason_map(
+    approved_candidate_rows: list[dict[str, Any]],
+    category_enabled: bool,
+) -> tuple[set[tuple[str, str]], dict[tuple[str, str], list[str]]]:
+    publishable_source_keys: set[tuple[str, str]] = set()
+    blocked_reasons: dict[tuple[str, str], list[str]] = {}
+    for row in approved_candidate_rows:
+        source_key = _source_key_for_row(row)
+        reason = candidate_publish_block_reason(row, category_enabled)
+        if reason:
+            blocked_reasons.setdefault(source_key, [])
+            if reason not in blocked_reasons[source_key]:
+                blocked_reasons[source_key].append(reason)
+        else:
+            publishable_source_keys.add(source_key)
+    return publishable_source_keys, blocked_reasons
+
+
 def _latest_approved_candidate_rows(store_hash: str) -> list[dict[str, Any]]:
     sql = """
         WITH latest_pairs AS (
@@ -326,6 +395,134 @@ def _approved_source_counts(store_hash: str) -> dict[str, int]:
     return counts
 
 
+def build_cleanup_candidate_report(
+    store_hash: str,
+    *,
+    product_ids: list[int] | None = None,
+    category_ids: list[int] | None = None,
+    max_entities: int | None = None,
+    batch_size: int = 50,
+    storefront_check_hints: bool = False,
+) -> dict[str, Any]:
+    normalized_hash = normalize_store_hash(store_hash)
+    _require_allowed_store(normalized_hash)
+    remote_before = list_remote_link_metafields(
+        normalized_hash,
+        product_ids=product_ids,
+        category_ids=category_ids,
+        max_entities=max_entities,
+    )
+    active_publications = list_publications(normalized_hash, active_only=True, limit=5000)
+    active_keyset = _active_publication_keyset(normalized_hash)
+    category_enabled = category_publishing_enabled_for_store(normalized_hash)
+    approved_candidate_rows = _latest_approved_candidate_rows(normalized_hash)
+    publishable_source_keys, blocked_reasons = _policy_block_reason_map(approved_candidate_rows, category_enabled)
+    policy_blocked_source_keys = set(blocked_reasons) - publishable_source_keys
+
+    normalized_batch_size = max(int(batch_size or 50), 1)
+    raw_candidates: list[dict[str, Any]] = []
+    seen_targets: set[tuple[str, int, int]] = set()
+    for row in remote_before:
+        entity_type = (row.get("entity_type") or "").strip().lower()
+        entity_url = row.get("entity_url")
+        metafield_key = (row.get("key") or "").strip()
+        active_publication_key = (entity_type, _normalize_url_path(entity_url), metafield_key)
+        source_key = _source_key_for_row(row)
+        is_orphan = active_publication_key not in active_keyset
+        is_policy_blocked = source_key in policy_blocked_source_keys
+        if not is_orphan and not is_policy_blocked:
+            continue
+
+        target_key = _remote_metafield_target_key(row)
+        if target_key in seen_targets:
+            continue
+        seen_targets.add(target_key)
+
+        cleanup_reasons: list[str] = []
+        if is_orphan:
+            cleanup_reasons.append("orphan_remote")
+        if is_policy_blocked:
+            cleanup_reasons.append("policy_blocked_active_remote")
+
+        storefront_url = _absolute_storefront_url(normalized_hash, entity_url)
+        raw_candidates.append(
+            {
+                "cleanup_reason": ";".join(cleanup_reasons),
+                "review_target_spec": f"{entity_type}:{int(row.get('entity_id') or 0)}:{int(row.get('metafield_id') or 0)}",
+                "entity_type": entity_type,
+                "entity_id": int(row.get("entity_id") or 0),
+                "entity_name": row.get("entity_name") or "",
+                "entity_url": entity_url or "",
+                "metafield_id": int(row.get("metafield_id") or 0),
+                "metafield_key": metafield_key,
+                "active_publication_match_status": "matched" if not is_orphan else "missing",
+                "policy_block_reason": "; ".join(blocked_reasons.get(source_key, [])),
+                "storefront_url": storefront_url,
+                "storefront_check_command": _storefront_check_command(storefront_url, metafield_key)
+                if storefront_check_hints
+                else "",
+            }
+        )
+
+    raw_candidates.sort(
+        key=lambda item: (
+            item["cleanup_reason"],
+            item["entity_type"],
+            int(item["entity_id"]),
+            item["metafield_key"],
+            int(item["metafield_id"]),
+        )
+    )
+    for index, row in enumerate(raw_candidates):
+        row["batch_number"] = (index // normalized_batch_size) + 1
+
+    reason_counts = Counter()
+    for row in raw_candidates:
+        for reason in str(row.get("cleanup_reason") or "").split(";"):
+            if reason:
+                reason_counts[reason] += 1
+
+    return {
+        "store_hash": normalized_hash,
+        "execute": False,
+        "report_only": True,
+        "scan_filters": {
+            "product_ids": [int(entity_id) for entity_id in product_ids or []],
+            "category_ids": [int(entity_id) for entity_id in category_ids or []],
+            "max_entities": max_entities,
+            "filtered_scan": bool(product_ids or category_ids or max_entities is not None),
+        },
+        "batch_size": normalized_batch_size,
+        "batch_count": (len(raw_candidates) + normalized_batch_size - 1) // normalized_batch_size,
+        "remote_before_count": len(remote_before),
+        "active_publications_before_count": len(active_publications),
+        "candidate_count": len(raw_candidates),
+        "candidate_counts_by_reason": dict(reason_counts),
+        "remote_before_by_key": dict(Counter(row.get("key") or "" for row in remote_before)),
+        "candidate_counts_by_key": dict(Counter(row.get("metafield_key") or "" for row in raw_candidates)),
+        "candidates": raw_candidates,
+    }
+
+
+def write_cleanup_candidate_report(report: dict[str, Any], output_base_path: str | Path) -> dict[str, str]:
+    base_path = Path(output_base_path)
+    if base_path.suffix.lower() in {".json", ".csv"}:
+        base_path = base_path.with_suffix("")
+    base_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path = base_path.with_suffix(".json")
+    csv_path = base_path.with_suffix(".csv")
+
+    json_path.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
+
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=CLEANUP_REPORT_FIELDS, extrasaction="ignore")
+        writer.writeheader()
+        for row in report.get("candidates", []):
+            writer.writerow(row)
+
+    return {"json_path": str(json_path), "csv_path": str(csv_path)}
+
+
 def reset_and_republish_bigcommerce_links(
     store_hash: str,
     execute: bool = False,
@@ -355,16 +552,8 @@ def reset_and_republish_bigcommerce_links(
     active_keyset = _active_publication_keyset(normalized_hash)
     category_enabled = category_publishing_enabled_for_store(normalized_hash)
     approved_candidate_rows = _latest_approved_candidate_rows(normalized_hash)
-    publishable_source_keys = {
-        _source_key_for_row(row)
-        for row in approved_candidate_rows
-        if not candidate_publish_block_reason(row, category_enabled)
-    }
-    policy_blocked_source_keys = {
-        _source_key_for_row(row)
-        for row in approved_candidate_rows
-        if candidate_publish_block_reason(row, category_enabled)
-    } - publishable_source_keys
+    publishable_source_keys, blocked_reasons = _policy_block_reason_map(approved_candidate_rows, category_enabled)
+    policy_blocked_source_keys = set(blocked_reasons) - publishable_source_keys
     orphan_remote = [
         row
         for row in remote_before

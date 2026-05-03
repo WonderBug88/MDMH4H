@@ -149,6 +149,20 @@ Operational rule: the AI audit is an advisor. It stores a verdict and recommende
 7. Verify unsupported stores still return `403`.
 8. Do not run BigCommerce deletes or cleanup until the dry-run sample is reviewed.
 
+## Reviewed Cleanup Candidate Report
+
+Review-only export generated for store `99oa2tso` on 2026-05-03:
+
+- Command: `python deploy/run_fulcrum_bc_reset_publish.py --store-hash 99oa2tso --max-entities 1200 --export-cleanup-report docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-cleanup-candidates-2026-05-03 --batch-size 50 --storefront-check-hints`
+- CSV: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-cleanup-candidates-2026-05-03.csv`
+- JSON: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-cleanup-candidates-2026-05-03.json`
+- Scan scope: `max_entities=1200`, `remote_before_count=205`, `active_publications_before_count=47`.
+- Cleanup candidates: `179` total in `4` review batches of `50`.
+- Reason counts: `159` orphan remotes, `20` policy-blocked active remotes.
+- Key counts: `78` `internal_links_html`, `51` `internal_category_links_html`, `50` `internal_product_links_html`.
+
+This report is evidence only. It does not approve deletion and no BigCommerce delete or publish request was made by the export command. The next reviewed cleanup step is to inspect batch `1` in the CSV/JSON, spot-check the storefront hints for selected rows, and then approve exact `review_target_spec` values for a later targeted cleanup command.
+
 ## Current Evidence
 
 - Evidence bundle: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-go-live-evidence-2026-05-03.json`
