@@ -244,6 +244,58 @@ class FulcrumPublishingTests(unittest.TestCase):
         self.assertEqual(publications, [])
         self.assertEqual(upsert_calls, [])
 
+    def test_publish_approved_entities_allows_thin_brand_family_category_fallback(self):
+        conn = _FakeConn(
+            fetchall_queue=[
+                [
+                    {
+                        "source_entity_type": "product",
+                        "source_product_id": 112557,
+                        "source_name": "Ganesh Mills Soap",
+                        "source_url": "/ganesh-mills-soap/",
+                    }
+                ]
+            ]
+        )
+        upsert_calls = []
+
+        publications = publish_approved_entities(
+            store_hash="abc123",
+            source_entity_ids=None,
+            run_id=None,
+            get_pg_conn=lambda: conn,
+            get_approved_rows_for_source=lambda store_hash, source_product_id, source_entity_type: [
+                {
+                    "target_entity_type": "category",
+                    "target_url": "/soap-dispensers/",
+                    "target_name": "Soap Dispensers",
+                    "metadata": {
+                        "query_intent_scope": "brand_navigation",
+                        "preferred_entity_type": "brand",
+                        "query_target_tokens": ["ganesh", "mills"],
+                        "semantics_analysis": {
+                            "head_term": "soap",
+                            "thin_brand_family_category_fallback": True,
+                            "constraint_rules": [
+                                {
+                                    "kind": "thin_brand_family_prefer_category",
+                                    "family_tokens": ["soap"],
+                                }
+                            ],
+                        },
+                    },
+                }
+            ],
+            resolve_store_category_id_by_url=lambda store_hash, url: (None, None),
+            resolve_store_product_id_by_url=lambda store_hash, url: (112557, "Ganesh Mills Soap"),
+            build_links_html=lambda rows, section_title="Related options": "html" if rows else None,
+            upsert_entity_metafield=lambda *args: upsert_calls.append(args) or {"action": "updated", "metafield_id": 1},
+            invalidate_admin_metric_cache=lambda store_hash, metric_keys=None: None,
+        )
+
+        self.assertEqual(len(upsert_calls), 1)
+        self.assertEqual(publications[0]["metafield_key"], "internal_links_html")
+
     def test_unpublish_entities_deletes_category_metafield_and_marks_row_unpublished(self):
         conn = _FakeConn(
             fetchall_queue=[

@@ -9,6 +9,8 @@ from typing import Any, Callable
 import requests
 from psycopg2.extras import RealDictCursor
 
+from app.fulcrum.candidate_runs import candidate_publish_block_reason
+
 
 PgConnFactory = Callable[[], Any]
 ApprovedRowsGetter = Callable[[str, int, str], list[dict[str, Any]]]
@@ -121,24 +123,7 @@ def _publication_source_match_ids(
 
 
 def _candidate_row_publish_block_reason(row: dict[str, Any]) -> str:
-    target_entity_type = (row.get("target_entity_type") or "product").strip().lower() or "product"
-    metadata = row.get("metadata") or {}
-    query_intent_scope = (metadata.get("query_intent_scope") or "").strip().lower()
-    preferred_entity_type = (metadata.get("preferred_entity_type") or "").strip().lower()
-
-    if target_entity_type not in {"product", "category", "brand"}:
-        return f"unsupported target entity type `{target_entity_type}`"
-    if target_entity_type == "brand":
-        if query_intent_scope != "brand_navigation" or preferred_entity_type != "brand":
-            return "brand targets require brand-navigation intent"
-        if not list(metadata.get("query_target_tokens") or []):
-            return "brand target did not preserve query target tokens"
-    if target_entity_type == "category":
-        if preferred_entity_type != "category":
-            return "category target does not match preferred entity type"
-        if query_intent_scope == "brand_navigation":
-            return "brand-navigation query cannot publish to category"
-    return ""
+    return candidate_publish_block_reason(row, category_enabled=True)
 
 
 def publish_approved_entities(
