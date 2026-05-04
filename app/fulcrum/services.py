@@ -367,6 +367,7 @@ _RUNTIME_SCHEMA_REQUIRED_TABLES = {
     "query_gate_agent_reviews",
     "query_gate_review_requests",
     "query_gate_review_submissions",
+    "query_gate_decision_feedback",
     "query_target_overrides",
     "link_candidates",
     "link_reviews",
@@ -1706,19 +1707,69 @@ def _brand_family_catalog_evidence(
     if not normalized_store_hash or not normalized_brand or not family_tokens or not brand_label_tokens:
         return {"matching_product_count": 0, "matching_product_urls": []}
 
+    def _profile_category_ids(profile: dict[str, Any]) -> set[int]:
+        source_data = profile.get("source_data") if isinstance(profile.get("source_data"), dict) else {}
+        product_data = source_data.get("product") if isinstance(source_data.get("product"), dict) else {}
+        category_values = product_data.get("categories") or []
+        category_ids: set[int] = set()
+        for value in category_values:
+            try:
+                category_id = int(value or 0)
+            except (TypeError, ValueError):
+                continue
+            if category_id > 0:
+                category_ids.add(category_id)
+        return category_ids
+
     matching_urls: list[str] = []
-    for profile in _load_all_store_product_profiles(normalized_store_hash):
+    matching_category_ids: set[int] = set()
+    brand_category_counts: dict[int, int] = {}
+    category_total_counts: dict[int, int] = {}
+    profiles = _load_all_store_product_profiles(normalized_store_hash)
+    for profile in profiles:
+        category_ids = _profile_category_ids(profile)
+        for category_id in category_ids:
+            category_total_counts[category_id] = category_total_counts.get(category_id, 0) + 1
         product_brand_tokens = _tokenize_intent_text(_normalize_signal_label(profile.get("brand_name")))
-        if not brand_label_tokens <= product_brand_tokens:
+        brand_matches = brand_label_tokens <= product_brand_tokens
+        if brand_matches:
+            for category_id in category_ids:
+                brand_category_counts[category_id] = brand_category_counts.get(category_id, 0) + 1
+        if not brand_matches:
             continue
         product_tokens = {_canonical_word_token(token) for token in set(profile.get("tokens") or []) if _canonical_word_token(token)}
         if product_tokens & family_tokens:
             matching_urls.append(profile.get("url") or "")
+            matching_category_ids.update(category_ids)
 
     deduped_urls = sorted({url for url in matching_urls if url})
+    category_depth_rows: list[dict[str, Any]] = []
+    for category_id in sorted(matching_category_ids):
+        total_count = int(category_total_counts.get(category_id) or 0)
+        brand_count = int(brand_category_counts.get(category_id) or 0)
+        share = round((brand_count / total_count), 4) if total_count > 0 else 0.0
+        category_depth_rows.append(
+            {
+                "category_id": category_id,
+                "brand_product_count": brand_count,
+                "category_product_count": total_count,
+                "brand_category_share": share,
+            }
+        )
+    best_category_depth = max(
+        category_depth_rows,
+        key=lambda row: (float(row.get("brand_category_share") or 0.0), int(row.get("brand_product_count") or 0)),
+        default={},
+    )
     return {
         "matching_product_count": len(deduped_urls),
         "matching_product_urls": deduped_urls[:12],
+        "matching_category_ids": sorted(matching_category_ids),
+        "category_depth": category_depth_rows[:12],
+        "best_brand_category_share": float(best_category_depth.get("brand_category_share") or 0.0),
+        "best_brand_category_product_count": int(best_category_depth.get("brand_product_count") or 0),
+        "best_category_product_count": int(best_category_depth.get("category_product_count") or 0),
+        "best_category_id": int(best_category_depth.get("category_id") or 0) or None,
     }
 
 

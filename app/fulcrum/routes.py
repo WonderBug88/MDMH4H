@@ -22,6 +22,7 @@ from flask import (
 )
 
 from app.fulcrum.config import Config
+from app.fulcrum.decision_feedback import record_query_gate_decision_feedback
 from app.fulcrum.logic_regression import (
     record_regression_against_logic_changelog,
     resolve_logic_change_case_ids,
@@ -1653,6 +1654,28 @@ def request_gate_review():
         flash(message, "danger")
         return redirect(url_for("fulcrum.dashboard", store_hash=store_hash))
 
+    try:
+        record_query_gate_decision_feedback(
+            store_hash,
+            gate_record_id,
+            "review",
+            submitted_by=initiated_by,
+            request_id=int(request_row.get("request_id") or 0) or None,
+            feedback_status="diagnosis_pending",
+            target_entity_type=request.form.get("target_entity_type") or None,
+            target_entity_id=target_entity_id,
+            target_name=request.form.get("target_name") or None,
+            target_url=request.form.get("target_url") or None,
+            reason_summary=request.form.get("reason_summary") or None,
+            metadata={"requested_from": "dashboard"},
+        )
+    except Exception:
+        current_app.logger.exception(
+            "Could not persist decision feedback for store %s gate %s.",
+            store_hash,
+            gate_record_id,
+        )
+
     pause_result = {
         "live_block_paused": False,
         "review_reset_count": 0,
@@ -1941,6 +1964,27 @@ def resolve_gate_review_request():
         resolution_note=resolution_note,
         metadata_updates=metadata_updates,
     )
+    try:
+        record_query_gate_decision_feedback(
+            store_hash,
+            int(request_row.get("gate_record_id") or 0),
+            "review",
+            submitted_by=session.get("email") or "fulcrum",
+            request_id=request_id,
+            feedback_status="resolved",
+            admin_decision="republish" if restore_live and restore_succeeded else "keep_off",
+            metadata={
+                "resolution_note": resolution_note,
+                "restore_live_requested": restore_live,
+                "restore_succeeded": restore_succeeded,
+            },
+        )
+    except Exception:
+        current_app.logger.exception(
+            "Could not update decision feedback resolution for store %s request %s.",
+            store_hash,
+            request_id,
+        )
     invalidate_admin_metric_cache(store_hash)
     if restore_live:
         restored_count = int((restored or {}).get("publication_count") or 0)

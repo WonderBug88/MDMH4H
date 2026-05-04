@@ -236,6 +236,74 @@ class FulcrumCandidateRunTests(unittest.TestCase):
 
         self.assertEqual(selected, [])
 
+    def test_candidate_publish_blocks_brand_query_to_broad_category(self):
+        reason = candidate_runs.candidate_publish_block_reason(
+            {
+                "source_entity_type": "product",
+                "target_entity_type": "category",
+                "target_name": "Hotel Bedding Supply",
+                "target_url": "/hotel-bedding-supply/",
+                "metadata": {
+                    "query_intent_scope": "brand_navigation",
+                    "preferred_entity_type": "brand",
+                    "query_target_tokens": ["downlite"],
+                    "semantics_analysis": {
+                        "head_term": "blanket",
+                        "thin_brand_family_category_fallback": False,
+                    },
+                },
+            },
+            category_enabled=True,
+        )
+
+        self.assertEqual(reason, "brand-navigation category target did not preserve brand or family intent")
+
+    def test_candidate_publish_allows_thin_brand_family_category_fallback(self):
+        reason = candidate_runs.candidate_publish_block_reason(
+            {
+                "source_entity_type": "product",
+                "target_entity_type": "category",
+                "target_name": "Soap Dispensers",
+                "target_url": "/soap-dispensers/",
+                "metadata": {
+                    "query_intent_scope": "brand_navigation",
+                    "preferred_entity_type": "brand",
+                    "query_target_tokens": ["ganesh", "mills"],
+                    "semantics_analysis": {
+                        "head_term": "soap",
+                        "thin_brand_family_category_fallback": True,
+                        "constraint_rules": [
+                            {
+                                "kind": "thin_brand_family_prefer_category",
+                                "family_tokens": ["soap"],
+                            }
+                        ],
+                    },
+                },
+            },
+            category_enabled=True,
+        )
+
+        self.assertEqual(reason, "")
+
+    def test_candidate_publish_allows_brand_preserving_category(self):
+        reason = candidate_runs.candidate_publish_block_reason(
+            {
+                "source_entity_type": "product",
+                "target_entity_type": "category",
+                "target_name": "1888 Mills Pool Towels",
+                "target_url": "/1888-mills-pool-towels/",
+                "metadata": {
+                    "query_intent_scope": "brand_navigation",
+                    "preferred_entity_type": "brand",
+                    "query_target_tokens": ["1888", "mills"],
+                },
+            },
+            category_enabled=True,
+        )
+
+        self.assertEqual(reason, "")
+
     def test_publish_all_current_results_reports_unresolved_approved_sources(self):
         result = candidate_runs.publish_all_current_results(
             "stores/abc123",

@@ -86,6 +86,7 @@ class FulcrumReviewSessionTests(unittest.TestCase):
                 cleared_gate_record_ids=[8, 10, 10],
                 review_bucket_gate_record_ids=[7],
                 metadata={"client_submitted_at": "2026-04-19T12:00:00Z"},
+                record_decision_feedback_batch_fn=lambda *args, **kwargs: 0,
             )
 
         self.assertEqual(row["submission_id"], 12)
@@ -123,12 +124,48 @@ class FulcrumReviewSessionTests(unittest.TestCase):
                 cleared_gate_record_ids=[7],
                 review_bucket_gate_record_ids=[7],
                 metadata=None,
+                record_decision_feedback_batch_fn=lambda *args, **kwargs: 0,
             )
 
         params = fake_cursor.executions[0][1]
         self.assertEqual(params[4], 0)
         self.assertEqual(params[5], 1)
         self.assertEqual(params[6], 1)
+
+    def test_create_query_gate_review_submission_records_clear_and_review_feedback(self):
+        fake_cursor = _FakeCursor(
+            fetchone_results=[
+                {
+                    "submission_id": 20,
+                    "metadata": {
+                        "all_gate_record_ids": [7, 8, 9],
+                        "cleared_gate_record_ids": [8],
+                        "review_bucket_gate_record_ids": [7],
+                        "remaining_gate_record_ids": [9],
+                    },
+                }
+            ]
+        )
+        calls = []
+
+        with patch("app.fulcrum.review_sessions.get_pg_conn", return_value=_FakeConnection([fake_cursor])):
+            review_sessions.create_query_gate_review_submission(
+                "99oa2tso",
+                run_id=44,
+                submitted_by="qa@example.com",
+                all_gate_record_ids=[7, 8, 9],
+                cleared_gate_record_ids=[8],
+                review_bucket_gate_record_ids=[7],
+                metadata={"client_submitted_at": "2026-04-19T12:00:00Z"},
+                record_decision_feedback_batch_fn=lambda *args, **kwargs: calls.append((args, kwargs)) or 1,
+            )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0][0][1], "clear")
+        self.assertEqual(calls[0][0][2], [8])
+        self.assertEqual(calls[1][0][1], "review")
+        self.assertEqual(calls[1][0][2], [7])
+        self.assertEqual(calls[1][1]["feedback_status"], "diagnosis_pending")
 
 
 if __name__ == "__main__":

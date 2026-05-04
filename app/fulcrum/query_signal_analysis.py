@@ -480,6 +480,15 @@ def build_query_semantics_analysis(
         else {"matching_product_count": 0, "matching_product_urls": []}
     )
     matching_brand_family_products = int(brand_family_catalog.get("matching_product_count") or 0)
+    best_brand_category_share = float(brand_family_catalog.get("best_brand_category_share") or 0.0)
+    thin_brand_family_category_fallback = bool(
+        brand_signals
+        and topic_signals
+        and not exact_category_topic_signal
+        and not (hard_signals or soft_signals or collection_signals or sku_signals)
+        and matching_brand_family_products == 1
+        and best_brand_category_share < 0.20
+    )
 
     phrase_binding_confidence = (
         0.92
@@ -566,6 +575,10 @@ def build_query_semantics_analysis(
     if broad_descriptive:
         category_confidence += 0.14
     category_confidence = max(0.0, min(1.0, round(category_confidence, 2)))
+    if thin_brand_family_category_fallback:
+        category_confidence = max(category_confidence, 0.78)
+        pdp_confidence = min(pdp_confidence, 0.44)
+        brand_confidence = min(brand_confidence, 0.46)
 
     ambiguity_confidence = 0.18
     if ambiguous_modifier_matches:
@@ -598,7 +611,7 @@ def build_query_semantics_analysis(
         and not (hard_signals or soft_signals or collection_signals or sku_signals)
         and matching_brand_family_products == 1
     ):
-        query_shape = "exact_product_like"
+        query_shape = "category_like" if thin_brand_family_category_fallback else "exact_product_like"
     elif exact_brand_phrase_confidence >= 0.82 and brand_confidence >= max(category_confidence, pdp_confidence):
         query_shape = "brand_navigational"
     elif brand_confidence >= 0.72 and not exact_category_topic_signal and not (hard_signals or soft_signals or collection_signals or sku_signals):
@@ -621,6 +634,10 @@ def build_query_semantics_analysis(
         query_shape = "category_like"
     elif ambiguity_confidence >= 0.78:
         query_shape = "hold"
+
+    blocked_brand_escalation = "suite" in query_tokens and not exact_brand_phrase_confidence
+    if blocked_brand_escalation and query_shape == "brand_navigational" and topic_signals:
+        query_shape = "category_like"
 
     if query_shape == "exact_product_like":
         eligible_page_types = ["product"]
@@ -676,7 +693,7 @@ def build_query_semantics_analysis(
                 }
             )
 
-    if "suite" in query_tokens and not exact_brand_phrase_confidence:
+    if blocked_brand_escalation:
         negative_constraints.append("Do not escalate 'suite' to brand without corroboration")
         constraint_rules.append(
             {
@@ -719,6 +736,20 @@ def build_query_semantics_analysis(
                 "matching_product_count": matching_brand_family_products,
                 "family_tokens": sorted(family_candidate_tokens),
                 "message": "Brand plus family queries with multiple matching brand products should stay brand-led until a more specific product phrase is present",
+            }
+        )
+    if thin_brand_family_category_fallback and query_shape == "category_like":
+        negative_constraints.append(
+            "Thin brand-family coverage blocks single-product routing; use the strongest matching family category instead"
+        )
+        constraint_rules.append(
+            {
+                "kind": "thin_brand_family_prefer_category",
+                "brand_label": primary_brand_label,
+                "matching_product_count": matching_brand_family_products,
+                "brand_category_share": best_brand_category_share,
+                "family_tokens": sorted(family_candidate_tokens),
+                "message": "Thin brand-family coverage blocks single-product routing; use the strongest matching family category instead",
             }
         )
 
@@ -821,6 +852,9 @@ def build_query_semantics_analysis(
         "reasoning_summary": "; ".join(reasoning_parts[:3]) or "Semantics control analyzed the query before routing.",
         "brand_family_matching_product_count": matching_brand_family_products,
         "brand_family_matching_product_urls": list(brand_family_catalog.get("matching_product_urls") or []),
+        "brand_family_category_depth": list(brand_family_catalog.get("category_depth") or []),
+        "best_brand_category_share": best_brand_category_share,
+        "thin_brand_family_category_fallback": thin_brand_family_category_fallback,
         "judge_verdict": "hold" if query_shape == "hold" else "allow",
         "resolver_invoked": False,
         "constraint_rules": constraint_rules,

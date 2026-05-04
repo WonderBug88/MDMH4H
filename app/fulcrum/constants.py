@@ -4,6 +4,17 @@ GATE_REVIEW_AGENT_BATCH_SIZE = 20
 GATE_REVIEW_AGENT_VERDICTS = {"correct", "incorrect", "unclear"}
 GATE_REVIEW_AGENT_ISSUE_TYPES = {
     "looks_correct",
+    "intent_classification",
+    "demand_gate",
+    "opportunity_gate",
+    "intent_gate",
+    "noise_gate",
+    "routing_logic",
+    "data_quality",
+    "missing_rule",
+    "conflicting_rule",
+    "low_confidence",
+    "product_experience_mismatch",
     "wrong_page_type",
     "too_broad",
     "too_narrow",

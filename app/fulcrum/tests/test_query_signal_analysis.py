@@ -161,6 +161,58 @@ class FulcrumQuerySignalAnalysisTests(unittest.TestCase):
             any(rule["kind"] == "require_head_term_presence" for rule in analysis["constraint_rules"])
         )
 
+    def test_build_query_semantics_analysis_prefers_category_for_thin_brand_family(self):
+        analysis = query_signal_analysis.build_query_semantics_analysis(
+            "99oa2tso",
+            "ganesh mills soap",
+            {
+                "query_tokens": ["ganesh", "mills", "soap"],
+                "brand_signals": [{"matched_tokens": ["ganesh", "mills"], "normalized_label": "ganesh mills"}],
+                "hard_attribute_signals": [],
+                "soft_attribute_signals": [],
+                "collection_signals": [],
+                "topic_signals": [{"matched_tokens": ["soap"], "entity_type": "category", "normalized_label": "soap"}],
+                "sku_signals": [],
+            },
+            signal_library={"protected_phrase": [], "taxonomy_alias": [], "ambiguous_modifier": []},
+            build_store_signal_library_fn=lambda store_hash: {},
+            ordered_intent_tokens_fn=lambda value: ["ganesh", "mills", "soap"],
+            expand_signal_tokens_fn=lambda tokens: set(tokens),
+            tokenize_intent_text_fn=_tokenize,
+            non_generic_signal_tokens_fn=lambda tokens: set(tokens),
+            match_semantic_signal_entries_fn=lambda query, query_tokens, entries: [],
+            semantic_head_term_fn=lambda query, query_tokens, bound_phrase_matches, resolved_signals: "soap",
+            semantic_head_family_fn=lambda head_term, query_tokens, bound_phrase_matches, taxonomy_alias_matches: "soap",
+            query_has_exact_brand_phrase_fn=lambda query, brand_signals: 0.0,
+            query_is_broad_descriptive_fn=lambda query, query_tokens, resolved_signals: False,
+            semantic_family_candidate_tokens_fn=lambda head_term, head_family, taxonomy_alias_matches: {"soap"},
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            brand_family_catalog_evidence_fn=lambda store_hash, brand_label, family_tokens: {
+                "matching_product_count": 1,
+                "matching_product_urls": ["/ganesh-mills-soap/"],
+                "best_brand_category_share": 0.08,
+            },
+            semantic_head_term_from_phrases_fn=lambda matches: "",
+            semantic_token_roles_fn=lambda query, head_term, resolved_signals, taxonomy_alias_matches, ambiguous_modifier_matches: [
+                {"text": "ganesh mills", "role": "brand_candidate"},
+                {"text": "soap", "role": "head_product"},
+            ],
+            generic_brand_alias_tokens=set(),
+            semantic_allowed_page_types={"brand", "category", "content", "product"},
+            semantic_accessory_block_rules={},
+            semantic_subtype_constraints={},
+            context_keep_tokens=set(),
+            query_noise_words=set(),
+            generic_routing_tokens=set(),
+        )
+
+        self.assertEqual(analysis["query_shape"], "category_like")
+        self.assertEqual(analysis["eligible_page_types"], ["category"])
+        self.assertTrue(analysis["thin_brand_family_category_fallback"])
+        self.assertTrue(
+            any(rule["kind"] == "thin_brand_family_prefer_category" for rule in analysis["constraint_rules"])
+        )
+
     def test_classify_query_intent_scope_uses_resolved_signals_when_present(self):
         result = query_signal_analysis.classify_query_intent_scope(
             "hookless curtain",

@@ -3,9 +3,43 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Callable
 
 from psycopg2.extras import RealDictCursor, execute_batch
+
+
+def _candidate_text_tokens(value: str | None) -> set[str]:
+    return {token for token in re.split(r"[^a-z0-9]+", str(value or "").lower()) if token}
+
+
+def _candidate_target_tokens(row: dict[str, Any]) -> set[str]:
+    return _candidate_text_tokens(f"{row.get('target_name') or ''} {row.get('target_url') or ''}")
+
+
+def _brand_navigation_category_allowed(row: dict[str, Any], metadata: dict[str, Any]) -> bool:
+    semantics = metadata.get("semantics_analysis") if isinstance(metadata.get("semantics_analysis"), dict) else {}
+    target_tokens = _candidate_target_tokens(row)
+    query_target_tokens = {
+        token
+        for value in list(metadata.get("query_target_tokens") or [])
+        for token in _candidate_text_tokens(str(value))
+    }
+    if query_target_tokens and query_target_tokens & target_tokens:
+        return True
+
+    if semantics.get("thin_brand_family_category_fallback"):
+        family_tokens: set[str] = set()
+        head_term = str(semantics.get("head_term") or "").strip().lower()
+        if head_term:
+            family_tokens.add(head_term)
+            family_tokens.add(f"{head_term}s")
+        for rule in semantics.get("constraint_rules") or []:
+            if (rule.get("kind") or "").strip().lower() == "thin_brand_family_prefer_category":
+                family_tokens.update(str(token).strip().lower() for token in (rule.get("family_tokens") or []) if token)
+        return bool(family_tokens & target_tokens)
+
+    return False
 
 
 def queue_candidate_run(
@@ -111,28 +145,17 @@ def eligible_auto_publish_candidates(
     seen_labels: dict[int, set[str]] = {}
     min_score = float(auto_publish_min_score)
     max_links_per_source = max(1, int(auto_publish_max_links_per_source))
+    category_enabled = category_publishing_enabled_for_store_fn(store_hash)
 
     for row in rows:
         source_entity_type = row.get("source_entity_type") or "product"
         if source_entity_type not in {"product", "category"}:
             continue
-        if source_entity_type == "category" and not category_publishing_enabled_for_store_fn(store_hash):
+        if source_entity_type == "category" and not category_enabled:
             continue
         target_entity_type = row.get("target_entity_type") or "product"
         metadata = row.get("metadata") or {}
-        query_intent_scope = (metadata.get("query_intent_scope") or "").strip().lower()
-        preferred_entity_type = (metadata.get("preferred_entity_type") or "").strip().lower()
-        if target_entity_type not in {"product", "category", "brand"}:
-            continue
-        if target_entity_type == "category":
-            if metadata.get("block_type") != "pdp_category_competition":
-                continue
-            if preferred_entity_type != "category":
-                continue
-        elif target_entity_type == "brand":
-            if query_intent_scope != "brand_navigation" or preferred_entity_type != "brand":
-                continue
-        elif target_entity_type != "product":
+        if candidate_publish_block_reason(row, category_enabled):
             continue
         if float(row.get("score") or 0) < min_score:
             continue
@@ -455,10 +478,14 @@ def candidate_publish_block_reason(row: dict[str, Any], category_enabled: bool) 
         if not list(metadata.get("query_target_tokens") or []):
             return "brand target did not preserve query target tokens"
     if target_entity_type == "category":
+        if preferred_entity_type == "category":
+            return ""
+        if query_intent_scope == "brand_navigation" and preferred_entity_type == "brand":
+            if _brand_navigation_category_allowed(row, metadata):
+                return ""
+            return "brand-navigation category target did not preserve brand or family intent"
         if preferred_entity_type != "category":
             return "category target does not match preferred entity type"
-        if query_intent_scope == "brand_navigation":
-            return "brand-navigation query cannot publish to category"
     return ""
 
 

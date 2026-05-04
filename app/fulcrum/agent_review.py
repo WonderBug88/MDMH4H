@@ -383,6 +383,39 @@ def store_query_gate_agent_reviews(
     with get_pg_conn() as conn:
         with conn.cursor() as cur:
             execute_batch(cur, sql, params, page_size=50)
+            feedback_params = [
+                (
+                    review.get("issue_type") or "needs_human_review",
+                    review.get("recommended_action") or "manual_review",
+                    {
+                        "agent_verdict": review.get("verdict") or "unclear",
+                        "agent_confidence": float(review.get("confidence") or 0.0),
+                        "agent_cluster_key": review.get("cluster_key") or "",
+                        "agent_rationale": review.get("rationale") or "",
+                    },
+                    store_hash,
+                    int(review.get("gate_record_id") or 0),
+                )
+                for review in reviews
+                if int(review.get("gate_record_id") or 0) > 0
+            ]
+            if feedback_params:
+                execute_batch(
+                    cur,
+                    """
+                    UPDATE app_runtime.query_gate_decision_feedback
+                    SET feedback_status = 'agent_diagnosed',
+                        diagnosis_category = %s,
+                        recommended_action = %s,
+                        metadata = COALESCE(metadata, '{}'::jsonb) || %s::jsonb,
+                        updated_at = NOW()
+                    WHERE store_hash = %s
+                      AND gate_record_id = %s
+                      AND action = 'review'
+                    """,
+                    [(category, action, json.dumps(metadata), store_hash, gate_record_id) for category, action, metadata, store_hash, gate_record_id in feedback_params],
+                    page_size=50,
+                )
         conn.commit()
     return len(params)
 

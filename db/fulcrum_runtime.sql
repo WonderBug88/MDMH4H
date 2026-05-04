@@ -435,6 +435,31 @@ CREATE TABLE IF NOT EXISTS app_runtime.query_gate_review_submissions (
 CREATE INDEX IF NOT EXISTS idx_query_gate_review_submissions_store_run
     ON app_runtime.query_gate_review_submissions (store_hash, run_id, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS app_runtime.query_gate_decision_feedback (
+    feedback_id BIGSERIAL PRIMARY KEY,
+    store_hash TEXT NOT NULL,
+    gate_record_id BIGINT NOT NULL REFERENCES app_runtime.query_gate_records(gate_record_id) ON DELETE CASCADE,
+    run_id BIGINT REFERENCES app_runtime.link_runs(run_id) ON DELETE SET NULL,
+    action TEXT NOT NULL,
+    feedback_status TEXT NOT NULL DEFAULT 'recorded',
+    request_id BIGINT REFERENCES app_runtime.query_gate_review_requests(request_id) ON DELETE SET NULL,
+    diagnosis_category TEXT,
+    recommended_action TEXT,
+    admin_decision TEXT,
+    decision_snapshot JSONB NOT NULL DEFAULT '{}'::jsonb,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    submitted_by TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (store_hash, gate_record_id, action)
+);
+
+CREATE INDEX IF NOT EXISTS idx_query_gate_decision_feedback_store_action
+    ON app_runtime.query_gate_decision_feedback (store_hash, action, updated_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_query_gate_decision_feedback_diagnosis
+    ON app_runtime.query_gate_decision_feedback (store_hash, diagnosis_category, feedback_status);
+
 CREATE TABLE IF NOT EXISTS app_runtime.query_target_overrides (
     override_id BIGSERIAL PRIMARY KEY,
     store_hash TEXT NOT NULL,

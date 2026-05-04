@@ -98,6 +98,54 @@ class FulcrumRoutingSemanticsTests(unittest.TestCase):
         self.assertIsNone(brand_category_reason)
         self.assertIsNone(brand_page_reason)
 
+    def test_thin_brand_family_prefers_family_category_over_single_product(self):
+        analysis = {
+            "normalized_query": "ganesh mills soap",
+            "eligible_page_types": ["category", "product", "brand"],
+            "constraint_rules": [
+                {
+                    "kind": "thin_brand_family_prefer_category",
+                    "family_tokens": ["soap"],
+                    "message": "thin brand family should use category",
+                }
+            ],
+        }
+        tokenizer = lambda value: set(str(value or "").lower().replace("/", " ").replace("-", " ").split())
+
+        product_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "product", "name": "Ganesh Mills Soap", "url": "/ganesh-mills-soap/"},
+            tokenize_intent_text_fn=tokenizer,
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+        brand_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "brand", "name": "Ganesh Mills", "url": "/ganesh-mills/"},
+            tokenize_intent_text_fn=tokenizer,
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+        category_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "category", "name": "Soap Dispensers", "url": "/soap-dispensers/"},
+            tokenize_intent_text_fn=tokenizer,
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+        broad_reason = routing_semantics.semantics_target_block_reason(
+            analysis,
+            {"entity_type": "category", "name": "Hotel Supplies", "url": "/hotel-supplies/"},
+            tokenize_intent_text_fn=tokenizer,
+            normalize_signal_label_fn=lambda value: str(value or "").strip().lower(),
+            semantic_pluralize_fn=lambda value: f"{value}s",
+        )
+
+        self.assertEqual(product_reason, "thin brand family should use category")
+        self.assertEqual(brand_reason, "thin brand family should use category")
+        self.assertIsNone(category_reason)
+        self.assertEqual(broad_reason, "thin brand family should use category")
+
     def test_apply_semantics_control_falls_back_to_current_page_when_top_target_blocked(self):
         result, semantics = routing_semantics.apply_semantics_control_to_ranked_targets(
             {"source_entity_id": 10, "source_url": "/hotel-shower-curtains/"},

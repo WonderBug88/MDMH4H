@@ -163,6 +163,29 @@ Review-only export generated for store `99oa2tso` on 2026-05-03:
 
 This report is evidence only. It does not approve deletion and no BigCommerce delete or publish request was made by the export command. The next reviewed cleanup step is to inspect batch `1` in the CSV/JSON, spot-check the storefront hints for selected rows, and then approve exact `review_target_spec` values for a later targeted cleanup command.
 
+## Routing And Review Loop Hardening Update
+
+Implemented on 2026-05-03:
+
+- Clear and Review now have durable per-decision feedback records scoped by `store_hash`, `gate_record_id`, and action.
+- Review requests keep the one-click merchant workflow, then store an agent/admin diagnosis lifecycle for later pattern analysis.
+- Agent review issue types now include intent, gate, routing, data-quality, missing-rule, conflict, confidence, and product-experience categories.
+- Brand-family routing now measures product depth and category brand share. One matching brand-family product with less than `20%` category share is blocked from single-product routing and pushed toward the strongest matching family category.
+- Brand-navigation category publishing is allowed only when the category preserves brand intent or is an explicit thin-brand-family category fallback.
+- Regression coverage now includes `downlite blankets`, thin Ganesh-style brand-family category fallback, broad category blocking, Clear feedback, Review feedback, and agent diagnosis updates.
+
+Verification:
+
+- `python -m unittest discover app/fulcrum/tests` passed: `268` tests.
+- `python deploy/run_fulcrum_release_checks.py` passed.
+- `python deploy/run_fulcrum_logic_regression.py --store-hash 99oa2tso --strict` passed: `29/29` cases.
+
+Production cleanup status:
+
+- The post-change BigCommerce dry-run audit could not run from this local workspace because the available local `99oa2tso` BigCommerce token returned `401 Unauthorized`.
+- No BigCommerce delete, publish, or remote mutation was run after this code change.
+- Before cleanup resumes, run the audit from an environment with the working installed app token, then delete only confirmed `h4h` orphan or policy-blocked metafields.
+
 ## Current Evidence
 
 - Evidence bundle: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-go-live-evidence-2026-05-03.json`

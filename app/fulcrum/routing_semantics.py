@@ -114,6 +114,12 @@ def semantics_target_block_reason(
             brand_tokens = tokenize_intent_text_fn(brand_label)
             if target_type == "category" and brand_tokens and not (brand_tokens & core_target_tokens):
                 return rule.get("message") or "brand-family query cannot fall back to a broad category"
+        elif kind == "thin_brand_family_prefer_category":
+            if target_type in {"product", "brand"}:
+                return rule.get("message") or "thin brand-family coverage should route through the family category"
+            family_tokens = set(rule.get("family_tokens") or [])
+            if target_type == "category" and family_tokens and not (family_tokens & core_target_tokens):
+                return rule.get("message") or "thin brand-family fallback must preserve the product family"
         elif kind == "require_head_term_presence" and target_type in {"product", "category"}:
             head_term = normalize_signal_label_fn(rule.get("head_term"))
             if head_term and head_term not in core_target_tokens and semantic_pluralize_fn(head_term) not in core_target_tokens:

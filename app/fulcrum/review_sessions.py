@@ -7,6 +7,7 @@ from typing import Any
 
 from psycopg2.extras import RealDictCursor
 
+from app.fulcrum.decision_feedback import record_query_gate_decision_feedback_batch
 from app.fulcrum.platform import get_pg_conn, normalize_store_hash
 
 
@@ -34,6 +35,7 @@ def create_query_gate_review_submission(
     cleared_gate_record_ids: list[Any] | tuple[Any, ...] | set[Any] | None,
     review_bucket_gate_record_ids: list[Any] | tuple[Any, ...] | set[Any] | None,
     metadata: dict[str, Any] | None = None,
+    record_decision_feedback_batch_fn=record_query_gate_decision_feedback_batch,
 ) -> dict[str, Any]:
     normalized_hash = normalize_store_hash(store_hash)
     all_ids = _normalize_gate_record_ids(all_gate_record_ids)
@@ -116,6 +118,29 @@ def create_query_gate_review_submission(
             )
             row = dict(cur.fetchone() or {})
         conn.commit()
+    feedback_metadata = {
+        "submission_id": int(row.get("submission_id") or 0),
+        "review_session": True,
+    }
+    feedback_metadata.update(metadata or {})
+    if cleared_ids:
+        record_decision_feedback_batch_fn(
+            normalized_hash,
+            "clear",
+            cleared_ids,
+            submitted_by=submitted_by,
+            feedback_status="confirmed_correct",
+            metadata=feedback_metadata,
+        )
+    if review_bucket_ids:
+        record_decision_feedback_batch_fn(
+            normalized_hash,
+            "review",
+            review_bucket_ids,
+            submitted_by=submitted_by,
+            feedback_status="diagnosis_pending",
+            metadata=feedback_metadata,
+        )
     return row
 
 

@@ -172,14 +172,19 @@ class FulcrumAgentReviewTests(unittest.TestCase):
 
         self.assertEqual(stored, 1)
         self.assertTrue(fake_conn.committed)
-        execute_batch_mock.assert_called_once()
-        params = execute_batch_mock.call_args.args[2][0]
+        self.assertEqual(execute_batch_mock.call_count, 2)
+        params = execute_batch_mock.call_args_list[0].args[2][0]
         self.assertEqual(params[0], 8)
         self.assertEqual(params[1], 44)
         self.assertEqual(params[9], 5451)
         metadata = json.loads(params[18])
         self.assertEqual(metadata["winner"]["entity_type"], "category")
         self.assertEqual(metadata["alternate"]["entity_type"], "product")
+        feedback_params = execute_batch_mock.call_args_list[1].args[2][0]
+        self.assertEqual(feedback_params[0], "looks_correct")
+        self.assertEqual(feedback_params[1], "keep_winner")
+        self.assertEqual(feedback_params[3], "99oa2tso")
+        self.assertEqual(feedback_params[4], 8)
 
     def test_run_query_gate_agent_review_uses_injected_callbacks(self):
         apply_runtime_schema_mock = Mock()
