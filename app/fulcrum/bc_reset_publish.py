@@ -26,6 +26,7 @@ LINK_METAFIELD_KEYS = {
     "internal_category_links_html",
     "internal_product_links_html",
 }
+UNPUBLISHED_REMOTE_VALUE = "<!-- Fulcrum unpublished -->"
 
 CLEANUP_REPORT_FIELDS = [
     "batch_number",
@@ -37,6 +38,7 @@ CLEANUP_REPORT_FIELDS = [
     "entity_url",
     "metafield_id",
     "metafield_key",
+    "remote_value_state",
     "active_publication_match_status",
     "policy_block_reason",
     "storefront_url",
@@ -126,6 +128,21 @@ def _storefront_check_command(storefront_url: str, metafield_key: str | None) ->
     )
 
 
+def _remote_value_state(value: str | None) -> str:
+    normalized = (value or "").strip()
+    if not normalized:
+        return "empty"
+    if normalized == UNPUBLISHED_REMOTE_VALUE:
+        return "unpublished_tombstone"
+    if "h4h-internal-links" in normalized or "<a " in normalized.lower():
+        return "link_html"
+    return "other"
+
+
+def _is_visible_remote_link(row: dict[str, Any]) -> bool:
+    return (row.get("remote_value_state") or "other") not in {"empty", "unpublished_tombstone"}
+
+
 def _api_base(store_hash: str) -> str:
     return f"https://api.bigcommerce.com/stores/{normalize_store_hash(store_hash)}/v3"
 
@@ -211,6 +228,7 @@ def _scan_entity_metafields(
         key = (metafield.get("key") or "").strip()
         if key not in LINK_METAFIELD_KEYS:
             continue
+        value = metafield.get("value")
         rows.append(
             {
                 "entity_type": entity_type,
@@ -219,6 +237,7 @@ def _scan_entity_metafields(
                 "entity_url": _custom_url_value(entity),
                 "metafield_id": int(metafield.get("id") or 0),
                 "key": key,
+                "remote_value_state": _remote_value_state(value),
             }
         )
     return rows
@@ -282,14 +301,31 @@ def _delete_remote_link_metafield(store_hash: str, row: dict[str, Any]) -> None:
     entity_type = (row.get("entity_type") or "").strip().lower()
     entity_id = int(row.get("entity_id") or 0)
     metafield_id = int(row.get("metafield_id") or 0)
+    key = (row.get("key") or "").strip()
     if entity_type not in {"product", "category"} or not entity_id or not metafield_id:
         return
+    metafield_url = f"{api_base}/catalog/{_entity_path(entity_type)}/{entity_id}/metafields/{metafield_id}"
     response = requests.delete(
-        f"{api_base}/catalog/{_entity_path(entity_type)}/{entity_id}/metafields/{metafield_id}",
+        metafield_url,
         headers=headers,
         timeout=30,
     )
     if response.status_code not in (200, 204, 404):
+        if response.status_code == 403 and key in LINK_METAFIELD_KEYS:
+            tombstone_response = requests.put(
+                metafield_url,
+                headers=headers,
+                json={
+                    "permission_set": "write_and_sf_access",
+                    "namespace": "h4h",
+                    "key": key,
+                    "value": UNPUBLISHED_REMOTE_VALUE,
+                    "description": "Fulcrum unpublished internal links HTML snippet",
+                },
+                timeout=30,
+            )
+            tombstone_response.raise_for_status()
+            return
         response.raise_for_status()
 
 
@@ -422,7 +458,8 @@ def build_cleanup_candidate_report(
     normalized_batch_size = max(int(batch_size or 50), 1)
     raw_candidates: list[dict[str, Any]] = []
     seen_targets: set[tuple[str, int, int]] = set()
-    for row in remote_before:
+    visible_remote_before = [row for row in remote_before if _is_visible_remote_link(row)]
+    for row in visible_remote_before:
         entity_type = (row.get("entity_type") or "").strip().lower()
         entity_url = row.get("entity_url")
         metafield_key = (row.get("key") or "").strip()
@@ -455,6 +492,7 @@ def build_cleanup_candidate_report(
                 "entity_url": entity_url or "",
                 "metafield_id": int(row.get("metafield_id") or 0),
                 "metafield_key": metafield_key,
+                "remote_value_state": row.get("remote_value_state") or "other",
                 "active_publication_match_status": "matched" if not is_orphan else "missing",
                 "policy_block_reason": "; ".join(blocked_reasons.get(source_key, [])),
                 "storefront_url": storefront_url,
@@ -495,10 +533,15 @@ def build_cleanup_candidate_report(
         "batch_size": normalized_batch_size,
         "batch_count": (len(raw_candidates) + normalized_batch_size - 1) // normalized_batch_size,
         "remote_before_count": len(remote_before),
+        "visible_remote_before_count": len(visible_remote_before),
+        "tombstone_remote_before_count": len(
+            [row for row in remote_before if (row.get("remote_value_state") or "") == "unpublished_tombstone"]
+        ),
         "active_publications_before_count": len(active_publications),
         "candidate_count": len(raw_candidates),
         "candidate_counts_by_reason": dict(reason_counts),
         "remote_before_by_key": dict(Counter(row.get("key") or "" for row in remote_before)),
+        "visible_remote_before_by_key": dict(Counter(row.get("key") or "" for row in visible_remote_before)),
         "candidate_counts_by_key": dict(Counter(row.get("metafield_key") or "" for row in raw_candidates)),
         "candidates": raw_candidates,
     }
@@ -548,6 +591,7 @@ def reset_and_republish_bigcommerce_links(
         category_ids=scan_category_ids,
         max_entities=max_entities,
     )
+    visible_remote_before = [row for row in remote_before if _is_visible_remote_link(row)]
     active_publications = list_publications(normalized_hash, active_only=True, limit=5000)
     active_keyset = _active_publication_keyset(normalized_hash)
     category_enabled = category_publishing_enabled_for_store(normalized_hash)
@@ -556,7 +600,7 @@ def reset_and_republish_bigcommerce_links(
     policy_blocked_source_keys = set(blocked_reasons) - publishable_source_keys
     orphan_remote = [
         row
-        for row in remote_before
+        for row in visible_remote_before
         if (
             (row.get("entity_type") or "").strip().lower(),
             _normalize_url_path(row.get("entity_url")),
@@ -566,7 +610,7 @@ def reset_and_republish_bigcommerce_links(
     ]
     policy_blocked_remote = [
         row
-        for row in remote_before
+        for row in visible_remote_before
         if _source_key_for_row(row) in policy_blocked_source_keys
     ]
 
@@ -581,7 +625,12 @@ def reset_and_republish_bigcommerce_links(
         },
         "reviewed_metafield_targets": reviewed_targets,
         "remote_before_count": len(remote_before),
+        "visible_remote_before_count": len(visible_remote_before),
+        "tombstone_remote_before_count": len(
+            [row for row in remote_before if (row.get("remote_value_state") or "") == "unpublished_tombstone"]
+        ),
         "remote_before_by_key": dict(Counter(row.get("key") or "" for row in remote_before)),
+        "visible_remote_before_by_key": dict(Counter(row.get("key") or "" for row in visible_remote_before)),
         "active_publications_before_count": len(active_publications),
         "active_publications_before_by_key": dict(
             Counter((row.get("metafield_key") or "internal_links_html") for row in active_publications)
@@ -657,7 +706,7 @@ def reset_and_republish_bigcommerce_links(
     )
     unpublished = unpublish_entities(normalized_hash, active_source_ids) if active_source_ids else []
 
-    remaining_remote = list_remote_link_metafields(normalized_hash)
+    remaining_remote = [row for row in list_remote_link_metafields(normalized_hash) if _is_visible_remote_link(row)]
     deleted_orphan_count = 0
     for row in remaining_remote:
         _delete_remote_link_metafield(normalized_hash, row)

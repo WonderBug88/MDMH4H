@@ -131,8 +131,9 @@ Operational rule: the AI audit is an advisor. It stores a verdict and recommende
 
 | Item | Current status | Completion condition |
 | --- | --- | --- |
-| Cloud Top stale/policy-blocked metafield cleanup | Complete for reviewed target `product:112556:11377` | Keep broader orphan/policy-blocked audit findings dry-run until separately reviewed |
-| Live publish proof after cleanup | Complete: Publish All wrote 25 metafields across 24 source pages and sample storefront render passed | Continue spot-checking live blocks during launch week |
+| Cloud Top stale/policy-blocked metafield cleanup | Complete. Targeted audit for product `112556` now shows `remote_before_count=0`, `orphan_remote_count=0`, and `policy_blocked_active_remote_count=0`. | Continue spot-checking the storefront during launch week |
+| Broader prototype/orphan cleanup | Complete functionally for the bounded production scan. Old visible prototype blocks were overwritten with the Fulcrum unpublished tombstone where BigCommerce hard delete returned `403`. | Full audit remains clean: `orphan_remote_count=0`, `policy_blocked_active_remote_count=0`, `visible_remote_before_count=32` current published blocks, `tombstone_remote_before_count=167` |
+| Live publish proof after cleanup | Complete: Publish All repaired current output and the Results page shows `32` pages with published queries. Sample storefront render passed on `/chamber-pillow/`. | Continue spot-checking live blocks during launch week |
 | Worker automation | `scheduler_enabled=false` and `embedded_scheduler_enabled=false`; worker is intentionally skipped to avoid cost | Add `fulcrum-sync-worker` or accept manual-ops alpha status |
 | Multi-store production proof | Code is store-scoped and unsupported store health returned `403`; only `99oa2tso` has been smoke-tested deeply | For each new store: install, allowlist, sync catalog/sites, run strict regression, dry-run audit, publish one proof block, verify rollback |
 | Marketplace evidence packet | Current screenshots and JSON evidence captured under `docs/bigcommerce_marketplace_assets/2026-05-03/` | Keep provider portal screenshots outside Git if they expose secrets |
@@ -163,6 +164,15 @@ Review-only export generated for store `99oa2tso` on 2026-05-03:
 
 This report is evidence only. It does not approve deletion and no BigCommerce delete or publish request was made by the export command. The next reviewed cleanup step is to inspect batch `1` in the CSV/JSON, spot-check the storefront hints for selected rows, and then approve exact `review_target_spec` values for a later targeted cleanup command.
 
+Post-publish repair export generated for store `99oa2tso` on 2026-05-03:
+
+- CSV: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-cleanup-candidates-post-publish-repair-2026-05-03.csv`
+- JSON: `docs/bigcommerce_marketplace_assets/2026-05-03/route-authority-cleanup-candidates-post-publish-repair-2026-05-03.json`
+- The corrected report identified `159` visible orphan prototype blocks after current publishing was repaired.
+- Reviewed cleanup attempted hard deletes, then tombstoned old blocks when BigCommerce returned `403`.
+- Final bounded audit: `remote_before_count=199`, `visible_remote_before_count=32`, `tombstone_remote_before_count=167`, `orphan_remote_count=0`, `policy_blocked_active_remote_count=0`.
+- The remaining `32` visible remote blocks match current active publications: `7` category blocks, `24` product blocks, and `1` category product-link block.
+
 ## Routing And Review Loop Hardening Update
 
 Implemented on 2026-05-03:
@@ -176,15 +186,19 @@ Implemented on 2026-05-03:
 
 Verification:
 
-- `python -m unittest discover app/fulcrum/tests` passed: `268` tests.
+- `python -m unittest discover app/fulcrum/tests` passed through release checks: `271` tests.
+- `python -m unittest app.fulcrum.tests.test_bc_reset_publish` passed: `14` tests.
 - `python deploy/run_fulcrum_release_checks.py` passed.
 - `python deploy/run_fulcrum_logic_regression.py --store-hash 99oa2tso --strict` passed: `29/29` cases.
 
 Production cleanup status:
 
-- The post-change BigCommerce dry-run audit could not run from this local workspace because the available local `99oa2tso` BigCommerce token returned `401 Unauthorized`.
-- No BigCommerce delete, publish, or remote mutation was run after this code change.
-- Before cleanup resumes, run the audit from an environment with the working installed app token, then delete only confirmed `h4h` orphan or policy-blocked metafields.
+- The local production-token env path `C:\Users\juddu\Downloads\PAM\fulcrum.alpha.env` resolved the working Neon installed app token for `99oa2tso`.
+- The first full execute command timed out after unpublishing old tracked rows, so current publishing was repaired with `publish_all_current_results('99oa2tso')`.
+- Publish repair created or updated `32` current visible BigCommerce `h4h` blocks and kept `15` policy-blocked approved candidates unpublished.
+- BigCommerce returned `403` for hard-deleting some old metafields, so the cleanup path now falls back to writing `<!-- Fulcrum unpublished -->`.
+- Final read-only audit is clean for visible cleanup candidates: `orphan_remote_count=0`, `policy_blocked_active_remote_count=0`.
+- Cloud Top no longer has a Route Authority block, and `/chamber-pillow/` renders a current Route Authority category block.
 
 ## Current Evidence
 

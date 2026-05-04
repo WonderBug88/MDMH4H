@@ -178,6 +178,7 @@ class FulcrumBigCommerceResetPublishTests(unittest.TestCase):
                         "entity_url": "/cloud-top/",
                         "metafield_id": 44,
                         "key": "internal_links_html",
+                        "remote_value_state": "empty",
                     }
                 ],
             )
@@ -258,6 +259,31 @@ class FulcrumBigCommerceResetPublishTests(unittest.TestCase):
             self.assertEqual(list_remote_mock.call_args_list[0].kwargs["product_ids"], [112556])
         finally:
             bc_reset_publish.Config.FULCRUM_ALLOWED_STORES = original
+
+    def test_delete_remote_metafield_tombstones_when_bigcommerce_forbids_delete(self):
+        row = {
+            "entity_type": "product",
+            "entity_id": 111120,
+            "metafield_id": 11340,
+            "key": "internal_links_html",
+        }
+        delete_response = _FakeResponse({}, status_code=403)
+        put_response = _FakeResponse({}, status_code=200)
+
+        with patch("app.fulcrum.bc_reset_publish.get_bc_headers", return_value={"X-Auth-Token": "token"}), patch(
+            "app.fulcrum.bc_reset_publish.requests.delete",
+            return_value=delete_response,
+        ) as delete_mock, patch(
+            "app.fulcrum.bc_reset_publish.requests.put",
+            return_value=put_response,
+        ) as put_mock:
+            bc_reset_publish._delete_remote_link_metafield("99oa2tso", row)
+
+        delete_mock.assert_called_once()
+        put_mock.assert_called_once()
+        payload = put_mock.call_args.kwargs["json"]
+        self.assertEqual(payload["value"], bc_reset_publish.UNPUBLISHED_REMOTE_VALUE)
+        self.assertEqual(payload["key"], "internal_links_html")
 
     def test_targeted_execute_skips_reviewed_metafield_when_current_policy_allows_it(self):
         original = list(bc_reset_publish.Config.FULCRUM_ALLOWED_STORES)
@@ -347,6 +373,92 @@ class FulcrumBigCommerceResetPublishTests(unittest.TestCase):
         self.assertEqual(len(csv_rows), len(report["candidates"]))
         self.assertEqual(csv_rows[0]["review_target_spec"], report["candidates"][0]["review_target_spec"])
         self.assertTrue(set(bc_reset_publish.CLEANUP_REPORT_FIELDS).issubset(csv_rows[0].keys()))
+
+    def test_cleanup_report_ignores_unpublished_tombstone_metafields(self):
+        original = list(bc_reset_publish.Config.FULCRUM_ALLOWED_STORES)
+        tombstone_remote = [
+            {
+                "entity_type": "product",
+                "entity_id": 111120,
+                "entity_name": "Ganesh Mills Pillow",
+                "entity_url": "/ganesh-mills-pillow/",
+                "metafield_id": 11340,
+                "key": "internal_links_html",
+                "remote_value_state": "unpublished_tombstone",
+            }
+        ]
+        try:
+            bc_reset_publish.Config.FULCRUM_ALLOWED_STORES = ["99oa2tso"]
+            with patch(
+                "app.fulcrum.bc_reset_publish.list_remote_link_metafields",
+                return_value=tombstone_remote,
+            ), patch(
+                "app.fulcrum.bc_reset_publish.list_publications",
+                return_value=[],
+            ), patch(
+                "app.fulcrum.bc_reset_publish.category_publishing_enabled_for_store",
+                return_value=True,
+            ), patch(
+                "app.fulcrum.bc_reset_publish._latest_approved_candidate_rows",
+                return_value=[],
+            ):
+                report = bc_reset_publish.build_cleanup_candidate_report("99oa2tso")
+
+            self.assertEqual(report["remote_before_count"], 1)
+            self.assertEqual(report["visible_remote_before_count"], 0)
+            self.assertEqual(report["tombstone_remote_before_count"], 1)
+            self.assertEqual(report["candidate_count"], 0)
+        finally:
+            bc_reset_publish.Config.FULCRUM_ALLOWED_STORES = original
+
+    def test_targeted_execute_skips_unpublished_tombstone_metafield(self):
+        original = list(bc_reset_publish.Config.FULCRUM_ALLOWED_STORES)
+        tombstone_remote = [
+            {
+                "entity_type": "product",
+                "entity_id": 111120,
+                "entity_name": "Ganesh Mills Pillow",
+                "entity_url": "/ganesh-mills-pillow/",
+                "metafield_id": 11340,
+                "key": "internal_links_html",
+                "remote_value_state": "unpublished_tombstone",
+            }
+        ]
+        try:
+            bc_reset_publish.Config.FULCRUM_ALLOWED_STORES = ["99oa2tso"]
+            with patch(
+                "app.fulcrum.bc_reset_publish.list_remote_link_metafields",
+                side_effect=[tombstone_remote, tombstone_remote],
+            ), patch(
+                "app.fulcrum.bc_reset_publish.list_publications",
+                return_value=[],
+            ), patch(
+                "app.fulcrum.bc_reset_publish.category_publishing_enabled_for_store",
+                return_value=True,
+            ), patch(
+                "app.fulcrum.bc_reset_publish._latest_approved_candidate_rows",
+                return_value=[],
+            ), patch(
+                "app.fulcrum.bc_reset_publish._approved_source_counts",
+                return_value={"product": 1, "category": 0},
+            ), patch(
+                "app.fulcrum.bc_reset_publish._gate_disposition_counts",
+                return_value={"pass": 1, "hold": 0, "reject": 0},
+            ), patch(
+                "app.fulcrum.bc_reset_publish._delete_remote_link_metafield",
+            ) as delete_mock:
+                result = bc_reset_publish.reset_and_republish_bigcommerce_links(
+                    "99oa2tso",
+                    execute=True,
+                    reviewed_metafields=["product:111120:11340"],
+                )
+
+            self.assertEqual(result["reviewed_delete_eligible_count"], 0)
+            self.assertEqual(result["deleted_reviewed_metafield_count"], 0)
+            self.assertTrue(result["skipped_reviewed_metafield_targets"][0]["remote_found"])
+            delete_mock.assert_not_called()
+        finally:
+            bc_reset_publish.Config.FULCRUM_ALLOWED_STORES = original
 
     def test_cleanup_report_review_target_specs_match_targeted_delete_syntax(self):
         report = self._build_report_with_mocks(batch_size=50, storefront_check_hints=False)
